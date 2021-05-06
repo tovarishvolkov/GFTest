@@ -12,18 +12,19 @@
 				</GameParameter>
 				<GameParameter Name="testVolume" ID="{4DD22DA4-AB9E-4C64-A0C5-8002FF3B7B0E}">
 					<PropertyList>
-						<Property Name="FilterTimeDown" Type="Real64" Value="3"/>
-						<Property Name="FilterTimeUp" Type="Real64" Value="0.5"/>
+						<Property Name="FilterTimeDown" Type="Real64" Value="1"/>
 						<Property Name="InitialValue" Type="Real64" Value="0"/>
 						<Property Name="RTPCRamping" Type="int16" Value="2"/>
 					</PropertyList>
 				</GameParameter>
 				<GameParameter Name="testLP" ID="{A523C67D-FE6D-4D1C-BC37-1F97D1BA336B}">
 					<PropertyList>
-						<Property Name="FilterTimeDown" Type="Real64" Value="1"/>
+						<Property Name="FilterTimeDown" Type="Real64" Value="1.5"/>
+						<Property Name="FilterTimeUp" Type="Real64" Value="1"/>
 						<Property Name="InitialValue" Type="Real64" Value="0"/>
 						<Property Name="RTPCRamping" Type="int16" Value="2"/>
-						<Property Name="SlewRateUp" Type="Real64" Value="1"/>
+						<Property Name="SlewRateDown" Type="Real64" Value="0"/>
+						<Property Name="SlewRateUp" Type="Real64" Value="0"/>
 					</PropertyList>
 				</GameParameter>
 			</ChildrenList>

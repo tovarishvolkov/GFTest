@@ -103,7 +103,7 @@
 													<PointList>
 														<Point>
 															<XPos>0</XPos>
-															<YPos>-0</YPos>
+															<YPos>0</YPos>
 															<Flags>5</Flags>
 															<SegmentShape>Log3</SegmentShape>
 														</Point>
@@ -184,14 +184,14 @@
 														<SegmentShape>Exp1</SegmentShape>
 													</Point>
 													<Point>
-														<XPos>75.53274</XPos>
-														<YPos>76</YPos>
+														<XPos>74.81846</XPos>
+														<YPos>75</YPos>
 														<Flags>0</Flags>
 														<SegmentShape>Log1</SegmentShape>
 													</Point>
 													<Point>
 														<XPos>100</XPos>
-														<YPos>72</YPos>
+														<YPos>80</YPos>
 														<Flags>37</Flags>
 													</Point>
 												</PointList>
@@ -285,12 +285,17 @@
 									<Custom CreatedFrom="{7C77D222-4F00-4198-A876-9FEF1F0D669D}">
 										<Attenuation Name="New Attenuation_01 (Custom)" ID="{2DF297E6-0345-4055-A948-AE65A0A7FF56}" ShortID="250293260">
 											<PropertyList>
-												<Property Name="ConeOuterAngle" Type="int32" Value="360"/>
-												<Property Name="ConeUse" Type="bool">
+												<Property Name="ConeAttenuation" Type="Real64">
 													<ValueList>
-														<Value>True</Value>
+														<Value>-13</Value>
 													</ValueList>
 												</Property>
+												<Property Name="ConeLowPassFilterValue" Type="int32">
+													<ValueList>
+														<Value>12</Value>
+													</ValueList>
+												</Property>
+												<Property Name="ConeOuterAngle" Type="int32" Value="250"/>
 												<Property Name="RadiusMax" Type="Real64" Value="3000"/>
 											</PropertyList>
 											<CurveUsageInfoList>
