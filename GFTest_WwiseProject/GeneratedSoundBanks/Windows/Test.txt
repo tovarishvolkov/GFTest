@@ -1,0 +1,10 @@
+Event	ID	Name			Wwise Object Path	Notes
+	3157003241	Test			\test\Test	
+
+Game Parameter	ID	Name			Wwise Object Path	Notes
+	3046093717	testLP			\Default Work Unit\testLP	
+	3299578263	testVolume			\Default Work Unit\testVolume	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	934438021	The_5_Am_On_Cold_Sea	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Windows\SFX\ColBox_Music_test(1)6_607A0CA7.wem		\Actor-Mixer Hierarchy\Test\New Actor-Mixer\The_5_Am_On_Cold_Sea		22747828
+

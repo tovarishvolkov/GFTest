@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{27F14ADB-E1ED-45EC-AD56-FF6433DCF4F4}" SchemaVersion="103">
+	<Events>
+		<WorkUnit Name="test" ID="{27F14ADB-E1ED-45EC-AD56-FF6433DCF4F4}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Test" ID="{F4E24975-DB7A-493A-B11C-3A8BD7BB6303}">
+					<ChildrenList>
+						<Action Name="" ID="{0DCAB1BC-E891-4F6F-B6FE-1A9E0D2535F3}" ShortID="408676837">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="The_5_Am_On_Cold_Sea" ID="{343F4FD4-1A80-436C-B77E-C6C47CE42B35}" WorkUnitID="{2F25FA87-7FC1-4453-9F3B-C948F3ED3F28}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

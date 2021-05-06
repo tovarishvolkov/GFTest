@@ -1,0 +1,78 @@
+Event	ID	Name			Wwise Object Path	Notes
+	4267990944	FootstepsR			\Default Work Unit\FootstepsR	
+	4267990974	FootstepsL			\Default Work Unit\FootstepsL	
+
+Switch Group	ID	Name			Wwise Object Path	Notes
+	4148674434	FootstepsSurfases			\Default Work Unit\FootstepsSurfases	
+
+Switch	ID	Name	Switch Group			Notes
+	761628071	PM_Grass	FootstepsSurfases			
+	1773321336	PM_Dirt	FootstepsSurfases			
+	2220787912	PM_Water	FootstepsSurfases			
+	4257446624	PM_Wood	FootstepsSurfases			
+
+Game Parameter	ID	Name			Wwise Object Path	Notes
+	1176274864	InWet			\Default Work Unit\InWet	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	56382393	FTS_Wood_5	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_5_C526684D.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Heel\FTS_Wood_5		10996
+	62961058	FTS_Water_5	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_5_37FD157D.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Toe\FTS_Water_5		33894
+	73200261	FTS_WaterAdd_5	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_5_4A0AB6FB.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Heel\FTS_WaterAdd_5		11808
+	98406913	FTS_Dirt_2	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_2_CB88AA66.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Toe\FTS_Dirt_2		50624
+	141445449	FTS_Grass_3	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_3_30A675D7.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Toe\FTS_Grass_3		37228
+	198730852	FTS_Dirt_6	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_6_8DDBF004.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Toe\FTS_Dirt_6		46736
+	206156835	FTS_Grass_6	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_6_8EEF10BB.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Toe\FTS_Grass_6		39560
+	207614910	FTS_Water_5	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_5_16A9A49A.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Heel\FTS_Water_5		17502
+	221762326	FTS_Water_4	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_4_176A9C6E.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Toe\FTS_Water_4		31230
+	250721738	FTS_Dirt_2	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_2_AB1C9EED.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Heel\FTS_Dirt_2		14904
+	303448486	FTS_WaterAdd_1	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_1_E1CF4A5E.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Toe\FTS_WaterAdd_1		36642
+	339303620	FTS_Wood_4	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_4_038676C7.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Toe\FTS_Wood_4		34804
+	401291620	FTS_Wood_2	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_2_2F41D277.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Heel\FTS_Wood_2		9144
+	406835349	FTS_Water_6	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_6_EE1898CA.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Heel\FTS_Water_6		14752
+	431763545	FTS_Wood_1	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_1_3C4E5E4C.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Toe\FTS_Wood_1		35514
+	438120175	FTS_Grass_3	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_3_54B4CD05.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Heel\FTS_Grass_3		8488
+	444544100	FTS_Wood_2	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_2_DE13346C.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Toe\FTS_Wood_2		29846
+	480819142	FTS_Dirt_1	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_1_F43EFA6B.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Toe\FTS_Dirt_1		61022
+	482086239	FTS_Wood_3	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_3_67503F55.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Toe\FTS_Wood_3		23140
+	493076993	FTS_WaterAdd_4	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_4_7A4CEB37.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Heel\FTS_WaterAdd_4		11480
+	502732169	FTS_WaterAdd_3	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_3_55CFC290.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Toe\FTS_WaterAdd_3		29176
+	504234298	FTS_Wood_5	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_5_C754A3A5.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Toe\FTS_Wood_5		32050
+	511745616	FTS_Dirt_4	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_4_6FAB0C2A.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Toe\FTS_Dirt_4		46324
+	538010256	FTS_Wood_4	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_4_3DF3FA20.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Heel\FTS_Wood_4		8474
+	546829936	FTS_WaterAdd_3	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_3_48F49A9F.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Heel\FTS_WaterAdd_3		11954
+	550492136	FTS_Grass_5	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_5_F84875F2.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Toe\FTS_Grass_5		41676
+	555878637	FTS_Water_4	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_4_C91DE67C.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Heel\FTS_Water_4		19030
+	563387354	FTS_Dirt_3	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_3_2496B7D5.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Heel\FTS_Dirt_3		8946
+	576470754	FTS_Grass_4	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_4_74E7318A.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Toe\FTS_Grass_4		39958
+	611815475	FTS_WaterAdd_1	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_1_E44F28A6.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Heel\FTS_WaterAdd_1		9440
+	618467011	FTS_Grass_2	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_2_DBFDCC5D.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Toe\FTS_Grass_2		39952
+	629267353	FTS_WaterAdd_2	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_2_E00A5C58.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Toe\FTS_WaterAdd_2		29318
+	649385026	FTS_Grass_5	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_5_0BFA4B1D.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Heel\FTS_Grass_5		8250
+	670195462	FTS_Grass_2	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_2_5A91BAB6.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Heel\FTS_Grass_2		8308
+	713361232	FTS_Wood_1	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_1_694782DB.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Heel\FTS_Wood_1		12142
+	727065953	FTS_Wood_6	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_6_453A2A0B.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Heel\FTS_Wood_6		9274
+	733903199	FTS_Dirt_4	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_4_DEBD2F79.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Heel\FTS_Dirt_4		10116
+	747514367	FTS_WaterAdd_5	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_5_4F7EA402.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Toe\FTS_WaterAdd_5		33320
+	793274488	FTS_Dirt_1	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_1_92A31068.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Heel\FTS_Dirt_1		15940
+	811188900	FTS_Dirt_5	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_5_B9C36459.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Heel\FTS_Dirt_5		8904
+	812880505	FTS_Grass_4	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_4_6C490DEA.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Heel\FTS_Grass_4		10546
+	814264923	FTS_Water_6	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_6_9EBFD5B9.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Toe\FTS_Water_6		25422
+	815145540	FTS_Grass_1	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_1_A0BBC561.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Heel\FTS_Grass_1		9054
+	842503274	FTS_Grass_6	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_6_51A301B5.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Heel\FTS_Grass_6		9410
+	906001231	FTS_WaterAdd_2	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_2_9A0BA0F8.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Heel\FTS_WaterAdd_2		12870
+	912231829	FTS_Wood_6	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_6_11283F61.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Toe\FTS_Wood_6		24686
+	916892411	FTS_WaterAdd_6	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_6_76C134C7.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Heel\FTS_WaterAdd_6		13414
+	917263878	FTS_Water_3	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_3_D097549F.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Heel\FTS_Water_3		17656
+	923241902	FTS_Dirt_6	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_6_7850A29A.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Heel\FTS_Dirt_6		10418
+	951118099	FTS_Water_2	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_2_37518A52.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Toe\FTS_Water_2		26148
+	954831587	FTS_Water_1	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_1_B144BB71.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Toe\FTS_Water_1		21058
+	958315919	FTS_Water_3	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_3_D4BF2F17.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Toe\FTS_Water_3		23870
+	959026001	FTS_Water_2	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_2_E92516A7.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Heel\FTS_Water_2		18384
+	976158979	FTS_WaterAdd_4	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_4_4DE860CF.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Toe\FTS_WaterAdd_4		35676
+	986177643	FTS_Dirt_5	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_5_0EEA20C3.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Toe\FTS_Dirt_5		45620
+	993929176	FTS_Grass_1	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Grass\FTS_Grass_1_09D62AB9.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Grass\Grass_Toe\FTS_Grass_1		42092
+	1003721826	FTS_WaterAdd_6	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\WaterAdd\FTS_WaterAdd_6_CE94B66F.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\WaterAdd\WaterAdd_Toe\FTS_WaterAdd_6		23944
+	1014150650	FTS_Dirt_3	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Dirt\FTS_Dirt_3_14DB1292.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Dirt\Dirt_Toe\FTS_Dirt_3		48676
+	1038585851	FTS_Wood_3	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Wood\FTS_Wood_3_EE029FA4.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Wood\Wood_Heel\FTS_Wood_3		11852
+	1050404912	FTS_Water_1	Z:\Volumes\Library\UnrealProjects\GFTest\GFTest_WwiseProject\.cache\Mac\SFX\Water\FTS_Water_1_22199DF6.wem		\Actor-Mixer Hierarchy\Footsteps\Character\Footsteps\FootstepsL\FootstepsSurfases\Water\Water_Heel\FTS_Water_1		21118
+
