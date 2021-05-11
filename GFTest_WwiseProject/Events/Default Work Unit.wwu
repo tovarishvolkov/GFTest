@@ -3,23 +3,12 @@
 	<Events>
 		<WorkUnit Name="Default Work Unit" ID="{3BA45091-9248-4E6D-8D69-4F7A287D8369}" PersistMode="Standalone">
 			<ChildrenList>
-				<Event Name="FootstepsL" ID="{8BA4787C-411E-4C21-9EE1-7CD28200A4BE}">
+				<Event Name="Footsteps" ID="{8BA4787C-411E-4C21-9EE1-7CD28200A4BE}">
 					<ChildrenList>
 						<Action Name="" ID="{E35D69FF-2343-4885-B6AB-8ED0EAAA2486}" ShortID="745514744">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="FootstepsL" ID="{3DDE15A8-5D2A-429B-9645-961925F41EF0}" WorkUnitID="{B6A3CD8D-C080-4A4C-A75D-8BD6318F5AB8}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
-				<Event Name="FootstepsR" ID="{5CDB14F0-AD72-4735-B39D-993F2BFED1FA}">
-					<ChildrenList>
-						<Action Name="" ID="{67045076-B92B-4538-B1BF-74F6D5B7FFE4}" ShortID="572644960">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="FootstepsR" ID="{7E9E403B-D579-4541-9BDC-35F8EDF70FB0}" WorkUnitID="{B6A3CD8D-C080-4A4C-A75D-8BD6318F5AB8}"/>
+									<ObjectRef Name="Footsteps" ID="{3DDE15A8-5D2A-429B-9645-961925F41EF0}" WorkUnitID="{B6A3CD8D-C080-4A4C-A75D-8BD6318F5AB8}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>

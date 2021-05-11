@@ -16,13 +16,17 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="2385628198" Language="SFX" Hash="1816764186">
+		<SoundBank Id="2385628198" Language="SFX" Hash="665595325">
 			<ObjectPath>\SoundBanks\Default Work Unit\Footsteps</ObjectPath>
 			<ShortName>Footsteps</ShortName>
 			<Path>Footsteps.bnk</Path>
 			<IncludedEvents>
-				<Event Id="4267990974" Name="FootstepsL" ObjectPath="\Events\Default Work Unit\FootstepsL">
+				<Event Id="2385628198" Name="Footsteps" ObjectPath="\Events\Default Work Unit\Footsteps">
 					<IncludedMemoryFiles>
+						<File Id="33279019" Language="SFX">
+							<ShortName>FTS_Grass_7.wav</ShortName>
+							<Path>SFX/FTS_Grass_7_EC42BDC3.wem</Path>
+						</File>
 						<File Id="56382393" Language="SFX">
 							<ShortName>Wood\FTS_Wood_5.wav</ShortName>
 							<Path>SFX/Wood/FTS_Wood_5_C526684D.wem</Path>
@@ -39,13 +43,45 @@
 							<ShortName>Dirt\FTS_Dirt_2.wav</ShortName>
 							<Path>SFX/Dirt/FTS_Dirt_2_CB88AA66.wem</Path>
 						</File>
+						<File Id="125341766" Language="SFX">
+							<ShortName>FTS_Grass_9.wav</ShortName>
+							<Path>SFX/FTS_Grass_9_5FEF176D.wem</Path>
+						</File>
+						<File Id="134792594" Language="SFX">
+							<ShortName>FTS_Wood_11.wav</ShortName>
+							<Path>SFX/FTS_Wood_11_9CC15608.wem</Path>
+						</File>
+						<File Id="135222606" Language="SFX">
+							<ShortName>FTS_Water_7.wav</ShortName>
+							<Path>SFX/FTS_Water_7_E7A583CD.wem</Path>
+						</File>
 						<File Id="141445449" Language="SFX">
 							<ShortName>Grass\FTS_Grass_3.wav</ShortName>
 							<Path>SFX/Grass/FTS_Grass_3_30A675D7.wem</Path>
 						</File>
+						<File Id="165414926" Language="SFX">
+							<ShortName>FTS_Water_10.wav</ShortName>
+							<Path>SFX/FTS_Water_10_22E26750.wem</Path>
+						</File>
+						<File Id="171200006" Language="SFX">
+							<ShortName>FTS_Wood_10.wav</ShortName>
+							<Path>SFX/FTS_Wood_10_4830E13C.wem</Path>
+						</File>
+						<File Id="176810074" Language="SFX">
+							<ShortName>FTS_Grass_11.wav</ShortName>
+							<Path>SFX/FTS_Grass_11_257778A0.wem</Path>
+						</File>
+						<File Id="195147332" Language="SFX">
+							<ShortName>FTS_Grass_8.wav</ShortName>
+							<Path>SFX/FTS_Grass_8_9B8C8042.wem</Path>
+						</File>
 						<File Id="198730852" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_6.wav</ShortName>
 							<Path>SFX/Dirt/FTS_Dirt_6_8DDBF004.wem</Path>
+						</File>
+						<File Id="200687469" Language="SFX">
+							<ShortName>FTS_Dirt_8.wav</ShortName>
+							<Path>SFX/FTS_Dirt_8_2BBF7C61.wem</Path>
 						</File>
 						<File Id="206156835" Language="SFX">
 							<ShortName>Grass\FTS_Grass_6.wav</ShortName>
@@ -59,17 +95,49 @@
 							<ShortName>Water\FTS_Water_4.wav</ShortName>
 							<Path>SFX/Water/FTS_Water_4_176A9C6E.wem</Path>
 						</File>
+						<File Id="236201808" Language="SFX">
+							<ShortName>FTS_Dirt_12.wav</ShortName>
+							<Path>SFX/FTS_Dirt_12_4B9D6B82.wem</Path>
+						</File>
+						<File Id="244999168" Language="SFX">
+							<ShortName>FTS_Dirt_7.wav</ShortName>
+							<Path>SFX/FTS_Dirt_7_78DDBB29.wem</Path>
+						</File>
 						<File Id="250721738" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_2.wav</ShortName>
 							<Path>SFX/Dirt/FTS_Dirt_2_AB1C9EED.wem</Path>
+						</File>
+						<File Id="264265626" Language="SFX">
+							<ShortName>FTS_Wood_9.wav</ShortName>
+							<Path>SFX/FTS_Wood_9_57D31F13.wem</Path>
+						</File>
+						<File Id="289830776" Language="SFX">
+							<ShortName>FTS_Wood_8.wav</ShortName>
+							<Path>SFX/FTS_Wood_8_7293A2E8.wem</Path>
+						</File>
+						<File Id="302590341" Language="SFX">
+							<ShortName>FTS_Wood_12.wav</ShortName>
+							<Path>SFX/FTS_Wood_12_1F801BDA.wem</Path>
 						</File>
 						<File Id="303448486" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_1.wav</ShortName>
 							<Path>SFX/WaterAdd/FTS_WaterAdd_1_E1CF4A5E.wem</Path>
 						</File>
+						<File Id="322454383" Language="SFX">
+							<ShortName>FTS_Water_11.wav</ShortName>
+							<Path>SFX/FTS_Water_11_2B21FAE4.wem</Path>
+						</File>
 						<File Id="339303620" Language="SFX">
 							<ShortName>Wood\FTS_Wood_4.wav</ShortName>
 							<Path>SFX/Wood/FTS_Wood_4_038676C7.wem</Path>
+						</File>
+						<File Id="364780378" Language="SFX">
+							<ShortName>FTS_Wood_7.wav</ShortName>
+							<Path>SFX/FTS_Wood_7_85EB9C07.wem</Path>
+						</File>
+						<File Id="367129222" Language="SFX">
+							<ShortName>FTS_Grass_8.wav</ShortName>
+							<Path>SFX/FTS_Grass_8_92C12EB8.wem</Path>
 						</File>
 						<File Id="401291620" Language="SFX">
 							<ShortName>Wood\FTS_Wood_2.wav</ShortName>
@@ -78,6 +146,10 @@
 						<File Id="406835349" Language="SFX">
 							<ShortName>Water\FTS_Water_6.wav</ShortName>
 							<Path>SFX/Water/FTS_Water_6_EE1898CA.wem</Path>
+						</File>
+						<File Id="417815908" Language="SFX">
+							<ShortName>FTS_Wood_8.wav</ShortName>
+							<Path>SFX/FTS_Wood_8_11A287D5.wem</Path>
 						</File>
 						<File Id="431763545" Language="SFX">
 							<ShortName>Wood\FTS_Wood_1.wav</ShortName>
@@ -91,6 +163,10 @@
 							<ShortName>Wood\FTS_Wood_2.wav</ShortName>
 							<Path>SFX/Wood/FTS_Wood_2_DE13346C.wem</Path>
 						</File>
+						<File Id="445363368" Language="SFX">
+							<ShortName>FTS_Dirt_10.wav</ShortName>
+							<Path>SFX/FTS_Dirt_10_4B5E17FB.wem</Path>
+						</File>
 						<File Id="480819142" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_1.wav</ShortName>
 							<Path>SFX/Dirt/FTS_Dirt_1_F43EFA6B.wem</Path>
@@ -98,6 +174,10 @@
 						<File Id="482086239" Language="SFX">
 							<ShortName>Wood\FTS_Wood_3.wav</ShortName>
 							<Path>SFX/Wood/FTS_Wood_3_67503F55.wem</Path>
+						</File>
+						<File Id="485510511" Language="SFX">
+							<ShortName>FTS_Water_7.wav</ShortName>
+							<Path>SFX/FTS_Water_7_D6714B59.wem</Path>
 						</File>
 						<File Id="493076993" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_4.wav</ShortName>
@@ -119,9 +199,17 @@
 							<ShortName>Wood\FTS_Wood_4.wav</ShortName>
 							<Path>SFX/Wood/FTS_Wood_4_3DF3FA20.wem</Path>
 						</File>
+						<File Id="538765976" Language="SFX">
+							<ShortName>FTS_Wood_12.wav</ShortName>
+							<Path>SFX/FTS_Wood_12_F8A24492.wem</Path>
+						</File>
 						<File Id="546829936" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_3.wav</ShortName>
 							<Path>SFX/WaterAdd/FTS_WaterAdd_3_48F49A9F.wem</Path>
+						</File>
+						<File Id="549071018" Language="SFX">
+							<ShortName>FTS_Dirt_9.wav</ShortName>
+							<Path>SFX/FTS_Dirt_9_8D26F931.wem</Path>
 						</File>
 						<File Id="550492136" Language="SFX">
 							<ShortName>Grass\FTS_Grass_5.wav</ShortName>
@@ -135,9 +223,25 @@
 							<ShortName>Dirt\FTS_Dirt_3.wav</ShortName>
 							<Path>SFX/Dirt/FTS_Dirt_3_2496B7D5.wem</Path>
 						</File>
+						<File Id="573849091" Language="SFX">
+							<ShortName>FTS_Grass_11.wav</ShortName>
+							<Path>SFX/FTS_Grass_11_0DAE77CE.wem</Path>
+						</File>
 						<File Id="576470754" Language="SFX">
 							<ShortName>Grass\FTS_Grass_4.wav</ShortName>
 							<Path>SFX/Grass/FTS_Grass_4_74E7318A.wem</Path>
+						</File>
+						<File Id="581137869" Language="SFX">
+							<ShortName>FTS_Water_12.wav</ShortName>
+							<Path>SFX/FTS_Water_12_49925707.wem</Path>
+						</File>
+						<File Id="593784370" Language="SFX">
+							<ShortName>FTS_Water_9.wav</ShortName>
+							<Path>SFX/FTS_Water_9_E928D61C.wem</Path>
+						</File>
+						<File Id="602974584" Language="SFX">
+							<ShortName>FTS_Wood_7.wav</ShortName>
+							<Path>SFX/FTS_Wood_7_0B256479.wem</Path>
 						</File>
 						<File Id="611815475" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_1.wav</ShortName>
@@ -147,9 +251,21 @@
 							<ShortName>Grass\FTS_Grass_2.wav</ShortName>
 							<Path>SFX/Grass/FTS_Grass_2_DBFDCC5D.wem</Path>
 						</File>
+						<File Id="621670397" Language="SFX">
+							<ShortName>FTS_Water_8.wav</ShortName>
+							<Path>SFX/FTS_Water_8_383EF0E4.wem</Path>
+						</File>
+						<File Id="626827759" Language="SFX">
+							<ShortName>FTS_Grass_7.wav</ShortName>
+							<Path>SFX/FTS_Grass_7_D6A3196F.wem</Path>
+						</File>
 						<File Id="629267353" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_2.wav</ShortName>
 							<Path>SFX/WaterAdd/FTS_WaterAdd_2_E00A5C58.wem</Path>
+						</File>
+						<File Id="631293237" Language="SFX">
+							<ShortName>FTS_Dirt_11.wav</ShortName>
+							<Path>SFX/FTS_Dirt_11_11B7F370.wem</Path>
 						</File>
 						<File Id="649385026" Language="SFX">
 							<ShortName>Grass\FTS_Grass_5.wav</ShortName>
@@ -158,6 +274,18 @@
 						<File Id="670195462" Language="SFX">
 							<ShortName>Grass\FTS_Grass_2.wav</ShortName>
 							<Path>SFX/Grass/FTS_Grass_2_5A91BAB6.wem</Path>
+						</File>
+						<File Id="684169982" Language="SFX">
+							<ShortName>FTS_Grass_12.wav</ShortName>
+							<Path>SFX/FTS_Grass_12_30B99D17.wem</Path>
+						</File>
+						<File Id="699258097" Language="SFX">
+							<ShortName>FTS_Dirt_8.wav</ShortName>
+							<Path>SFX/FTS_Dirt_8_1A64D34F.wem</Path>
+						</File>
+						<File Id="712604823" Language="SFX">
+							<ShortName>FTS_Dirt_11.wav</ShortName>
+							<Path>SFX/FTS_Dirt_11_AC3C814A.wem</Path>
 						</File>
 						<File Id="713361232" Language="SFX">
 							<ShortName>Wood\FTS_Wood_1.wav</ShortName>
@@ -171,17 +299,41 @@
 							<ShortName>Dirt\FTS_Dirt_4.wav</ShortName>
 							<Path>SFX/Dirt/FTS_Dirt_4_DEBD2F79.wem</Path>
 						</File>
+						<File Id="745308928" Language="SFX">
+							<ShortName>FTS_Grass_10.wav</ShortName>
+							<Path>SFX/FTS_Grass_10_A5646E70.wem</Path>
+						</File>
 						<File Id="747514367" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_5.wav</ShortName>
 							<Path>SFX/WaterAdd/FTS_WaterAdd_5_4F7EA402.wem</Path>
+						</File>
+						<File Id="767380054" Language="SFX">
+							<ShortName>FTS_Grass_9.wav</ShortName>
+							<Path>SFX/FTS_Grass_9_97D73072.wem</Path>
+						</File>
+						<File Id="781933926" Language="SFX">
+							<ShortName>FTS_Wood_9.wav</ShortName>
+							<Path>SFX/FTS_Wood_9_F58E0414.wem</Path>
+						</File>
+						<File Id="782161243" Language="SFX">
+							<ShortName>FTS_Water_11.wav</ShortName>
+							<Path>SFX/FTS_Water_11_14CFBEED.wem</Path>
 						</File>
 						<File Id="793274488" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_1.wav</ShortName>
 							<Path>SFX/Dirt/FTS_Dirt_1_92A31068.wem</Path>
 						</File>
+						<File Id="793581616" Language="SFX">
+							<ShortName>FTS_Wood_11.wav</ShortName>
+							<Path>SFX/FTS_Wood_11_ADB9193E.wem</Path>
+						</File>
 						<File Id="811188900" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_5.wav</ShortName>
 							<Path>SFX/Dirt/FTS_Dirt_5_B9C36459.wem</Path>
+						</File>
+						<File Id="812856809" Language="SFX">
+							<ShortName>FTS_Dirt_7.wav</ShortName>
+							<Path>SFX/FTS_Dirt_7_2EF48069.wem</Path>
 						</File>
 						<File Id="812880505" Language="SFX">
 							<ShortName>Grass\FTS_Grass_4.wav</ShortName>
@@ -198,6 +350,30 @@
 						<File Id="842503274" Language="SFX">
 							<ShortName>Grass\FTS_Grass_6.wav</ShortName>
 							<Path>SFX/Grass/FTS_Grass_6_51A301B5.wem</Path>
+						</File>
+						<File Id="851711587" Language="SFX">
+							<ShortName>FTS_Water_9.wav</ShortName>
+							<Path>SFX/FTS_Water_9_095BB45B.wem</Path>
+						</File>
+						<File Id="864460552" Language="SFX">
+							<ShortName>FTS_Grass_10.wav</ShortName>
+							<Path>SFX/FTS_Grass_10_3126A1A7.wem</Path>
+						</File>
+						<File Id="874691548" Language="SFX">
+							<ShortName>FTS_Dirt_9.wav</ShortName>
+							<Path>SFX/FTS_Dirt_9_863C03B1.wem</Path>
+						</File>
+						<File Id="881472598" Language="SFX">
+							<ShortName>FTS_Water_8.wav</ShortName>
+							<Path>SFX/FTS_Water_8_DDBCB740.wem</Path>
+						</File>
+						<File Id="884947141" Language="SFX">
+							<ShortName>FTS_Dirt_12.wav</ShortName>
+							<Path>SFX/FTS_Dirt_12_B279A3F8.wem</Path>
+						</File>
+						<File Id="903112626" Language="SFX">
+							<ShortName>FTS_Grass_12.wav</ShortName>
+							<Path>SFX/FTS_Grass_12_F6C736B3.wem</Path>
 						</File>
 						<File Id="906001231" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_2.wav</ShortName>
@@ -218,6 +394,18 @@
 						<File Id="923241902" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_6.wav</ShortName>
 							<Path>SFX/Dirt/FTS_Dirt_6_7850A29A.wem</Path>
+						</File>
+						<File Id="927880812" Language="SFX">
+							<ShortName>FTS_Dirt_10.wav</ShortName>
+							<Path>SFX/FTS_Dirt_10_D4CACECB.wem</Path>
+						</File>
+						<File Id="939157900" Language="SFX">
+							<ShortName>FTS_Water_10.wav</ShortName>
+							<Path>SFX/FTS_Water_10_51362A61.wem</Path>
+						</File>
+						<File Id="950299676" Language="SFX">
+							<ShortName>FTS_Water_12.wav</ShortName>
+							<Path>SFX/FTS_Water_12_4301F937.wem</Path>
 						</File>
 						<File Id="951118099" Language="SFX">
 							<ShortName>Water\FTS_Water_2.wav</ShortName>
@@ -263,50 +451,90 @@
 							<ShortName>Water\FTS_Water_1.wav</ShortName>
 							<Path>SFX/Water/FTS_Water_1_22199DF6.wem</Path>
 						</File>
+						<File Id="1052307181" Language="SFX">
+							<ShortName>FTS_Wood_10.wav</ShortName>
+							<Path>SFX/FTS_Wood_10_C02F295B.wem</Path>
+						</File>
 					</IncludedMemoryFiles>
 					<DefaultSwitchValue>{C042CC26-ED83-482C-B5E2-1F682530BF77}</DefaultSwitchValue>
 					<SwitchContainers>
 						<SwitchContainer SwitchValue="{C042CC26-ED83-482C-B5E2-1F682530BF77}">
 							<Media>
 								<File Id="56382393"/>
+								<File Id="134792594"/>
+								<File Id="171200006"/>
+								<File Id="264265626"/>
+								<File Id="289830776"/>
+								<File Id="302590341"/>
 								<File Id="339303620"/>
+								<File Id="364780378"/>
 								<File Id="401291620"/>
+								<File Id="417815908"/>
 								<File Id="431763545"/>
 								<File Id="444544100"/>
 								<File Id="482086239"/>
 								<File Id="504234298"/>
 								<File Id="538010256"/>
+								<File Id="538765976"/>
+								<File Id="602974584"/>
 								<File Id="713361232"/>
 								<File Id="727065953"/>
+								<File Id="781933926"/>
+								<File Id="793581616"/>
 								<File Id="912231829"/>
 								<File Id="1038585851"/>
+								<File Id="1052307181"/>
 							</Media>
 						</SwitchContainer>
 						<SwitchContainer SwitchValue="{4430BFF3-D7F3-4650-9197-AD4A3EE0B81A}">
 							<Media>
+								<File Id="33279019"/>
+								<File Id="125341766"/>
 								<File Id="141445449"/>
+								<File Id="176810074"/>
+								<File Id="195147332"/>
 								<File Id="206156835"/>
+								<File Id="367129222"/>
 								<File Id="438120175"/>
 								<File Id="550492136"/>
+								<File Id="573849091"/>
 								<File Id="576470754"/>
 								<File Id="618467011"/>
+								<File Id="626827759"/>
 								<File Id="649385026"/>
 								<File Id="670195462"/>
+								<File Id="684169982"/>
+								<File Id="745308928"/>
+								<File Id="767380054"/>
 								<File Id="812880505"/>
 								<File Id="815145540"/>
 								<File Id="842503274"/>
+								<File Id="864460552"/>
+								<File Id="903112626"/>
 								<File Id="993929176"/>
 							</Media>
 						</SwitchContainer>
 						<SwitchContainer SwitchValue="{F553FB2D-7FE6-4CD3-9DC8-BFC76F6EF20A}">
 							<Media>
 								<File Id="62961058"/>
+								<File Id="135222606"/>
+								<File Id="165414926"/>
 								<File Id="207614910"/>
 								<File Id="221762326"/>
+								<File Id="322454383"/>
 								<File Id="406835349"/>
+								<File Id="485510511"/>
 								<File Id="555878637"/>
+								<File Id="581137869"/>
+								<File Id="593784370"/>
+								<File Id="621670397"/>
+								<File Id="782161243"/>
 								<File Id="814264923"/>
+								<File Id="851711587"/>
+								<File Id="881472598"/>
 								<File Id="917263878"/>
+								<File Id="939157900"/>
+								<File Id="950299676"/>
 								<File Id="951118099"/>
 								<File Id="954831587"/>
 								<File Id="958315919"/>
@@ -318,325 +546,26 @@
 							<Media>
 								<File Id="98406913"/>
 								<File Id="198730852"/>
+								<File Id="200687469"/>
+								<File Id="236201808"/>
+								<File Id="244999168"/>
 								<File Id="250721738"/>
+								<File Id="445363368"/>
 								<File Id="480819142"/>
 								<File Id="511745616"/>
+								<File Id="549071018"/>
 								<File Id="563387354"/>
+								<File Id="631293237"/>
+								<File Id="699258097"/>
+								<File Id="712604823"/>
 								<File Id="733903199"/>
 								<File Id="793274488"/>
 								<File Id="811188900"/>
+								<File Id="812856809"/>
+								<File Id="874691548"/>
+								<File Id="884947141"/>
 								<File Id="923241902"/>
-								<File Id="986177643"/>
-								<File Id="1014150650"/>
-							</Media>
-						</SwitchContainer>
-					</SwitchContainers>
-				</Event>
-				<Event Id="4267990944" Name="FootstepsR" ObjectPath="\Events\Default Work Unit\FootstepsR">
-					<IncludedMemoryFiles>
-						<File Id="56382393" Language="SFX">
-							<ShortName>Wood\FTS_Wood_5.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_5_C526684D.wem</Path>
-						</File>
-						<File Id="62961058" Language="SFX">
-							<ShortName>Water\FTS_Water_5.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_5_37FD157D.wem</Path>
-						</File>
-						<File Id="73200261" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_5.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_5_4A0AB6FB.wem</Path>
-						</File>
-						<File Id="98406913" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_2.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_2_CB88AA66.wem</Path>
-						</File>
-						<File Id="141445449" Language="SFX">
-							<ShortName>Grass\FTS_Grass_3.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_3_30A675D7.wem</Path>
-						</File>
-						<File Id="198730852" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_6.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_6_8DDBF004.wem</Path>
-						</File>
-						<File Id="206156835" Language="SFX">
-							<ShortName>Grass\FTS_Grass_6.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_6_8EEF10BB.wem</Path>
-						</File>
-						<File Id="207614910" Language="SFX">
-							<ShortName>Water\FTS_Water_5.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_5_16A9A49A.wem</Path>
-						</File>
-						<File Id="221762326" Language="SFX">
-							<ShortName>Water\FTS_Water_4.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_4_176A9C6E.wem</Path>
-						</File>
-						<File Id="250721738" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_2.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_2_AB1C9EED.wem</Path>
-						</File>
-						<File Id="303448486" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_1.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_1_E1CF4A5E.wem</Path>
-						</File>
-						<File Id="339303620" Language="SFX">
-							<ShortName>Wood\FTS_Wood_4.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_4_038676C7.wem</Path>
-						</File>
-						<File Id="401291620" Language="SFX">
-							<ShortName>Wood\FTS_Wood_2.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_2_2F41D277.wem</Path>
-						</File>
-						<File Id="406835349" Language="SFX">
-							<ShortName>Water\FTS_Water_6.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_6_EE1898CA.wem</Path>
-						</File>
-						<File Id="431763545" Language="SFX">
-							<ShortName>Wood\FTS_Wood_1.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_1_3C4E5E4C.wem</Path>
-						</File>
-						<File Id="438120175" Language="SFX">
-							<ShortName>Grass\FTS_Grass_3.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_3_54B4CD05.wem</Path>
-						</File>
-						<File Id="444544100" Language="SFX">
-							<ShortName>Wood\FTS_Wood_2.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_2_DE13346C.wem</Path>
-						</File>
-						<File Id="480819142" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_1.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_1_F43EFA6B.wem</Path>
-						</File>
-						<File Id="482086239" Language="SFX">
-							<ShortName>Wood\FTS_Wood_3.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_3_67503F55.wem</Path>
-						</File>
-						<File Id="493076993" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_4.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_4_7A4CEB37.wem</Path>
-						</File>
-						<File Id="502732169" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_3.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_3_55CFC290.wem</Path>
-						</File>
-						<File Id="504234298" Language="SFX">
-							<ShortName>Wood\FTS_Wood_5.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_5_C754A3A5.wem</Path>
-						</File>
-						<File Id="511745616" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_4.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_4_6FAB0C2A.wem</Path>
-						</File>
-						<File Id="538010256" Language="SFX">
-							<ShortName>Wood\FTS_Wood_4.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_4_3DF3FA20.wem</Path>
-						</File>
-						<File Id="546829936" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_3.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_3_48F49A9F.wem</Path>
-						</File>
-						<File Id="550492136" Language="SFX">
-							<ShortName>Grass\FTS_Grass_5.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_5_F84875F2.wem</Path>
-						</File>
-						<File Id="555878637" Language="SFX">
-							<ShortName>Water\FTS_Water_4.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_4_C91DE67C.wem</Path>
-						</File>
-						<File Id="563387354" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_3.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_3_2496B7D5.wem</Path>
-						</File>
-						<File Id="576470754" Language="SFX">
-							<ShortName>Grass\FTS_Grass_4.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_4_74E7318A.wem</Path>
-						</File>
-						<File Id="611815475" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_1.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_1_E44F28A6.wem</Path>
-						</File>
-						<File Id="618467011" Language="SFX">
-							<ShortName>Grass\FTS_Grass_2.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_2_DBFDCC5D.wem</Path>
-						</File>
-						<File Id="629267353" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_2.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_2_E00A5C58.wem</Path>
-						</File>
-						<File Id="649385026" Language="SFX">
-							<ShortName>Grass\FTS_Grass_5.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_5_0BFA4B1D.wem</Path>
-						</File>
-						<File Id="670195462" Language="SFX">
-							<ShortName>Grass\FTS_Grass_2.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_2_5A91BAB6.wem</Path>
-						</File>
-						<File Id="713361232" Language="SFX">
-							<ShortName>Wood\FTS_Wood_1.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_1_694782DB.wem</Path>
-						</File>
-						<File Id="727065953" Language="SFX">
-							<ShortName>Wood\FTS_Wood_6.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_6_453A2A0B.wem</Path>
-						</File>
-						<File Id="733903199" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_4.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_4_DEBD2F79.wem</Path>
-						</File>
-						<File Id="747514367" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_5.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_5_4F7EA402.wem</Path>
-						</File>
-						<File Id="793274488" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_1.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_1_92A31068.wem</Path>
-						</File>
-						<File Id="811188900" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_5.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_5_B9C36459.wem</Path>
-						</File>
-						<File Id="812880505" Language="SFX">
-							<ShortName>Grass\FTS_Grass_4.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_4_6C490DEA.wem</Path>
-						</File>
-						<File Id="814264923" Language="SFX">
-							<ShortName>Water\FTS_Water_6.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_6_9EBFD5B9.wem</Path>
-						</File>
-						<File Id="815145540" Language="SFX">
-							<ShortName>Grass\FTS_Grass_1.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_1_A0BBC561.wem</Path>
-						</File>
-						<File Id="842503274" Language="SFX">
-							<ShortName>Grass\FTS_Grass_6.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_6_51A301B5.wem</Path>
-						</File>
-						<File Id="906001231" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_2.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_2_9A0BA0F8.wem</Path>
-						</File>
-						<File Id="912231829" Language="SFX">
-							<ShortName>Wood\FTS_Wood_6.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_6_11283F61.wem</Path>
-						</File>
-						<File Id="916892411" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_6.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_6_76C134C7.wem</Path>
-						</File>
-						<File Id="917263878" Language="SFX">
-							<ShortName>Water\FTS_Water_3.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_3_D097549F.wem</Path>
-						</File>
-						<File Id="923241902" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_6.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_6_7850A29A.wem</Path>
-						</File>
-						<File Id="951118099" Language="SFX">
-							<ShortName>Water\FTS_Water_2.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_2_37518A52.wem</Path>
-						</File>
-						<File Id="954831587" Language="SFX">
-							<ShortName>Water\FTS_Water_1.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_1_B144BB71.wem</Path>
-						</File>
-						<File Id="958315919" Language="SFX">
-							<ShortName>Water\FTS_Water_3.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_3_D4BF2F17.wem</Path>
-						</File>
-						<File Id="959026001" Language="SFX">
-							<ShortName>Water\FTS_Water_2.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_2_E92516A7.wem</Path>
-						</File>
-						<File Id="976158979" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_4.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_4_4DE860CF.wem</Path>
-						</File>
-						<File Id="986177643" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_5.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_5_0EEA20C3.wem</Path>
-						</File>
-						<File Id="993929176" Language="SFX">
-							<ShortName>Grass\FTS_Grass_1.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_1_09D62AB9.wem</Path>
-						</File>
-						<File Id="1003721826" Language="SFX">
-							<ShortName>WaterAdd\FTS_WaterAdd_6.wav</ShortName>
-							<Path>SFX/WaterAdd/FTS_WaterAdd_6_CE94B66F.wem</Path>
-						</File>
-						<File Id="1014150650" Language="SFX">
-							<ShortName>Dirt\FTS_Dirt_3.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_3_14DB1292.wem</Path>
-						</File>
-						<File Id="1038585851" Language="SFX">
-							<ShortName>Wood\FTS_Wood_3.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_3_EE029FA4.wem</Path>
-						</File>
-						<File Id="1050404912" Language="SFX">
-							<ShortName>Water\FTS_Water_1.wav</ShortName>
-							<Path>SFX/Water/FTS_Water_1_22199DF6.wem</Path>
-						</File>
-					</IncludedMemoryFiles>
-					<DefaultSwitchValue>{C042CC26-ED83-482C-B5E2-1F682530BF77}</DefaultSwitchValue>
-					<SwitchContainers>
-						<SwitchContainer SwitchValue="{C042CC26-ED83-482C-B5E2-1F682530BF77}">
-							<Media>
-								<File Id="56382393"/>
-								<File Id="339303620"/>
-								<File Id="401291620"/>
-								<File Id="431763545"/>
-								<File Id="444544100"/>
-								<File Id="482086239"/>
-								<File Id="504234298"/>
-								<File Id="538010256"/>
-								<File Id="713361232"/>
-								<File Id="727065953"/>
-								<File Id="912231829"/>
-								<File Id="1038585851"/>
-							</Media>
-						</SwitchContainer>
-						<SwitchContainer SwitchValue="{4430BFF3-D7F3-4650-9197-AD4A3EE0B81A}">
-							<Media>
-								<File Id="141445449"/>
-								<File Id="206156835"/>
-								<File Id="438120175"/>
-								<File Id="550492136"/>
-								<File Id="576470754"/>
-								<File Id="618467011"/>
-								<File Id="649385026"/>
-								<File Id="670195462"/>
-								<File Id="812880505"/>
-								<File Id="815145540"/>
-								<File Id="842503274"/>
-								<File Id="993929176"/>
-							</Media>
-						</SwitchContainer>
-						<SwitchContainer SwitchValue="{F553FB2D-7FE6-4CD3-9DC8-BFC76F6EF20A}">
-							<Media>
-								<File Id="62961058"/>
-								<File Id="207614910"/>
-								<File Id="221762326"/>
-								<File Id="406835349"/>
-								<File Id="555878637"/>
-								<File Id="814264923"/>
-								<File Id="917263878"/>
-								<File Id="951118099"/>
-								<File Id="954831587"/>
-								<File Id="958315919"/>
-								<File Id="959026001"/>
-								<File Id="1050404912"/>
-							</Media>
-						</SwitchContainer>
-						<SwitchContainer SwitchValue="{83291855-76C8-4929-B26F-27DE69D2588D}">
-							<Media>
-								<File Id="98406913"/>
-								<File Id="198730852"/>
-								<File Id="250721738"/>
-								<File Id="480819142"/>
-								<File Id="511745616"/>
-								<File Id="563387354"/>
-								<File Id="733903199"/>
-								<File Id="793274488"/>
-								<File Id="811188900"/>
-								<File Id="923241902"/>
+								<File Id="927880812"/>
 								<File Id="986177643"/>
 								<File Id="1014150650"/>
 							</Media>
