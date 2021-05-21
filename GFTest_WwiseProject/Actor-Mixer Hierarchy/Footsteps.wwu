@@ -80,6 +80,7 @@
 												<RandomSequenceContainer Name="Wood" ID="{90E71329-ACE2-4068-B136-2D6B4898F70B}" ShortID="346554034">
 													<PropertyList>
 														<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
+														<Property Name="PlayMechanismSpecialTransitionsValue" Type="Real64" Value="1.5"/>
 														<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
 														<Property Name="RandomOrSequence" Type="int16" Value="0"/>
 													</PropertyList>
@@ -94,7 +95,7 @@
 													<ChildrenList>
 														<RandomSequenceContainer Name="Wood_Heel" ID="{702584C2-19AD-4CF6-974C-62E5108D4DF2}" ShortID="710387257">
 															<PropertyList>
-																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="5"/>
 															</PropertyList>
 															<ReferenceList>
 																<Reference Name="Conversion">
@@ -119,7 +120,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0224417510853835"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.125809816690786"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.19177496382055"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Wood\FTS_Wood_1.wav</AudioFile>
@@ -147,7 +148,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0163282380607815"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0945911722141823"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.144701971780029"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Wood\FTS_Wood_2.wav</AudioFile>
@@ -175,7 +176,7 @@
 																			<PropertyList>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
 																				<Property Name="TrimBegin" Type="Real64" Value="0.0150884286058852"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.137877020019296"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.157648064399421"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Wood\FTS_Wood_3.wav</AudioFile>
@@ -203,7 +204,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0234897793053546"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0876105282199711"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.165698172937771"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Wood\FTS_Wood_4.wav</AudioFile>
@@ -231,7 +232,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0150627110467921"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.113874095513748"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.168702363724071"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Wood\FTS_Wood_5.wav</AudioFile>
@@ -259,7 +260,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.00819554992764109"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0959361432706223"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.139806439942113"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Wood\FTS_Wood_6.wav</AudioFile>
@@ -287,7 +288,7 @@
 																			<PropertyList>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
 																				<Property Name="TrimBegin" Type="Real64" Value="0.0142083031837916"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.135317173178968"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.202975759768452"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Wood_7.wav</AudioFile>
@@ -313,9 +314,8 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Wood_8" ID="{B40DC35E-76A7-41B5-AA94-21C9A4C3B70B}">
 																			<PropertyList>
-																				<Property Name="LoopBegin" Type="Real64" Value="0"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0945911722141822"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.167786722141823"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Wood_8.wav</AudioFile>
@@ -343,7 +343,7 @@
 																			<PropertyList>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
 																				<Property Name="TrimBegin" Type="Real64" Value="0.012486975397974"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.150884286058852"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.157127773757839"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Wood_9.wav</AudioFile>
@@ -369,9 +369,9 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Wood_10" ID="{1299971B-BAA5-4133-85E7-897F5640AFC6}">
 																			<PropertyList>
-																				<Property Name="LoopBegin" Type="Real64" Value="0"/>
+																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0457098408104197"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0863408104196815"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.173316479739508"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Wood_10.wav</AudioFile>
@@ -397,9 +397,9 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Wood_11" ID="{DFEEFBCE-3741-4352-B183-FF7CF6516E81}">
 																			<PropertyList>
-																				<Property Name="LoopBegin" Type="Real64" Value="0"/>
+																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0729035214664737"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.120501688374337"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.187982633863966"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Wood_11.wav</AudioFile>
@@ -425,9 +425,8 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Wood_12" ID="{AD358862-3E89-4F64-BF07-19696CD7538C}">
 																			<PropertyList>
-																				<Property Name="LoopBegin" Type="Real64" Value="0"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0940077785817656"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.147037807525326"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Wood_12.wav</AudioFile>
@@ -446,7 +445,7 @@
 														</RandomSequenceContainer>
 														<RandomSequenceContainer Name="Wood_Toe" ID="{642A0DB9-6D5B-4EAD-A019-C25071723C89}" ShortID="434307535">
 															<PropertyList>
-																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="5"/>
 															</PropertyList>
 															<ReferenceList>
 																<Reference Name="Conversion">
@@ -555,7 +554,7 @@
 																			<PropertyList>
 																				<Property Name="FadeInDuration" Type="Real64" Value="0.0171411903039074"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimBegin" Type="Real64" Value="0.0768179269175109"/>
+																				<Property Name="TrimBegin" Type="Real64" Value="0.0977682706222866"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Wood\FTS_Wood_4.wav</AudioFile>
@@ -583,7 +582,7 @@
 																			<PropertyList>
 																				<Property Name="FadeInDuration" Type="Real64" Value="0.0234978292329957"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimBegin" Type="Real64" Value="0.0831461649782923"/>
+																				<Property Name="TrimBegin" Type="Real64" Value="0.126526772793053"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Wood\FTS_Wood_5.wav</AudioFile>
@@ -611,7 +610,7 @@
 																			<PropertyList>
 																				<Property Name="FadeInDuration" Type="Real64" Value="0.0110880969609262"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimBegin" Type="Real64" Value="0.076652496382055"/>
+																				<Property Name="TrimBegin" Type="Real64" Value="0.0915973227206947"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Wood\FTS_Wood_6.wav</AudioFile>
@@ -693,7 +692,7 @@
 																		<AudioFileSource Name="FTS_Wood_9" ID="{99BE01D1-5B90-4118-A2FB-2870707EAF5A}">
 																			<PropertyList>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimBegin" Type="Real64" Value="0.140478473227207"/>
+																				<Property Name="TrimBegin" Type="Real64" Value="0.147242251567776"/>
 																				<Property Name="TrimEnd" Type="Real64" Value="0.357959961408587"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
@@ -720,8 +719,9 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Wood_7" ID="{5988FF36-AFB7-464B-8A6F-11F610F588A0}">
 																			<PropertyList>
+																				<Property Name="FadeInDuration" Type="Real64" Value="0.0757776169802219"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimBegin" Type="Real64" Value="0.12449179932465"/>
+																				<Property Name="TrimBegin" Type="Real64" Value="0.150878648094549"/>
 																				<Property Name="TrimEnd" Type="Real64" Value="0.464137904003859"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
@@ -776,6 +776,7 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Wood_8" ID="{E13FE0A8-23A1-44E0-B4CF-05512334AC3D}">
 																			<PropertyList>
+																				<Property Name="FadeInDuration" Type="Real64" Value="0.132878075253256"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
 																				<Property Name="TrimBegin" Type="Real64" Value="0.0872716172214182"/>
 																			</PropertyList>
@@ -819,7 +820,7 @@
 														<RandomSequenceContainer Name="Grass_Heel" ID="{3EF7F59D-B2B1-4B59-8B8C-FBF261234D18}" ShortID="377056609">
 															<PropertyList>
 																<Property Name="GlobalOrPerObject" Type="int16" Value="0"/>
-																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="5"/>
 															</PropertyList>
 															<ReferenceList>
 																<Reference Name="Conversion">
@@ -844,7 +845,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0141222563917028"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0936528581765557"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.165007416787265"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Grass\FTS_Grass_1.wav</AudioFile>
@@ -872,7 +873,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.00924807042932948"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0858749397009166"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.157217197298601"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Grass\FTS_Grass_2.wav</AudioFile>
@@ -900,7 +901,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0129040038591413"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0877472262421611"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.159364447660395"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Grass\FTS_Grass_3.wav</AudioFile>
@@ -928,7 +929,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.00955324409068982"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.109179932465026"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.181511637723106"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Grass\FTS_Grass_4.wav</AudioFile>
@@ -956,7 +957,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0220284310178485"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0852713458755427"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.177648637240714"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Grass\FTS_Grass_5.wav</AudioFile>
@@ -984,7 +985,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0106584659913169"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0973473227206946"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.184746743849493"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Grass\FTS_Grass_6.wav</AudioFile>
@@ -1012,7 +1013,7 @@
 																			<PropertyList>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
 																				<Property Name="TrimBegin" Type="Real64" Value="0.0222982995658466"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.165007416787265"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.205887632657984"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Grass_7.wav</AudioFile>
@@ -1039,7 +1040,7 @@
 																		<AudioFileSource Name="FTS_Grass_8" ID="{E6036E28-2CC9-4561-8248-0DD4F6971808}">
 																			<PropertyList>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.155896044380125"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.170428726483357"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Grass_8.wav</AudioFile>
@@ -1146,9 +1147,8 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Grass_12" ID="{A29143AE-C7F8-496A-811B-DC959805C97A}">
 																			<PropertyList>
-																				<Property Name="LoopBegin" Type="Real64" Value="0"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.118664254703329"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.195405209840811"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Grass_12.wav</AudioFile>
@@ -1168,7 +1168,7 @@
 														<RandomSequenceContainer Name="Grass_Toe" ID="{442364DE-BB55-4B30-B94F-7C103FF3FE6F}" ShortID="1019843069">
 															<PropertyList>
 																<Property Name="GlobalOrPerObject" Type="int16" Value="0"/>
-																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="5"/>
 															</PropertyList>
 															<ReferenceList>
 																<Reference Name="Conversion">
@@ -1540,7 +1540,7 @@
 														<RandomSequenceContainer Name="Water_Heel" ID="{36379B4F-21DF-4865-9A26-3BF955774D13}" ShortID="335340048">
 															<PropertyList>
 																<Property Name="GlobalOrPerObject" Type="int16" Value="0"/>
-																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="5"/>
 															</PropertyList>
 															<ReferenceList>
 																<Reference Name="Conversion">
@@ -1870,9 +1870,8 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Water_12" ID="{8EBF9550-EBE6-47EB-9B47-7B59970AC67E}">
 																			<PropertyList>
-																				<Property Name="LoopBegin" Type="Real64" Value="0"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.116439881813796"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.154451248191027"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Water_12.wav</AudioFile>
@@ -1891,7 +1890,7 @@
 														</RandomSequenceContainer>
 														<RandomSequenceContainer Name="Water_Toe" ID="{0E3CA603-DDD6-45BA-8E1A-B6DDD85C2C61}" ShortID="368436111">
 															<PropertyList>
-																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="5"/>
 															</PropertyList>
 															<ReferenceList>
 																<Reference Name="Conversion">
@@ -2263,7 +2262,7 @@
 														<RandomSequenceContainer Name="Dirt_Heel" ID="{DC59E2D1-06A7-4F1E-97CF-1B378D6E12A5}" ShortID="79360794">
 															<PropertyList>
 																<Property Name="GlobalOrPerObject" Type="int16" Value="0"/>
-																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="5"/>
 															</PropertyList>
 															<ReferenceList>
 																<Reference Name="Conversion">
@@ -2289,7 +2288,7 @@
 																				<Property Name="FadeInDuration" Type="Real64" Value="0.0106005788712012"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
 																				<Property Name="TrimBegin" Type="Real64" Value="0.00106005788712012"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.166429088277858"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.248053545586107"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Dirt\FTS_Dirt_1.wav</AudioFile>
@@ -2317,7 +2316,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0197726724553787"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.154586348287506"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.239069585142306"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Dirt\FTS_Dirt_2.wav</AudioFile>
@@ -2345,7 +2344,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0142994150988905"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.092525627110468"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.184210112156295"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Dirt\FTS_Dirt_3.wav</AudioFile>
@@ -2373,7 +2372,7 @@
 																			<PropertyList>
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.0163621562952243"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.104717800289436"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.200436414616498"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Dirt\FTS_Dirt_4.wav</AudioFile>
@@ -2402,7 +2401,7 @@
 																				<Property Name="FadeOutDuration" Type="Real64" Value="0.009955499276411"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
 																				<Property Name="TrimBegin" Type="Real64" Value="0.0149332489146165"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.107021617221418"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.204917360106126"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Dirt\FTS_Dirt_5.wav</AudioFile>
@@ -2430,7 +2429,7 @@
 																			<PropertyList>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
 																				<Property Name="TrimBegin" Type="Real64" Value="0.009955499276411"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.11780674143753"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.198280360588519"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Dirt\FTS_Dirt_6.wav</AudioFile>
@@ -2457,7 +2456,7 @@
 																		<AudioFileSource Name="FTS_Dirt_7" ID="{AE0F2F59-0EA4-44D6-A7DB-6301AF38C4E0}">
 																			<PropertyList>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.121906657018813"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.195050651230101"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Dirt_7.wav</AudioFile>
@@ -2484,7 +2483,7 @@
 																		<AudioFileSource Name="FTS_Dirt_8" ID="{CC95938A-DD3C-4AFC-8AB9-61862860722A}">
 																			<PropertyList>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.100660877954655"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.202220513748191"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Dirt_8.wav</AudioFile>
@@ -2510,9 +2509,8 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Dirt_9" ID="{5A16CF1D-B518-4200-87C8-E6FF48B87F72}">
 																			<PropertyList>
-																				<Property Name="LoopBegin" Type="Real64" Value="0"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0580388024602027"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.148882145441389"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Dirt_9.wav</AudioFile>
@@ -2539,7 +2537,7 @@
 																		<AudioFileSource Name="FTS_Dirt_10" ID="{AB14ED28-B424-44EC-BA9D-74F8652401FC}">
 																			<PropertyList>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.0809926736613603"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.176711287988423"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Dirt_10.wav</AudioFile>
@@ -2565,9 +2563,8 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Dirt_11" ID="{58E85D79-3A76-4A18-A7B1-2601418ED3BB}">
 																			<PropertyList>
-																				<Property Name="LoopBegin" Type="Real64" Value="0"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.102043867583213"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.175050862276894"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Dirt_11.wav</AudioFile>
@@ -2593,9 +2590,8 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Dirt_12" ID="{27DD0419-9384-4B26-9043-F008237D0C87}">
 																			<PropertyList>
-																				<Property Name="LoopBegin" Type="Real64" Value="0"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimEnd" Type="Real64" Value="0.112828991799324"/>
+																				<Property Name="TrimEnd" Type="Real64" Value="0.189984111191509"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>FTS_Dirt_12.wav</AudioFile>
@@ -2615,7 +2611,7 @@
 														<RandomSequenceContainer Name="Dirt_Toe" ID="{D772EACD-2C38-4E8E-B821-F43378C3E2E9}" ShortID="573097192">
 															<PropertyList>
 																<Property Name="GlobalOrPerObject" Type="int16" Value="0"/>
-																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
+																<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="5"/>
 															</PropertyList>
 															<ReferenceList>
 																<Reference Name="Conversion">
@@ -2638,9 +2634,8 @@
 																	<ChildrenList>
 																		<AudioFileSource Name="FTS_Dirt_1" ID="{43E448A8-403A-45F6-923A-765D6DC84BE0}">
 																			<PropertyList>
-																				<Property Name="LoopBegin" Type="Real64" Value="0.0975253256150507"/>
 																				<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-																				<Property Name="TrimBegin" Type="Real64" Value="0.0975253256150507"/>
+																				<Property Name="TrimBegin" Type="Real64" Value="0.107065846599132"/>
 																			</PropertyList>
 																			<Language>SFX</Language>
 																			<AudioFile>Dirt\FTS_Dirt_1.wav</AudioFile>
@@ -3030,6 +3025,7 @@
 												<RandomSequenceContainer Name="WaterAdd_Heel" ID="{AC58931A-2F39-4826-B183-C510D2173B68}" ShortID="795715077">
 													<PropertyList>
 														<Property Name="GlobalOrPerObject" Type="int16" Value="0"/>
+														<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="3"/>
 													</PropertyList>
 													<ReferenceList>
 														<Reference Name="Conversion">
@@ -3214,6 +3210,7 @@
 												<RandomSequenceContainer Name="WaterAdd_Toe" ID="{AE807A62-21C2-4F53-BBF3-4C5854671DED}" ShortID="64985124">
 													<PropertyList>
 														<Property Name="GlobalOrPerObject" Type="int16" Value="0"/>
+														<Property Name="RandomAvoidRepeatingCount" Type="int32" Value="4"/>
 													</PropertyList>
 													<ReferenceList>
 														<Reference Name="Conversion">
