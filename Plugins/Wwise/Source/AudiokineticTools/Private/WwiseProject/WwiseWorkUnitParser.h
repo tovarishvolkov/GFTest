@@ -28,7 +28,7 @@ struct FScopedSlowTask;
 class WwiseWorkUnitParser
 {
 public:
-	void SetVisitor(WorkUnitXmlVisitor* Visitor) { visitor = Visitor; }
+	void SetVisitor(WorkUnitXmlVisitor* VisitorInstance) { Visitor = VisitorInstance; }
 
 	bool Parse();
 
@@ -63,5 +63,5 @@ private:
 	TArray<FGuid> parsedWwus;
 	TArray<FString> unparseableWwus;
 	FString projectRootFolder;
-	WorkUnitXmlVisitor* visitor = nullptr;
+	WorkUnitXmlVisitor* Visitor = nullptr;
 };

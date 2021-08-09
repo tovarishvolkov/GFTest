@@ -53,18 +53,18 @@ namespace AkSpatialAudioColors
 		BackColor = ConnectedColor;
 		if (!Portal->PortalPlacementValid())
 		{
-			FLinearColor ErrorColor = GetDefault<UEditorStyleSettings>()->LogErrorColor;
+			FLinearColor ErrorColor = FLinearColor::Red;
 			FrontColor = ErrorColor;
 			BackColor = ErrorColor;
 		}
 		else if (Portal->GetFrontRoomComponent() == nullptr)
 		{
-			FLinearColor DisconnectedColor = GetDefault<UEditorStyleSettings>()->InactiveSelectionColor;
+			FLinearColor DisconnectedColor = FLinearColor::Gray;
 			FrontColor = DisconnectedColor;
 		}
 		else if (Portal->GetBackRoomComponent() == nullptr)
 		{
-			FLinearColor DisconnectedColor = GetDefault<UEditorStyleSettings>()->InactiveSelectionColor;
+			FLinearColor DisconnectedColor = FLinearColor::Gray;
 			BackColor = DisconnectedColor;
 		}
 		FrontColor.A = kAlphaValue;
@@ -75,8 +75,10 @@ namespace AkSpatialAudioColors
 	{
 		FLinearColor OutlineColor = GetDefault<UEditorStyleSettings>()->SelectionColor;
 		if (false == Portal->PortalPlacementValid())
-			OutlineColor = GetDefault<UEditorStyleSettings>()->LogErrorColor;
-		OutlineColor.A = 0.85f;
+		{
+			OutlineColor = FLinearColor::Red;
+			OutlineColor.A = 0.85f;
+		}
 		return OutlineColor;
 	}
 	
@@ -103,7 +105,7 @@ namespace AkSpatialAudioColors
 	{
 		const FLinearColor DefaultColor(FColor(0x4280AF));
 
-		FLinearColor Color = GetDefault<UEditorStyleSettings>()->InactiveSelectionColor;
+		FLinearColor Color = FLinearColor::Gray;
 
 		if (SurfaceReflectorSet->AcousticPolys[NodeIdx].EnableSurface)
 		{
@@ -127,7 +129,7 @@ namespace AkSpatialAudioColors
 
 	FLinearColor GetBadFitSpatialAudioVolumeOutlineColor()
 	{
-		return GetDefault<UEditorStyleSettings>()->LogErrorColor;
+		return FLinearColor::Red;
 	}
 
 	FLinearColor GetDiffractionEdgeColor()

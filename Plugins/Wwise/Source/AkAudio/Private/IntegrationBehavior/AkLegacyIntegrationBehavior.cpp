@@ -121,8 +121,14 @@ void AkLegacyIntegrationBehavior::AkAudioDevice_SetCurrentAudioCulture(const FSt
 
 void AkLegacyIntegrationBehavior::AkAudioDevice_SetCurrentAudioCultureAsync(FAkAudioDevice* AkAudioDevice, const FString& NewWwiseLanguage, const FOnSetCurrentAudioCultureCompleted& CompletedCallback)
 {
-	AK::StreamMgr::SetCurrentLanguage(TCHAR_TO_AK(*NewWwiseLanguage));
+	AkAudioDevice_SetCurrentAudioCulture(NewWwiseLanguage);
 	CompletedCallback.ExecuteIfBound(true);
+}
+
+void AkLegacyIntegrationBehavior::AkAudioDevice_SetCurrentAudioCultureAsync(FAkAudioDevice* AkAudioDevice, const FString& NewWwiseLanguage, FSetCurrentAudioCultureAction* LatentAction)
+{
+	AkAudioDevice_SetCurrentAudioCulture(NewWwiseLanguage);
+	LatentAction->ActionDone = true;
 }
 
 void AkLegacyIntegrationBehavior::AkAudioDevice_CreateIOHook(FAkAudioDevice* AkAudioDevice)

@@ -209,7 +209,7 @@ public class AkAudio : ModuleRules
 					"TargetPlatform",
 					"SharedSettingsWidgets",
 					"RenderCore",
-					"SourceControl"
+					"SourceControl",
 				});
 
 #if UE_4_25_OR_LATER
@@ -219,7 +219,10 @@ public class AkAudio : ModuleRules
 			PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"EditorStyle"
+				"EditorStyle",
+#if UE_5_0_OR_LATER
+				"DeveloperToolSettings"
+#endif
 			});
 
 			foreach (var Platform in GetAvailablePlatforms(ModuleDirectory))

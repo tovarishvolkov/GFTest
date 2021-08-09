@@ -16,6 +16,7 @@ Copyright (c) 2021 Audiokinetic Inc.
 #pragma once
 
 #include "UObject/Object.h"
+#include "AkInclude.h"
 #include "AkAudioType.generated.h"
 
 UCLASS()
@@ -30,6 +31,7 @@ public:
 #endif
 
 #if WITH_EDITOR
+	bool bChangedDuringReset = false;
 	virtual void Reset();
 #endif
 
@@ -43,15 +45,21 @@ public:
 
 	virtual void Load();
 
+	void ValidateShortId(bool bMarkAsDirty);
+	bool ShortIdMatchesName(AkUInt32& OutIdFromName);
+	void SetShortId(const AkUInt32& IdFromName, bool bMarkAsDirty);
+	
+	void MarkDirtyInGameThread();
+
 public:
 	template<typename T>
 	T* GetUserData()
 	{
-		for (auto entry : UserData)
+		for (auto Entry : UserData)
 		{
-			if (entry && entry->GetClass()->IsChildOf(T::StaticClass()))
+			if (Entry && Entry->GetClass()->IsChildOf(T::StaticClass()))
 			{
-				return entry;
+				return Entry;
 			}
 		}
 

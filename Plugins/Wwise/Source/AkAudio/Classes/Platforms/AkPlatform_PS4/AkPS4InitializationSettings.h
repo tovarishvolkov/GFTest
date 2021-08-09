@@ -17,6 +17,8 @@ Copyright (c) 2021 Audiokinetic Inc.
 
 #include "AkInclude.h"
 #include "InitializationSettings/AkInitializationSettings.h"
+#include "InitializationSettings/AkPlatformInitialisationSettingsBase.h"
+
 #include "AkPS4InitializationSettings.generated.h"
 
 
@@ -36,7 +38,7 @@ struct FAkPS4AdvancedInitializationSettings : public FAkAdvancedInitializationSe
 
 
 UCLASS(config = Game, defaultconfig)
-class AKAUDIO_API UAkPS4InitializationSettings : public UObject
+class AKAUDIO_API UAkPS4InitializationSettings : public UObject, public IAkPlatformInitialisationSettingsBase
 {
 	GENERATED_UCLASS_BODY()
 

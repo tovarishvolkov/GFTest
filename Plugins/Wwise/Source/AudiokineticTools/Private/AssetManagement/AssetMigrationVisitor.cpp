@@ -100,9 +100,7 @@ void AssetMigrationVisitor::OnBeginParse()
 
 	if (allInitBank.Num() > 0)
 	{
-		auto initBank = Cast<UAkInitBank>(allInitBank[0].GetAsset());
-		initBank->Reset();
-		akAssetDatabase.Add(initBank->ID, initBank);
+		ObjectTools::DeleteAssets(allInitBank);
 	}
 
 	akAssetDatabase.CreateInitBankIfNeeded();

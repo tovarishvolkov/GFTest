@@ -47,8 +47,14 @@ void UAkInitBank::Load()
 #if WITH_EDITOR
 void UAkInitBank::Reset()
 {
+	if (AvailableAudioCultures.Num() > 0)
+	{
+		bChangedDuringReset = true;
+	}
 	AvailableAudioCultures.Empty();
 
+	// ALWAYS call Super::Reset() last, since it will check if things have been modified
+	// before marking as dirty.
 	Super::Reset();
 }
 #endif

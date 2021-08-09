@@ -56,6 +56,10 @@ UAkRoomComponent::UAkRoomComponent(const class FObjectInitializer& ObjectInitial
 	PrimaryComponentTick.bStartWithTickEnabled = true;
 	bTickInEditor = true;
 #if WITH_EDITOR
+	if (GEditor)
+	{
+		GEditor->OnObjectsReplaced().AddUObject(this, &UAkRoomComponent::HandleObjectsReplaced);
+	}
 	bWantsOnUpdateTransform = true;
 	bWantsInitializeComponent = true;
 #else
@@ -85,20 +89,7 @@ void UAkRoomComponent::OnRegister()
 {
 	Super::OnRegister();
 	SetRelativeLocation(FVector::ZeroVector);
-#if WITH_EDITOR
-	// EComponentCreationMethod::Instance indicates the component was added from the details panel in the level editor, to an
-	// existing actor in the level. For room components that are added in this way, the Parent member gets trashed after OnRegister.
-	if (!AkComponentHelpers::IsInGameWorld(this) && CreationMethod == EComponentCreationMethod::Instance)
-	{
-		bRequiresInitParent = true;
-	}
-	else
-	{
-		InitializeParent();
-	}
-#else
 	InitializeParent();
-#endif
 	// We want to add / update the room both in BeginPlay and OnRegister. BeginPlay for aux bus and reverb level assignment, OnRegister for portal room assignment and visualization
 	if (!IsRegisteredWithWwise)
 		AddSpatialAudioRoom();
@@ -151,15 +142,6 @@ void UAkRoomComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
 void UAkRoomComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction * ThisTickFunction)
 {
 #if WITH_EDITOR
-	if (bRequiresInitParent)
-	{
-		InitializeParent();
-		bRequiresInitParent = false;
-		if (!IsRegisteredWithWwise)
-			AddSpatialAudioRoom();
-		else
-			UpdateSpatialAudioRoom();
-	}
 	if (bRequiresDeferredBeginPlay)
 	{
 		BeginPlayInternal();
@@ -204,6 +186,45 @@ void UAkRoomComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, 
 }
 
 #if WITH_EDITOR
+void UAkRoomComponent::BeginDestroy()
+{
+	Super::BeginDestroy();
+	if (GEditor)
+	{
+		GEditor->OnObjectsReplaced().RemoveAll(this);
+	}
+}
+
+void UAkRoomComponent::HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap)
+{
+	if (ReplacementMap.Contains(Parent))
+	{
+		InitializeParent();
+		if (!IsRegisteredWithWwise)
+			AddSpatialAudioRoom();
+		else
+			UpdateSpatialAudioRoom();
+	}
+	if (ReplacementMap.Contains(GeometryComponent))
+	{
+		GeometryComponent = AkComponentHelpers::GetChildComponentOfType<UAkAcousticTextureSetComponent>(*Parent);
+		if (GeometryComponent == nullptr || GeometryComponent->HasAnyFlags(RF_Transient) || GeometryComponent->IsBeingDestroyed())
+		{
+			GeometryComponent = NewObject<UAkGeometryComponent>(Parent, TEXT("GeometryComponent"));
+			UAkGeometryComponent* GeomComp = Cast<UAkGeometryComponent>(GeometryComponent);
+			GeomComp->MeshType = AkMeshType::CollisionMesh;
+			GeomComp->bWasAddedByRoom = true;
+			GeometryComponent->AttachToComponent(Parent, FAttachmentTransformRules::KeepRelativeTransform);
+			GeometryComponent->RegisterComponent();
+
+			if (!RoomIsActive())
+				GeomComp->RemoveGeometry();
+		}
+		SendGeometry();
+		UpdateSpatialAudioRoom();
+	}
+}
+
 void UAkRoomComponent::RegisterVisEnabledCallback()
 {
 	if (!ShowRoomsChangedHandle.IsValid())
@@ -550,7 +571,7 @@ void UAkRoomComponent::SendGeometry()
 
 void UAkRoomComponent::RemoveGeometry()
 {
-	if (GeometryComponent)
+	if (IsValid(GeometryComponent))
 	{
 		UAkGeometryComponent* GeometryComp = Cast<UAkGeometryComponent>(GeometryComponent);
 		if (GeometryComp && GeometryComp->bWasAddedByRoom)

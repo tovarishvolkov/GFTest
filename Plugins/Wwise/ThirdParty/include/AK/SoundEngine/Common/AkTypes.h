@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -192,6 +192,7 @@ enum AKRESULT
 	AK_FileFormatMismatch       = 96,   ///< Media file format unexpected
 	AK_NoDistinctListener		= 97,	///< No distinct listener provided for AddOutput
 	AK_ACP_Error				= 98,	///< Generic XMA decoder error.
+	AK_ResourceInUse			= 99,	///< Resource is in use and cannot be released.
 };
 
 /// Game sync group type
@@ -697,6 +698,7 @@ inline AkRamp operator*(const AkRamp& in_rLhs, const AkRamp& in_rRhs)
 
 #define AKPLUGINID_METER				(129)   ///< Meter Plugin
 #define AKPLUGINID_RECORDER				(132)   ///< Recorder Plugin
+#define AKPLUGINID_IMPACTER				(184)
 #define AKPLUGINID_SYSTEM_OUTPUT_META	(900)   ///< System output metadata
 
 #define AKEXTENSIONID_SPATIALAUDIO		(800)	///< Spatial Audio

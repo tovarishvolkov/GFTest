@@ -55,6 +55,6 @@ private:
 	FOnAkPostEventCallback PostEventCallback;
 	TArray<FAkExternalSourceInfo> ExternalSources;
 	bool bStopWhenAttachedToDestroyed = false;
-	TFuture<AkPlayingID> playingIDFuture;
+	TFuture<AkPlayingID> PlayingIDFuture;
 	FTimerHandle Timer;
 };

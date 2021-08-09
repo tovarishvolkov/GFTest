@@ -24,6 +24,7 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "AkInitBank.h"
 #include "AkRtpc.h"
 #include "AkTrigger.h"
+#include "AkAudioType.h"
 #include "AkUnrealHelper.h"
 #include "AssetManagement/AkAssetDatabase.h"
 #include "Async/Async.h"
@@ -99,16 +100,19 @@ void WwiseConsoleAkSoundDataBuilder::DoWork()
 
 	auto now = FDateTime::UtcNow();
 
-	auto start = FPlatformTime::Cycles64();
+	StartTime = FPlatformTime::Cycles64();
 
 	if (!IsRunningCommandlet())
 	{
 		createNotificationItem();
 	}
 
-	loadAndWaitForAssetToLoad();
+	if (AkUnrealHelper::IsUsingEventBased())
+	{
+		loadAndWaitForAssetToLoad();
+	}
 
-	bool wwiseConsoleSucces = runWwiseConsole();
+	bool WwiseConsoleSuccess = runWwiseConsole();
 
 	if (!IsRunningCommandlet())
 	{
@@ -149,33 +153,7 @@ void WwiseConsoleAkSoundDataBuilder::DoWork()
 
 	FTaskGraphInterface::Get().WaitUntilTasksComplete(allReadTasks);
 
-	dispatchAndWaitMediaCookTasks();
-
-	AutoSaveAssetsBlocking();
-
-	if (!wwiseConsoleSucces)
-	{
-		notifyGenerationFailed();
-	}
-	else
-	{
-		notifyGenerationSucceeded();
-	}
-
-	if (!IsRunningCommandlet())
-	{
-		AsyncTask(ENamedThreads::Type::GameThread, []
-		{
-			if (auto audioDevice = FAkAudioDevice::Get())
-			{
-				audioDevice->ReloadAllSoundData();
-			}
-		});
-	}
-
-	auto end = FPlatformTime::Cycles64();
-
-	UE_LOG(LogAkSoundData, Display, TEXT("WwiseConsole Sound Data Builder task took %f seconds."), FPlatformTime::ToSeconds64(end - start));
+	WrapUpGeneration(WwiseConsoleSuccess, TEXT("WwiseConsole"));
 }
 
 void WwiseConsoleAkSoundDataBuilder::onDirectoryWatcher(const TArray<struct FFileChangeData>& ChangedFiles)
@@ -450,7 +428,7 @@ void WwiseConsoleAkSoundDataBuilder::prepareRebuild(const FString& BankName, con
 		FPaths::NormalizeDirectoryName(pathToDelete);
 		platformFile->DeleteFile(*pathToDelete);
 
-		auto& languagesArray = initParameters.Languages.Num() > 0 ? initParameters.Languages : wwiseProjectInfo.SupportedLanguages();
+		auto& languagesArray = initParameters.Languages.Num() > 0 ? initParameters.Languages : wwiseProjectInfo.GetSupportedLanguages();
 
 		for (auto& language : languagesArray)
 		{

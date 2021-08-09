@@ -25,7 +25,10 @@ public class AkUEPlatform_Android : AkUEPlatform
 	{
 		AndroidSDKFolders = new List<string>
 		{
-#if UE_4_25_OR_LATER
+#if UE_5_0_OR_LATER
+			Path.Combine(ThirdPartyFolder, "Android", "arm64-v8a", AkConfigurationDir),
+			Path.Combine(ThirdPartyFolder, "Android", "x86_64", AkConfigurationDir),
+#elif UE_4_25_OR_LATER
 			Path.Combine(ThirdPartyFolder, "Android", "armeabi-v7a", AkConfigurationDir),
 			Path.Combine(ThirdPartyFolder, "Android", "x86", AkConfigurationDir),
 			Path.Combine(ThirdPartyFolder, "Android", "arm64-v8a", AkConfigurationDir),
@@ -35,7 +38,7 @@ public class AkUEPlatform_Android : AkUEPlatform
 			Path.Combine(ThirdPartyFolder, "Android_x86", AkConfigurationDir),
 			Path.Combine(ThirdPartyFolder, "Android_arm64-v8a", AkConfigurationDir),
 			Path.Combine(ThirdPartyFolder, "Android_x86_64", AkConfigurationDir),
-	#endif
+#endif
 		};
 	}
 

@@ -68,26 +68,26 @@ static inline void CallWaapiGetProjectNamePath(FString& ProjectName, FString& Pr
 	if (!waapiClient)
 		return;
 
-	TSharedRef<FJsonObject> args = MakeShared<FJsonObject>();
+	TSharedRef<FJsonObject> Args = MakeShared<FJsonObject>();
 	{
 		TSharedPtr<FJsonObject> OfType = MakeShared<FJsonObject>();
 		OfType->SetArrayField(WwiseWaapiHelper::OF_TYPE, TArray<TSharedPtr<FJsonValue>> { MakeShared<FJsonValueString>(WwiseWaapiHelper::PROJECT) });
-		args->SetObjectField(WwiseWaapiHelper::FROM, OfType);
+		Args->SetObjectField(WwiseWaapiHelper::FROM, OfType);
 	}
 
-	TSharedRef<FJsonObject> options = MakeShared<FJsonObject>();
+	TSharedRef<FJsonObject> Options = MakeShared<FJsonObject>();
 	{
-		options->SetArrayField(WwiseWaapiHelper::RETURN, TArray<TSharedPtr<FJsonValue>>
+		Options->SetArrayField(WwiseWaapiHelper::RETURN, TArray<TSharedPtr<FJsonValue>>
 		{
 			MakeShared<FJsonValueString>(WwiseWaapiHelper::NAME),
 			MakeShared<FJsonValueString>(WwiseWaapiHelper::FILEPATH),
 		});
 	}
-	
+
 	TSharedPtr<FJsonObject> outJsonResult;
-	if (waapiClient->Call(ak::wwise::core::object::get, args, options, outJsonResult))
+	if (waapiClient->Call(ak::wwise::core::object::get, Args, Options, outJsonResult))
 	{
-		// Recover the information from the Json object getResult and use it to get the item id.
+		// Recover the information from the Json object Result and use it to get the item id.
 		TArray<TSharedPtr<FJsonValue>> StructJsonArray = outJsonResult->GetArrayField(WwiseWaapiHelper::RETURN);
 		if (StructJsonArray.Num())
 		{
@@ -102,7 +102,7 @@ static inline void CallWaapiGetProjectNamePath(FString& ProjectName, FString& Pr
 	}
 }
 
-inline TSharedPtr<FWwiseTreeItem> SWaapiPicker::FindItemFromPath(const TSharedPtr<FWwiseTreeItem>& ParentItem,const FString& CurrentItemPath)
+inline TSharedPtr<FWwiseTreeItem> SWaapiPicker::FindItemFromPath(const TSharedPtr<FWwiseTreeItem>& ParentItem, const FString& CurrentItemPath)
 {
 	// We get the element to create in an array and loop over it to create them.
 	TArray<FString> itemPathArray;
@@ -133,7 +133,7 @@ inline void SWaapiPicker::FindAndCreateItems(TSharedPtr<FWwiseTreeItem> CurrentI
 	else if (LastPathVisited == RootItem->FolderPath)
 	{
 		CurrentItem->Parent = RootItem->Parent.Pin();
-		RootItem->AddChild(CurrentItem);		
+		RootItem->AddChild(CurrentItem);
 		return;
 	}
 	TSharedPtr<FWwiseTreeItem> ParentItem = FindItemFromPath(RootItem, LastPathVisited);
@@ -144,12 +144,12 @@ inline void SWaapiPicker::FindAndCreateItems(TSharedPtr<FWwiseTreeItem> CurrentI
 	}
 	else
 	{
-		TSharedPtr<FJsonObject> getResult;
+		TSharedPtr<FJsonObject> Result;
 		// Request data from Wwise UI using WAAPI and use them to create a Wwise tree item, getting the informations from a specific "PATH".
-		if (CallWaapiGetInfoFrom(WwiseWaapiHelper::PATH, LastPathVisited, getResult, {}))
+		if (CallWaapiGetInfoFrom(WwiseWaapiHelper::PATH, LastPathVisited, Result, {}))
 		{
-			// Recover the information from the Json object getResult and use it to construct the tree item.
-			TSharedPtr<FWwiseTreeItem> NewRootItem = ConstructWwiseTreeItem(getResult->GetArrayField(WwiseWaapiHelper::RETURN)[0]);
+			// Recover the information from the Json object Result and use it to construct the tree item.
+			TSharedPtr<FWwiseTreeItem> NewRootItem = ConstructWwiseTreeItem(Result->GetArrayField(WwiseWaapiHelper::RETURN)[0]);
 			CurrentItem->Parent = NewRootItem;
 			NewRootItem->AddChild(CurrentItem);
 			FindAndCreateItems(NewRootItem);
@@ -181,18 +181,18 @@ bool SWaapiPicker::CallWaapiGetInfoFrom(const FString& inFromField, const FStrin
 		return false;
 
 	// Construct the arguments Json object : Getting infos "from - a specific id/path"
-	TSharedRef<FJsonObject> args = MakeShared<FJsonObject>();
+	TSharedRef<FJsonObject> Args = MakeShared<FJsonObject>();
 	{
 		TSharedPtr<FJsonObject> from = MakeShared<FJsonObject>();
 		from->SetArrayField(inFromField, TArray<TSharedPtr<FJsonValue>> { MakeShared<FJsonValueString>(inFromString) });
-		args->SetObjectField(WwiseWaapiHelper::FROM, from);
+		Args->SetObjectField(WwiseWaapiHelper::FROM, from);
 
 		// In case we would recover the children of the object that have the id : ID or the path : PATH, then we set isGetChildren to true.
 
 		if (TransformFields.Num())
-		{		
+		{
 			TArray<TSharedPtr<FJsonValue>> transform;
-			
+
 			for (auto TransformValue : TransformFields)
 			{
 				TSharedPtr<FJsonObject> insideTransform = MakeShared<FJsonObject>();
@@ -208,13 +208,13 @@ bool SWaapiPicker::CallWaapiGetInfoFrom(const FString& inFromField, const FStrin
 				insideTransform->SetArrayField(TransformValue.keyArg, JsonArray);
 				transform.Add(MakeShared<FJsonValueObject>(insideTransform));
 			}
-			args->SetArrayField(WwiseWaapiHelper::TRANSFORM, transform);
+			Args->SetArrayField(WwiseWaapiHelper::TRANSFORM, transform);
 		}
 	}
 
-	// Construct the options Json object : Getting specific infos to construct the wwise tree item "id - name - type - childrenCount - path - parent"
-	TSharedRef<FJsonObject> options = MakeShared<FJsonObject>();
-	options->SetArrayField(WwiseWaapiHelper::RETURN, TArray<TSharedPtr<FJsonValue>>
+	// Construct the Options Json object : Getting specific infos to construct the wwise tree item "id - name - type - childrenCount - path - parent"
+	TSharedRef<FJsonObject> Options = MakeShared<FJsonObject>();
+	Options->SetArrayField(WwiseWaapiHelper::RETURN, TArray<TSharedPtr<FJsonValue>>
 	{
 		MakeShared<FJsonValueString>(WwiseWaapiHelper::ID),
 		MakeShared<FJsonValueString>(WwiseWaapiHelper::NAME),
@@ -226,7 +226,7 @@ bool SWaapiPicker::CallWaapiGetInfoFrom(const FString& inFromField, const FStrin
 
 	// Request data from Wwise using WAAPI
 
-	return waapiClient->Call(ak::wwise::core::object::get, args, options, outJsonResult);
+	return waapiClient->Call(ak::wwise::core::object::get, Args, Options, outJsonResult);
 }
 
 TSharedPtr<FWwiseTreeItem> SWaapiPicker::ConstructWwiseTreeItem(const TSharedPtr<FJsonValue>& InJsonItem)
@@ -280,7 +280,7 @@ TSharedPtr<FWwiseTreeItem> SWaapiPicker::ConstructWwiseTreeItem(const TSharedPtr
 			return {};
 		}
 
-		const uint32_t itemChilrenCount = ItemInfoObj->GetNumberField(WwiseWaapiHelper::CHILDREN_COUNT);
+		const uint32_t ItemChildrenCount = ItemInfoObj->GetNumberField(WwiseWaapiHelper::CHILDREN_COUNT);
 
 		if (itemType == EWwiseItemType::StandaloneWorkUnit)
 		{
@@ -293,7 +293,7 @@ TSharedPtr<FWwiseTreeItem> SWaapiPicker::ConstructWwiseTreeItem(const TSharedPtr
 		TSharedPtr<FWwiseTreeItem> treeItem = MakeShared<FWwiseTreeItem>(itemName, itemPath, nullptr, itemType, in_ItemId);
 		if ((itemType != EWwiseItemType::Event) && (itemType != EWwiseItemType::Sound))
 		{
-			treeItem->ChildCountInWwise = itemChilrenCount;
+			treeItem->ChildCountInWwise = ItemChildrenCount;
 		}
 		return treeItem;
 	}
@@ -523,25 +523,30 @@ void SWaapiPicker::Construct(const FArguments& InArgs)
 	if (!waapiClient)
 		return;
 
-	ProjectLoadedHandle = waapiClient->OnProjectLoaded.AddLambda([this]
-	{
-		/* Construct the tree when we have the same project */
-		isPickerVisible = true;
-		isModalActiveInWwise = false;
-		SubscribeWaapiCallbacks();
-		CallWaapiGetProjectNamePath(ProjectName, ProjectFolder);
-		ConstructTree();
-	});
+	ProjectLoadedHandle = waapiClient->OnProjectLoaded.AddSP(this, &SWaapiPicker::OnProjectLoadedCallback);
 
-	ConnectionLostHandle = waapiClient->OnConnectionLost.AddLambda([this]
-	{
-		/* Empty the tree when we have different projects */
-		isPickerVisible = false;
-		UnsubscribeWaapiCallbacks();
-		ConstructTree();
-	});
+	ConnectionLostHandle = waapiClient->OnConnectionLost.AddSP(this, &SWaapiPicker::OnConnectionLostCallback);
 
 	ClientBeginDestroyHandle = waapiClient->OnClientBeginDestroy.AddSP(this, &SWaapiPicker::RemoveClientCallbacks);
+}
+
+
+void SWaapiPicker::OnProjectLoadedCallback()
+{
+	/* Construct the tree when we have the same project */
+	isPickerVisible = true;
+	isModalActiveInWwise = false;
+	SubscribeWaapiCallbacks();
+	CallWaapiGetProjectNamePath(ProjectName, ProjectFolder);
+	ConstructTree();
+}
+
+void SWaapiPicker::OnConnectionLostCallback()
+{			
+	/* Empty the tree when we have different projects */
+	isPickerVisible = false;
+	UnsubscribeWaapiCallbacks();
+	ConstructTree();
 }
 
 EVisibility SWaapiPicker::isPickerAllowed() const
@@ -568,18 +573,18 @@ void SWaapiPicker::Tick(const FGeometry& AllottedGeometry, const double InCurren
 	bool NeedRefresh = AkSettings->bRequestRefresh;
 	if (isModalActiveInWwise && waapiClient)
 	{
-		TSharedRef<FJsonObject> args = MakeShareable(new FJsonObject());
-		TSharedRef<FJsonObject> options = MakeShareable(new FJsonObject());
-		TSharedPtr<FJsonObject> result = MakeShareable(new FJsonObject());
-		waapiClient->Call(ak::wwise::core::getInfo, args, options, result, 10, true);
-		if (result->GetStringField(TEXT("uri")) != TEXT("ak.wwise.locked"))
+		TSharedRef<FJsonObject> Args = MakeShareable(new FJsonObject());
+		TSharedRef<FJsonObject> Options = MakeShareable(new FJsonObject());
+		TSharedPtr<FJsonObject> Result = MakeShareable(new FJsonObject());
+		waapiClient->Call(ak::wwise::core::getInfo, Args, Options, Result, 10, true);
+		if (Result->GetStringField(TEXT("uri")) != TEXT("ak.wwise.locked"))
 		{
 			NeedRefresh = true;
 			isModalActiveInWwise = false;
 		}
 	}
 
-	if(NeedRefresh)
+	if (NeedRefresh)
 	{
 		ConstructTree();
 		AkSettings->bRequestRefresh = false;
@@ -623,64 +628,67 @@ void SWaapiPicker::ConstructTree()
 			FilterUpdated();
 			return;
 		}
-		ConstructTreeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([sharedThis = SharedThis(this)] {
+
+		ConstructTreeTask = FFunctionGraphTask::CreateAndDispatchWhenReady([sharedThis = SharedThis(this)]
 			{
-				FScopeLock autoLock(&sharedThis->RootItemsLock);
-				sharedThis->RootItems.Empty(EWwiseItemType::LastWaapiDraggable - EWwiseItemType::Event + 1);
-			}
-
-			auto populateTask = FFunctionGraphTask::CreateAndDispatchWhenReady([sharedThis] {
-				for (int i = EWwiseItemType::Event; i <= EWwiseItemType::LastWaapiDraggable; ++i)
 				{
-					FGuid in_ItemId = FGuid::NewGuid();
-					TSharedPtr<FJsonObject> getResult;
-					uint32_t itemChilrenCount = 0;
-					FString path = WwiseWaapiHelper::BACK_SLASH + EWwiseItemType::FolderNames[i];
-					// Request data from Wwise UI using WAAPI and use them to create a Wwise tree item, getting the informations from a specific "PATH".
-					if (sharedThis->CallWaapiGetInfoFrom(WwiseWaapiHelper::PATH, path, getResult, {}))
-					{
-						// Recover the information from the Json object getResult and use it to get the item id.
-						const TSharedPtr<FJsonObject>& ItemInfoObj = getResult->GetArrayField(WwiseWaapiHelper::RETURN)[0]->AsObject();
-						const FString itemIdString = ItemInfoObj->GetStringField(WwiseWaapiHelper::ID);
-						path = ItemInfoObj->GetStringField(WwiseWaapiHelper::PATH);
-						itemChilrenCount = ItemInfoObj->GetNumberField(WwiseWaapiHelper::CHILDREN_COUNT);
-						FGuid::ParseExact(itemIdString, EGuidFormats::DigitsWithHyphensInBraces, in_ItemId);
-					}
-					else
-					{
-						UE_LOG(LogAkAudioPicker, Log, TEXT("Failed to get information from id : %s"), *path);
-						if (getResult->GetStringField(TEXT("uri")) == TEXT("ak.wwise.locked"))
-						{
-							UE_LOG(LogAkAudioPicker, Warning, TEXT("%s"), *ModalWarning.ToString());
-							sharedThis->isModalActiveInWwise = true;
-						}
-						else if (auto AkSettings = GetMutableDefault<UAkSettings>())
-						{
-							AkSettings->bRequestRefresh = true;
-						}
-						return;
-					}
-					// Create a new tree item and add it the root list.
-					TSharedPtr<FWwiseTreeItem> NewRootParent = MakeShared<FWwiseTreeItem>(EWwiseItemType::ItemNames[i], path, nullptr, EWwiseItemType::PhysicalFolder, in_ItemId);
-					NewRootParent->ChildCountInWwise = itemChilrenCount;
-
-					{
-						FScopeLock autoLock(&sharedThis->RootItemsLock);
-						sharedThis->RootItems.Add(NewRootParent);
-					}
+					FScopeLock autoLock(&sharedThis->RootItemsLock);
+					sharedThis->RootItems.Empty(EWwiseItemType::LastWaapiDraggable - EWwiseItemType::Event + 1);
 				}
-			}, GET_STATID(STAT_WaapiPickerConstructTree), nullptr, ENamedThreads::AnyThread);
 
-			FTaskGraphInterface::Get().WaitUntilTaskCompletes(populateTask);
+				auto PopulateTask = FFunctionGraphTask::CreateAndDispatchWhenReady([sharedThis] 
+				{
+					for (int i = EWwiseItemType::Event; i <= EWwiseItemType::LastWaapiDraggable; ++i)
+					{
+						FGuid in_ItemId = FGuid::NewGuid();
+						TSharedPtr<FJsonObject> Result;
+						uint32_t ItemChildrenCount = 0;
+						FString Path = WwiseWaapiHelper::BACK_SLASH + EWwiseItemType::FolderNames[i];
+						// Request data from Wwise UI using WAAPI and use them to create a Wwise tree item, getting the informations from a specific "PATH".
+						if (sharedThis->CallWaapiGetInfoFrom(WwiseWaapiHelper::PATH, Path, Result, {}))
+						{
+							// Recover the information from the Json object Result and use it to get the item id.
+							const TSharedPtr<FJsonObject>& ItemInfoObj = Result->GetArrayField(WwiseWaapiHelper::RETURN)[0]->AsObject();
+							const FString ItemIdString = ItemInfoObj->GetStringField(WwiseWaapiHelper::ID);
+							Path = ItemInfoObj->GetStringField(WwiseWaapiHelper::PATH);
+							ItemChildrenCount = ItemInfoObj->GetNumberField(WwiseWaapiHelper::CHILDREN_COUNT);
+							FGuid::ParseExact(ItemIdString, EGuidFormats::DigitsWithHyphensInBraces, in_ItemId);
+						}
+						else
+						{
+							UE_LOG(LogAkAudioPicker, Log, TEXT("Failed to get information from id : %s"), *Path);
+							if (Result->GetStringField(TEXT("uri")) == TEXT("ak.wwise.locked"))
+							{
+								UE_LOG(LogAkAudioPicker, Warning, TEXT("%s"), *ModalWarning.ToString());
+								sharedThis->isModalActiveInWwise = true;
+							}
+							else if (auto AkSettings = GetMutableDefault<UAkSettings>())
+							{
+								AkSettings->bRequestRefresh = true;
+							}
+							return;
+						}
+						// Create a new tree item and add it the root list.
+						TSharedPtr<FWwiseTreeItem> NewRootParent = MakeShared<FWwiseTreeItem>(EWwiseItemType::ItemNames[i], Path, nullptr, EWwiseItemType::PhysicalFolder, in_ItemId);
+						NewRootParent->ChildCountInWwise = ItemChildrenCount;
+						{
+							FScopeLock autoLock(&sharedThis->RootItemsLock);
+							sharedThis->RootItems.Add(NewRootParent);
+						}
+					}
+				}, GET_STATID(STAT_WaapiPickerConstructTree), nullptr, ENamedThreads::AnyThread);
 
-			FFunctionGraphTask::CreateAndDispatchWhenReady([sharedThis] {
-				sharedThis->AllowTreeViewDelegates = true;
+			FTaskGraphInterface::Get().WaitUntilTaskCompletes(PopulateTask);
 
-				sharedThis->ExpandFirstLevel();
-				sharedThis->RestoreTreeExpansion(sharedThis->RootItems);
+			FFunctionGraphTask::CreateAndDispatchWhenReady( [sharedThis] 
+				{
+					sharedThis->AllowTreeViewDelegates = true;
 
-				sharedThis->TreeViewPtr->RequestTreeRefresh();
-			}, GET_STATID(STAT_WaapiPickerConstructTree), nullptr, ENamedThreads::GameThread);
+					sharedThis->ExpandFirstLevel();
+					sharedThis->RestoreTreeExpansion(sharedThis->RootItems);
+
+					sharedThis->TreeViewPtr->RequestTreeRefresh();
+				}, GET_STATID(STAT_WaapiPickerConstructTree), nullptr, ENamedThreads::GameThread);
 
 		}, GET_STATID(STAT_WaapiPickerConstructTree), nullptr, ENamedThreads::AnyThread);
 	}
@@ -689,7 +697,7 @@ void SWaapiPicker::ConstructTree()
 void SWaapiPicker::ExpandFirstLevel()
 {
 	// Expand root items and first-level work units.
-	for(int32 i = 0; i < RootItems.Num(); i++)
+	for (int32 i = 0; i < RootItems.Num(); i++)
 	{
 		TreeViewPtr->SetItemExpansion(RootItems[i], true);
 	}
@@ -697,19 +705,19 @@ void SWaapiPicker::ExpandFirstLevel()
 
 void SWaapiPicker::ExpandParents(TSharedPtr<FWwiseTreeItem> Item)
 {
-	if(Item->Parent.IsValid())
+	if (Item->Parent.IsValid())
 	{
 		ExpandParents(Item->Parent.Pin());
 		TreeViewPtr->SetItemExpansion(Item->Parent.Pin(), true);
 	}
 }
 
-TSharedRef<ITableRow> SWaapiPicker::GenerateRow( TSharedPtr<FWwiseTreeItem> TreeItem, const TSharedRef<STableViewBase>& OwnerTable )
+TSharedRef<ITableRow> SWaapiPicker::GenerateRow(TSharedPtr<FWwiseTreeItem> TreeItem, const TSharedRef<STableViewBase>& OwnerTable)
 {
 	check(TreeItem.IsValid());
-	
+
 	EVisibility RowVisibility = TreeItem->IsVisible ? EVisibility::Visible : EVisibility::Collapsed;
-	
+
 	TSharedPtr<ITableRow> NewRow = SNew(STableRow< TSharedPtr<FWwiseTreeItem> >, OwnerTable)
 		.OnDragDetected(this, &SWaapiPicker::HandleOnDragDetected)
 		.Visibility(RowVisibility)
@@ -719,13 +727,12 @@ TSharedRef<ITableRow> SWaapiPicker::GenerateRow( TSharedPtr<FWwiseTreeItem> Tree
 			.HighlightText(this, &SWaapiPicker::GetHighlightText)
 			.IsSelected(this, &SWaapiPicker::IsTreeItemSelected, TreeItem)
 		];
-	
+
 	TreeItem->TreeRow = NewRow;
-	
 	return NewRow.ToSharedRef();
 }
 
-void SWaapiPicker::GetChildrenForTree( TSharedPtr< FWwiseTreeItem > TreeItem, TArray< TSharedPtr<FWwiseTreeItem> >& OutChildren )
+void SWaapiPicker::GetChildrenForTree(TSharedPtr< FWwiseTreeItem > TreeItem, TArray< TSharedPtr<FWwiseTreeItem> >& OutChildren)
 {
 	// In case the item is "unexpanded" and have children (in the Wwise tree), we need to add a default item to show the arrow that says, this item have children.
 	FString CurrentFilterText = SearchBoxFilter->GetRawFilterText().ToString();
@@ -757,8 +764,10 @@ void SWaapiPicker::GetChildrenForTree( TSharedPtr< FWwiseTreeItem > TreeItem, TA
 FReply SWaapiPicker::HandleOnDragDetected(const FGeometry& Geometry, const FPointerEvent& MouseEvent)
 {
 	// Refresh the contents
-	if(OnDragDetected.IsBound())
-		return OnDragDetected.Execute(Geometry,MouseEvent);
+	if (OnDragDetected.IsBound())
+	{
+		return OnDragDetected.Execute(Geometry, MouseEvent);
+	}
 
 	return FReply::Unhandled();
 }
@@ -835,11 +844,15 @@ void SWaapiPicker::ApplyFilter()
 		LastExpandedItems.Empty();
 	}
 
-	TSharedPtr<FJsonObject> getResult;
-	if (CallWaapiGetInfoFrom(WwiseWaapiHelper::SEARCH, CurrentFilterText, getResult, { { WwiseWaapiHelper::WHERE, { WwiseWaapiHelper::NAMECONTAINS, CurrentFilterText }, {} }, { WwiseWaapiHelper::RANGE, {}, { 0, 2000*CurrentFilterText.Len() } } }))
+	TSharedPtr<FJsonObject> Result;
+	if (CallWaapiGetInfoFrom(WwiseWaapiHelper::SEARCH, CurrentFilterText, Result,
+			{ 
+				{ WwiseWaapiHelper::WHERE , { WwiseWaapiHelper::NAMECONTAINS, CurrentFilterText }, {} }, 
+				{ WwiseWaapiHelper::RANGE, {}, { 0, 2000 * CurrentFilterText.Len() } } 
+			}))
 	{
-		// Recover the information from the Json object getResult and use it to construct the tree item.
-		TArray<TSharedPtr<FJsonValue>> SearchResultArray = getResult->GetArrayField(WwiseWaapiHelper::RETURN);
+		// Recover the information from the Json object Result and use it to construct the tree item.
+		TArray<TSharedPtr<FJsonValue>> SearchResultArray = Result->GetArrayField(WwiseWaapiHelper::RETURN);
 		if (SearchResultArray.Num())
 		{
 			// The map contains each path and the correspondent object of the search result.
@@ -866,9 +879,9 @@ void SWaapiPicker::ApplyFilter()
 
 void SWaapiPicker::RestoreTreeExpansion(const TArray< TSharedPtr<FWwiseTreeItem> >& Items)
 {
-	for(int i = 0; i < Items.Num(); i++)
+	for (int i = 0; i < Items.Num(); i++)
 	{
-		if(LastExpandedItems.Contains(Items[i]->ItemId) )
+		if (LastExpandedItems.Contains(Items[i]->ItemId))
 		{
 			TreeViewPtr->SetItemExpansion(Items[i], true);
 		}
@@ -926,20 +939,22 @@ void SWaapiPicker::TreeExpansionChanged(TSharedPtr< FWwiseTreeItem > TreeItem, b
 		return;
 
 	const FString itemIdStringField = TreeItem->ItemId.ToString(EGuidFormats::DigitsWithHyphensInBraces);
-	
-	FFunctionGraphTask::CreateAndDispatchWhenReady([sharedThis = SharedThis(this), TreeItem, itemIdStringField] {
-		TSharedPtr<FJsonObject> result;
+
+	FFunctionGraphTask::CreateAndDispatchWhenReady([sharedThis = SharedThis(this), TreeItem, itemIdStringField]
+	{
+		TSharedPtr<FJsonObject> Result;
 		// Request data from Wwise UI using WAAPI and use them to create a Wwise tree item, getting the informations from a specific "ID".
-		if (!sharedThis->CallWaapiGetInfoFrom(WwiseWaapiHelper::ID, itemIdStringField, result, { { WwiseWaapiHelper::SELECT, { WwiseWaapiHelper::CHILDREN }, {} } }))
+		if (!sharedThis->CallWaapiGetInfoFrom(WwiseWaapiHelper::ID, itemIdStringField, Result, { { WwiseWaapiHelper::SELECT, { WwiseWaapiHelper::CHILDREN }, {} } }))
 		{
 			UE_LOG(LogAkAudioPicker, Log, TEXT("Failed to get information from id : %s"), *itemIdStringField);
 			return;
 		}
 
-		FFunctionGraphTask::CreateAndDispatchWhenReady([sharedThis, result, TreeItem] {
+		FFunctionGraphTask::CreateAndDispatchWhenReady([sharedThis, Result, TreeItem]
+		{
 			// The tree view might have been destroyed between scheduling and running this task
-			// Recover the information from the Json object getResult and use it to construct the tree item.
-			TArray<TSharedPtr<FJsonValue>> StructJsonArray = result->GetArrayField(WwiseWaapiHelper::RETURN);
+			// Recover the information from the Json object Result and use it to construct the tree item.
+			TArray<TSharedPtr<FJsonValue>> StructJsonArray = Result->GetArrayField(WwiseWaapiHelper::RETURN);
 			/** If the item have just one child and we are expanding it, this means that we need to construct the children list.
 			*   In case the the number of children gotten form Wwise is not the same of the item, this means that there is some children added/removed,
 			*   so we also need to construct the new list.
@@ -961,7 +976,6 @@ void SWaapiPicker::TreeExpansionChanged(TSharedPtr< FWwiseTreeItem > TreeItem, b
 				sharedThis->TreeViewPtr->RequestTreeRefresh();
 			}
 		}, GET_STATID(STAT_WaapiPickerTreeExpansionChanged), nullptr, ENamedThreads::GameThread);
-
 	}, GET_STATID(STAT_WaapiPickerTreeExpansionChanged));
 }
 
@@ -1108,11 +1122,11 @@ bool SWaapiPicker::HandlePlayWwiseItemCommandCanExecute() const
 int32 SWaapiPicker::CreateTransport(const FGuid& in_ItemId)
 {
 	const FString itemIdStringField = in_ItemId.ToString(EGuidFormats::DigitsWithHyphensInBraces);
-	TSharedPtr<FJsonObject> getResult;
+	TSharedPtr<FJsonObject> Result;
 	int32 transportID = -1;
-	if (SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::core::transport::create, { { WwiseWaapiHelper::OBJECT, itemIdStringField } }, getResult))
+	if (SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::core::transport::create, { { WwiseWaapiHelper::OBJECT, itemIdStringField } }, Result))
 	{
-		transportID = getResult->GetIntegerField(WwiseWaapiHelper::TRANSPORT);
+		transportID = Result->GetIntegerField(WwiseWaapiHelper::TRANSPORT);
 		uint64 subscriptionID = SubscribeToTransportStateChanged(transportID);
 		ItemToTransport.Add(in_ItemId, TransportInfo(transportID, subscriptionID));
 	}
@@ -1126,18 +1140,18 @@ void SWaapiPicker::DestroyTransport(const FGuid& in_itemID)
 	if (!waapiClient)
 		return;
 
-	if(!ItemToTransport.Contains(in_itemID))
+	if (!ItemToTransport.Contains(in_itemID))
 		return;
 
-	TSharedRef<FJsonObject> args = MakeShared<FJsonObject>();
-	args->SetNumberField(WwiseWaapiHelper::TRANSPORT, ItemToTransport[in_itemID].TransportID);
+	TSharedRef<FJsonObject> Args = MakeShared<FJsonObject>();
+	Args->SetNumberField(WwiseWaapiHelper::TRANSPORT, ItemToTransport[in_itemID].TransportID);
 
-	TSharedPtr<FJsonObject> getResult;
-	if(ItemToTransport[in_itemID].SubscriptionID != 0)
-		waapiClient->Unsubscribe(ItemToTransport[in_itemID].SubscriptionID, getResult);
+	TSharedPtr<FJsonObject> Result;
+	if (ItemToTransport[in_itemID].SubscriptionID != 0)
+		waapiClient->Unsubscribe(ItemToTransport[in_itemID].SubscriptionID, Result);
 
-	TSharedRef<FJsonObject> options = MakeShared<FJsonObject>();
-	if (waapiClient->Call(ak::wwise::core::transport::destroy, args, options, getResult))
+	TSharedRef<FJsonObject> Options = MakeShared<FJsonObject>();
+	if (waapiClient->Call(ak::wwise::core::transport::destroy, Args, Options, Result))
 		ItemToTransport.Remove(in_itemID);
 }
 
@@ -1150,13 +1164,13 @@ void SWaapiPicker::TogglePlayStop(int32 in_transportID)
 		return;
 	}
 
-	TSharedRef<FJsonObject> args = MakeShared<FJsonObject>();
-	args->SetStringField(WwiseWaapiHelper::ACTION, WwiseWaapiHelper::PLAYSTOP);
-	args->SetNumberField(WwiseWaapiHelper::TRANSPORT, in_transportID);
+	TSharedRef<FJsonObject> Args = MakeShared<FJsonObject>();
+	Args->SetStringField(WwiseWaapiHelper::ACTION, WwiseWaapiHelper::PLAYSTOP);
+	Args->SetNumberField(WwiseWaapiHelper::TRANSPORT, in_transportID);
 
-	TSharedPtr<FJsonObject> getResult;
-	TSharedRef<FJsonObject> options = MakeShared<FJsonObject>();
-	if (!waapiClient->Call(ak::wwise::core::transport::executeAction, args, options, getResult))
+	TSharedPtr<FJsonObject> Result;
+	TSharedRef<FJsonObject> Options = MakeShared<FJsonObject>();
+	if (!waapiClient->Call(ak::wwise::core::transport::executeAction, Args, Options, Result))
 	{
 		UE_LOG(LogAkAudioPicker, Log, TEXT("Failed to trigger playback"));
 	}
@@ -1168,13 +1182,13 @@ void SWaapiPicker::StopTransport(int32 in_transportID)
 	if (!waapiClient)
 		return;
 
-	TSharedRef<FJsonObject> args = MakeShared<FJsonObject>();
-	args->SetStringField(WwiseWaapiHelper::ACTION, WwiseWaapiHelper::STOP);
-	args->SetNumberField(WwiseWaapiHelper::TRANSPORT, in_transportID);
+	TSharedRef<FJsonObject> Args = MakeShared<FJsonObject>();
+	Args->SetStringField(WwiseWaapiHelper::ACTION, WwiseWaapiHelper::STOP);
+	Args->SetNumberField(WwiseWaapiHelper::TRANSPORT, in_transportID);
 
-	TSharedPtr<FJsonObject> getResult;
-	TSharedRef<FJsonObject> options = MakeShared<FJsonObject>();
-	if (!waapiClient->Call(ak::wwise::core::transport::executeAction, args, options, getResult))
+	TSharedPtr<FJsonObject> Result;
+	TSharedRef<FJsonObject> Options = MakeShared<FJsonObject>();
+	if (!waapiClient->Call(ak::wwise::core::transport::executeAction, Args, Options, Result))
 	{
 		UE_LOG(LogAkAudioPicker, Log, TEXT("Cannot stop event."));
 	}
@@ -1196,27 +1210,27 @@ void SWaapiPicker::HandleStateChanged(TSharedPtr<FJsonObject> in_UEJsonObject)
 	}
 }
 
-uint64 SWaapiPicker::SubscribeToTransportStateChanged(int32 in_transportID)
+uint64 SWaapiPicker::SubscribeToTransportStateChanged(int32 TransportID)
 {
-	auto waapiClient = FAkWaapiClient::Get();
-	if (!waapiClient)
+	auto WaapiClient = FAkWaapiClient::Get();
+	if (!WaapiClient)
 		return 0;
-
-	auto wampEventCallback = WampEventCallback::CreateLambda([&](uint64_t id, TSharedPtr<FJsonObject> in_UEJsonObject)
-	{
-		AsyncTask(ENamedThreads::GameThread, [this, in_UEJsonObject]
+	auto WampEventCallback = WampEventCallback::CreateLambda( 
+		[sharedThis = SharedThis(this)](uint64_t ID, TSharedPtr<FJsonObject> UEJsonObject)
 		{
-			HandleStateChanged(in_UEJsonObject);
+			AsyncTask(ENamedThreads::GameThread, [sharedThis, UEJsonObject]
+			{
+				sharedThis->HandleStateChanged(UEJsonObject);
+			});
 		});
-	});
 
 	TSharedRef<FJsonObject> Options = MakeShared<FJsonObject>();
-	Options->SetNumberField(WwiseWaapiHelper::TRANSPORT, in_transportID);
+	Options->SetNumberField(WwiseWaapiHelper::TRANSPORT, TransportID);
 
-	TSharedPtr<FJsonObject> outJsonResult;
-	uint64 subscriptionID = 0;
-	waapiClient->Subscribe(ak::wwise::core::transport::stateChanged, Options, wampEventCallback, subscriptionID, outJsonResult);
-	return subscriptionID;
+	TSharedPtr<FJsonObject> OutJsonResult;
+	uint64 SubscriptionID = 0;
+	WaapiClient->Subscribe(ak::wwise::core::transport::stateChanged, Options, WampEventCallback, SubscriptionID, OutJsonResult);
+	return SubscriptionID;
 }
 
 void SWaapiPicker::HandlePlayWwiseItemCommandExecute()
@@ -1254,8 +1268,8 @@ void SWaapiPicker::StopAndDestroyAllTransports()
 bool SWaapiPicker::HandleDeleteWwiseItemCommandCanExecute() const
 {
 	auto& SelectedItems = GetSelectedItems();
-	if ((SelectedItems.Num() > 0) && 
-		!(TreeViewPtr->IsItemSelected(RootItems[EWwiseItemType::Event]) || TreeViewPtr->IsItemSelected(RootItems[EWwiseItemType::AuxBus]) 
+	if ((SelectedItems.Num() > 0) &&
+		!(TreeViewPtr->IsItemSelected(RootItems[EWwiseItemType::Event]) || TreeViewPtr->IsItemSelected(RootItems[EWwiseItemType::AuxBus])
 			|| TreeViewPtr->IsItemSelected(RootItems[EWwiseItemType::ActorMixer]) || TreeViewPtr->IsItemSelected(RootItems[EWwiseItemType::AcousticTexture])))
 	{
 		for (int32 i = 0; i < SelectedItems.Num(); ++i)
@@ -1270,15 +1284,15 @@ bool SWaapiPicker::HandleDeleteWwiseItemCommandCanExecute() const
 
 void SWaapiPicker::HandleDeleteWwiseItemCommandExecute()
 {
-	TSharedPtr<FJsonObject> getResult;
-	SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::core::undo::beginGroup, {}, getResult);
+	TSharedPtr<FJsonObject> Result;
+	SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::core::undo::beginGroup, {}, Result);
 	auto& SelectedItems = GetSelectedItems();
 	for (int32 i = 0; i < SelectedItems.Num(); ++i)
 	{
 		const FString itemIdStringField = SelectedItems[i]->ItemId.ToString(EGuidFormats::DigitsWithHyphensInBraces);
-		SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::core::object::delete_, { { WwiseWaapiHelper::OBJECT, itemIdStringField } }, getResult);
+		SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::core::object::delete_, { { WwiseWaapiHelper::OBJECT, itemIdStringField } }, Result);
 	}
-	SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::core::undo::endGroup, { {WwiseWaapiHelper::DISPLAY_NAME, WwiseWaapiHelper::DELETE_ITEMS} }, getResult);
+	SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::core::undo::endGroup, { {WwiseWaapiHelper::DISPLAY_NAME, WwiseWaapiHelper::DELETE_ITEMS} }, Result);
 	OnPopulateClicked();
 }
 
@@ -1295,18 +1309,18 @@ void SWaapiPicker::HandleExploreWwiseItemCommandExecute() const
 	if (SelectedItems.Num() == 0)
 		return;
 
-	TSharedRef<FJsonObject> args = MakeShared<FJsonObject>();
+	TSharedRef<FJsonObject> Args = MakeShared<FJsonObject>();
 	{
 		TSharedPtr<FJsonObject> from = MakeShared<FJsonObject>();
 		from->SetArrayField(WwiseWaapiHelper::PATH, TArray<TSharedPtr<FJsonValue>> { MakeShared<FJsonValueString>(SelectedItems[0]->FolderPath) });
-		args->SetObjectField(WwiseWaapiHelper::FROM, from);
+		Args->SetObjectField(WwiseWaapiHelper::FROM, from);
 	}
 
-	TSharedRef<FJsonObject> options = MakeShared<FJsonObject>();
-	options->SetArrayField(WwiseWaapiHelper::RETURN, TArray<TSharedPtr<FJsonValue>> { MakeShared<FJsonValueString>(WwiseWaapiHelper::FILEPATH) });
+	TSharedRef<FJsonObject> Options = MakeShared<FJsonObject>();
+	Options->SetArrayField(WwiseWaapiHelper::RETURN, TArray<TSharedPtr<FJsonValue>> { MakeShared<FJsonValueString>(WwiseWaapiHelper::FILEPATH) });
 
 	TSharedPtr<FJsonObject> outJsonResult;
-	if (!waapiClient->Call(ak::wwise::core::object::get, args, options, outJsonResult))
+	if (!waapiClient->Call(ak::wwise::core::object::get, Args, Options, outJsonResult))
 	{
 		UE_LOG(LogAkAudioPicker, Log, TEXT("Call Failed"));
 		return;
@@ -1334,18 +1348,18 @@ void SWaapiPicker::HandleFindWwiseItemInProjectExplorerCommandExecute() const
 	if (SelectedItems.Num() == 0)
 		return;
 
-	TSharedRef<FJsonObject> args = MakeShared<FJsonObject>();
-	args->SetStringField(WwiseWaapiHelper::COMMAND, WwiseWaapiHelper::FIND_IN_PROJECT_EXPLORER);
+	TSharedRef<FJsonObject> Args = MakeShared<FJsonObject>();
+	Args->SetStringField(WwiseWaapiHelper::COMMAND, WwiseWaapiHelper::FIND_IN_PROJECT_EXPLORER);
 	TArray<TSharedPtr<FJsonValue>> SelectedObjects;
 	for (auto selectedItem : SelectedItems)
 	{
 		SelectedObjects.Add(MakeShared<FJsonValueString>(selectedItem->ItemId.ToString(EGuidFormats::DigitsWithHyphensInBraces)));
 	}
-	args->SetArrayField(WwiseWaapiHelper::OBJECTS, SelectedObjects);
+	Args->SetArrayField(WwiseWaapiHelper::OBJECTS, SelectedObjects);
 
-	TSharedPtr<FJsonObject> getResult;
-	TSharedRef<FJsonObject> options = MakeShared<FJsonObject>();
-	if (!waapiClient->Call(ak::wwise::ui::commands::execute, args, options, getResult))
+	TSharedPtr<FJsonObject> Result;
+	TSharedRef<FJsonObject> Options = MakeShared<FJsonObject>();
+	if (!waapiClient->Call(ak::wwise::ui::commands::execute, Args, Options, Result))
 	{
 		UE_LOG(LogAkAudioPicker, Log, TEXT("Call Failed"));
 	}
@@ -1358,14 +1372,14 @@ void SWaapiPicker::HandleRefreshWaapiPickerCommandExecute()
 
 void SWaapiPicker::HandleUndoWaapiPickerCommandExecute() const
 {
-	TSharedPtr<FJsonObject> getResult;
-	SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::ui::commands::execute, { {WwiseWaapiHelper::COMMAND, WwiseWaapiHelper::UNDO} }, getResult);
+	TSharedPtr<FJsonObject> Result;
+	SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::ui::commands::execute, { {WwiseWaapiHelper::COMMAND, WwiseWaapiHelper::UNDO} }, Result);
 }
 
 void SWaapiPicker::HandleRedoWaapiPickerCommandExecute() const
 {
-	TSharedPtr<FJsonObject> getResult;
-	SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::ui::commands::execute, { {WwiseWaapiHelper::COMMAND, WwiseWaapiHelper::REDO} }, getResult);
+	TSharedPtr<FJsonObject> Result;
+	SWaapiPickerRow::CallWaapiExecuteUri(ak::wwise::ui::commands::execute, { {WwiseWaapiHelper::COMMAND, WwiseWaapiHelper::REDO} }, Result);
 }
 
 FReply SWaapiPicker::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyboardEvent)
@@ -1474,8 +1488,8 @@ void SWaapiPicker::SubscribeWaapiCallbacks()
 		return;
 	}
 
-	TSharedRef<FJsonObject> options = MakeShared<FJsonObject>();
-	options->SetArrayField(WwiseWaapiHelper::RETURN, TArray<TSharedPtr<FJsonValue>>
+	TSharedRef<FJsonObject> Options = MakeShared<FJsonObject>();
+	Options->SetArrayField(WwiseWaapiHelper::RETURN, TArray<TSharedPtr<FJsonValue>>
 	{
 		MakeShared<FJsonValueString>(WwiseWaapiHelper::ID),
 		MakeShared<FJsonValueString>(WwiseWaapiHelper::NAME),
@@ -1486,17 +1500,17 @@ void SWaapiPicker::SubscribeWaapiCallbacks()
 		MakeShared<FJsonValueString>(WwiseWaapiHelper::WORKUNIT_TYPE),
 	});
 
-	TSharedPtr<FJsonObject> result;
+	TSharedPtr<FJsonObject> Result;
 
-	for (auto& subscriptionData : Subscriptions)
+	for (auto& SubscriptionData : Subscriptions)
 	{
-		if (*subscriptionData.SubscriptionId == 0)
+		if (*SubscriptionData.SubscriptionId == 0)
 		{
-			waapiClient->Subscribe(subscriptionData.Uri,
-				options,
-				subscriptionData.Callback,
-				*subscriptionData.SubscriptionId,
-				result
+			waapiClient->Subscribe(SubscriptionData.Uri,
+				Options,
+				SubscriptionData.Callback,
+				*SubscriptionData.SubscriptionId,
+				Result
 			);
 		}
 	}
@@ -1513,8 +1527,8 @@ void SWaapiPicker::UnsubscribeWaapiCallbacks()
 	auto doUnsubscribe = [waapiClient](uint64& subscriptionId) {
 		if (subscriptionId > 0)
 		{
-			TSharedPtr<FJsonObject> result;
-			waapiClient->Unsubscribe(subscriptionId, result);
+			TSharedPtr<FJsonObject> Result;
+			waapiClient->Unsubscribe(subscriptionId, Result);
 			subscriptionId = 0;
 		}
 	};
@@ -1622,8 +1636,9 @@ void SWaapiPicker::OnWaapiRenamed(uint64_t Id, TSharedPtr<FJsonObject> Response)
 
 			pendingTreeItems.Remove(id);
 
-			AsyncTask(ENamedThreads::GameThread, [this] {
-				TreeViewPtr->RequestTreeRefresh();
+			AsyncTask(ENamedThreads::GameThread, [sharedThis = SharedThis(this)]
+			{
+				sharedThis->TreeViewPtr->RequestTreeRefresh();
 			});
 		}
 
@@ -1647,9 +1662,9 @@ void SWaapiPicker::OnWaapiRenamed(uint64_t Id, TSharedPtr<FJsonObject> Response)
 				treeItem->Parent.Pin()->SortChildren();
 			}
 
-			AsyncTask(ENamedThreads::GameThread, [this] {
-
-				TreeViewPtr->RequestTreeRefresh();
+			AsyncTask(ENamedThreads::GameThread, [sharedThis = SharedThis(this)]
+			{
+				sharedThis->TreeViewPtr->RequestTreeRefresh();
 			});
 		}
 	}
@@ -1693,17 +1708,20 @@ void SWaapiPicker::HandleOnWaapiChildResponse(TSharedPtr<FJsonObject> Response, 
 	{
 		Action(parentTreeItem, *childJsonPtr);
 
-		AsyncTask(ENamedThreads::GameThread, [this] {
-			TreeViewPtr->RequestTreeRefresh();
+		AsyncTask(ENamedThreads::GameThread, [sharedThis = SharedThis(this)]
+		{
+			sharedThis->TreeViewPtr->RequestTreeRefresh();
 		});
 	}
 }
 
 void SWaapiPicker::OnWaapiChildAdded(uint64_t Id, TSharedPtr<FJsonObject> Response)
 {
-	HandleOnWaapiChildResponse(Response, [this](const TSharedPtr<FWwiseTreeItem>& parentTreeItem, const TSharedPtr<FJsonObject>& childJson) {
-		CreateTreeItemWaapi(parentTreeItem, childJson);
-	});
+	HandleOnWaapiChildResponse(Response, 
+		[sharedThis = SharedThis(this)](const TSharedPtr<FWwiseTreeItem>& parentTreeItem, const TSharedPtr<FJsonObject>& childJson)
+		{
+			sharedThis->CreateTreeItemWaapi(parentTreeItem, childJson);
+		});
 }
 
 void SWaapiPicker::CreateTreeItemWaapi(const TSharedPtr<FWwiseTreeItem>& parentTreeItem, const TSharedPtr<FJsonObject>& childJson)
@@ -1730,20 +1748,22 @@ void SWaapiPicker::CreateTreeItemWaapi(const TSharedPtr<FWwiseTreeItem>& parentT
 
 void SWaapiPicker::OnWaapiChildRemoved(uint64_t Id, TSharedPtr<FJsonObject> Response)
 {
-	HandleOnWaapiChildResponse(Response, [this](const TSharedPtr<FWwiseTreeItem>& parentTreeItem, const TSharedPtr<FJsonObject>& childJson) {
-		auto stringId = childJson->GetStringField(WwiseWaapiHelper::ID);
-		FGuid id;
-		FGuid::ParseExact(stringId, EGuidFormats::DigitsWithHyphensInBraces, id);
-
-		for (int32 i = 0; i < parentTreeItem->GetChildren().Num(); ++i)
+	HandleOnWaapiChildResponse(Response, 
+		[sharedThis=SharedThis(this)](const TSharedPtr<FWwiseTreeItem>& ParentTreeItem, const TSharedPtr<FJsonObject>& ChildJson)
 		{
-			parentTreeItem->RemoveChild(id);
-			if (parentTreeItem->ChildCountInWwise <= 0)
+			auto StringId = ChildJson->GetStringField(WwiseWaapiHelper::ID);
+			FGuid ParsedID;
+			FGuid::ParseExact(StringId, EGuidFormats::DigitsWithHyphensInBraces, ParsedID);
+
+			for (int32 ChildIndex = 0; ChildIndex < ParentTreeItem->GetChildren().Num(); ++ChildIndex)
 			{
-				LastExpandedItems.Remove(parentTreeItem->ItemId);
+				ParentTreeItem->RemoveChild(ParsedID);
+				if (ParentTreeItem->ChildCountInWwise <= 0)
+				{
+					sharedThis->LastExpandedItems.Remove(ParentTreeItem->ItemId);
+				}
 			}
-		}
-	});
+		});
 }
 
 TSharedPtr<FWwiseTreeItem> SWaapiPicker::FindOrConstructTreeItemFromJsonObject(const TSharedPtr<FJsonObject>& ObjectJson)
@@ -1795,17 +1815,17 @@ TSharedPtr<FWwiseTreeItem> SWaapiPicker::FindOrConstructTreeItemFromJsonObject(c
 				{
 					const FString itemIdStringField = item->ItemId.ToString(EGuidFormats::DigitsWithHyphensInBraces);
 
-					TSharedPtr<FJsonObject> result;
+					TSharedPtr<FJsonObject> Result;
 					// Request data from Wwise UI using WAAPI and use them to create a Wwise tree item, getting the informations from a specific "ID".
-					if (!CallWaapiGetInfoFrom(WwiseWaapiHelper::ID, itemIdStringField, result, { { WwiseWaapiHelper::SELECT, { WwiseWaapiHelper::CHILDREN }, {} } }))
+					if (!CallWaapiGetInfoFrom(WwiseWaapiHelper::ID, itemIdStringField, Result, { { WwiseWaapiHelper::SELECT, { WwiseWaapiHelper::CHILDREN }, {} } }))
 					{
 						UE_LOG(LogAkAudioPicker, Log, TEXT("Failed to get information from id : %s"), *itemIdStringField);
 						return {};
 					}
 
 					// The tree view might have been destroyed between scheduling and running this task
-					// Recover the information from the Json object getResult and use it to construct the tree item.
-					TArray<TSharedPtr<FJsonValue>> StructJsonArray = result->GetArrayField(WwiseWaapiHelper::RETURN);
+					// Recover the information from the Json object Result and use it to construct the tree item.
+					TArray<TSharedPtr<FJsonValue>> StructJsonArray = Result->GetArrayField(WwiseWaapiHelper::RETURN);
 					/** If the item have just one child and we are expanding it, this means that we need to construct the children list.
 					*   In case the the number of children gotten form Wwise is not the same of the item, this means that there is some children added/removed,
 					*   so we also need to construct the new list.
@@ -1858,7 +1878,7 @@ TSharedPtr<FWwiseTreeItem> SWaapiPicker::FindOrConstructTreeItemFromJsonObject(c
 
 void SWaapiPicker::OnWwiseSelectionChanged(uint64_t Id, TSharedPtr<FJsonObject> Response)
 {
-	AsyncTask(ENamedThreads::GameThread, [this, Response]() 
+	AsyncTask(ENamedThreads::GameThread, [sharedThis = SharedThis(this), Response]()
 	{
 		const UAkSettingsPerUser* AkSettingsPerUser = GetDefault<UAkSettingsPerUser>();
 		if (AkSettingsPerUser && AkSettingsPerUser->AutoSyncSelection)
@@ -1866,26 +1886,26 @@ void SWaapiPicker::OnWwiseSelectionChanged(uint64_t Id, TSharedPtr<FJsonObject> 
 			const TArray<TSharedPtr<FJsonValue>>* objectsJsonArray = nullptr;
 			if (Response->TryGetArrayField(WwiseWaapiHelper::OBJECTS, objectsJsonArray))
 			{
-				AllowTreeViewDelegates = false;
-				TArray<TSharedPtr<FWwiseTreeItem>> treeItems;
+				sharedThis->AllowTreeViewDelegates = false;
+				TArray<TSharedPtr<FWwiseTreeItem>> TreeItems;
 				for (auto JsonObject : *objectsJsonArray)
 				{
-					auto treeItem = FindOrConstructTreeItemFromJsonObject(JsonObject->AsObject());
-					if (treeItem)
+					auto TreeItem = sharedThis->FindOrConstructTreeItemFromJsonObject(JsonObject->AsObject());
+					if (TreeItem)
 					{
-						treeItems.Add(treeItem);
+						TreeItems.Add(TreeItem);
 					}
 				}
-				TreeViewPtr->RequestTreeRefresh();
+				sharedThis->TreeViewPtr->RequestTreeRefresh();
 
-				if (treeItems.Num() > 0)
+				if (TreeItems.Num() > 0)
 				{
 
-					TreeViewPtr->ClearSelection();
-					TreeViewPtr->SetItemSelection(treeItems, true);
-					TreeViewPtr->RequestScrollIntoView(treeItems[0]);
+					sharedThis->TreeViewPtr->ClearSelection();
+					sharedThis->TreeViewPtr->SetItemSelection(TreeItems, true);
+					sharedThis->TreeViewPtr->RequestScrollIntoView(TreeItems[0]);
 				}
-				AllowTreeViewDelegates = true;
+				sharedThis->AllowTreeViewDelegates = true;
 			}
 		}
 	});

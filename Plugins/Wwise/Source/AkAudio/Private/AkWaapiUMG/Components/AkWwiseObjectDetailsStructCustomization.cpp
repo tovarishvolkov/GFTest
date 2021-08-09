@@ -23,6 +23,10 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "DetailWidgetRow.h"
 #include "AkAudioStyle.h"
 
+#if UE_5_0_OR_LATER
+#include "Framework/Docking/TabManager.h"
+#endif
+
 #define LOCTEXT_NAMESPACE "AkWwiseObjectDetailsStructCustomization"
 
 TSharedRef<IPropertyTypeCustomization> FAkWwiseObjectDetailsStructCustomization::MakeInstance()

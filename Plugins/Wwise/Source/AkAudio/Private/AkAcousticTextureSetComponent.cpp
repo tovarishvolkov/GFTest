@@ -25,6 +25,12 @@ UAkAcousticTextureSetComponent::UAkAcousticTextureSetComponent(const class FObje
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	bTickInEditor = true;
+#if WITH_EDITOR
+	if (GEditor)
+	{
+		GEditor->OnObjectsReplaced().AddUObject(this, &UAkAcousticTextureSetComponent::HandleObjectsReplaced);
+	}
+#endif
 }
 
 void UAkAcousticTextureSetComponent::OnRegister()
@@ -104,6 +110,30 @@ void UAkAcousticTextureSetComponent::RecalculateHFDamping()
 }
 
 #if WITH_EDITOR
+void UAkAcousticTextureSetComponent::BeginDestroy()
+{
+	Super::BeginDestroy();
+	if (GEditor)
+	{
+		GEditor->OnObjectsReplaced().RemoveAll(this);
+	}
+}
+
+void UAkAcousticTextureSetComponent::HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap)
+{
+	if (ReplacementMap.Contains(this))
+	{
+		UAkAcousticTextureSetComponent* NewTextureSetComponent = Cast<UAkAcousticTextureSetComponent>(ReplacementMap[this]);
+		if (USceneComponent* Parent = NewTextureSetComponent->GetAttachParent())
+		{
+			if (UAkLateReverbComponent* ReverbComp = AkComponentHelpers::GetChildComponentOfType<UAkLateReverbComponent>(*Parent))
+			{
+				ReverbComp->AssociateAkTextureSetComponent(NewTextureSetComponent);
+			}
+		}
+	}
+}
+
 void UAkAcousticTextureSetComponent::RegisterReverbRTPCChangedCallback()
 {
 	UAkSettings* AkSettings = GetMutableDefault<UAkSettings>();

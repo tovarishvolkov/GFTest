@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -233,7 +233,7 @@ struct AkInitSettings
 	AkUInt32			uBankReadBufferSize;		///< The number of bytes read by the BankReader when new data needs to be loaded from disk during serialization. Increasing this trades memory usage for larger, but fewer, file-read events during bank loading.
 
 	AkReal32			fDebugOutOfRangeLimit;		///< Debug setting: Only used when bDebugOutOfRangeCheckEnabled is true.  This defines the maximum values samples can have.  Normal audio must be contained within +1/-1.  This limit should be set higher to allow temporary or short excursions out of range.  Default is 16.
-	bool				bDebugOutOfRangeCheckEnabled;	///< Debug setting: Enable checks for out-of-range (and NAN) floats in the processing code.  Do not enable in any normal usage, this setting uses a lot of CPU.  Will print error messages in the log if invalid values are found at various point in the pipeline. Contact AK Support with the new error messages for more information.
+	bool				bDebugOutOfRangeCheckEnabled;	///< Debug setting: Enable checks for out-of-range (and NAN) floats in the processing code.  This incurs a small performance hit, but can be enabled in most scenarios.  Will print error messages in the log if invalid values are found at various point in the pipeline. Contact AK Support with the new error messages for more information.
 };
 
 /// Necessary settings for setting externally-loaded sources
@@ -550,7 +550,10 @@ namespace AK
 		/// \return 
 		/// - Ak_Success if successful.  
 		/// - AK_FileNotFound if the DLL is not found in the OS path or if it has extraneous dependencies not found.  
+		/// - AK_InsufficientMemory if the system ran out of resources while loading the dynamic library
+		/// - AK_NotCompatible if the file was found but is not binary-compatible with the system's expected executable format
 		/// - AK_InvalidFile if the symbol g_pAKPluginList is not exported by the dynamic library
+		/// - AK_Fail if an unexpected system error was encountered
 		AK_EXTERNAPIFUNC( AKRESULT, RegisterPluginDLL ) (
 			const AkOSChar* in_DllName,					///< Name of the DLL to load, without "lib" prefix or extension.  
 			const AkOSChar* in_DllPath = NULL			///< Optional path to the DLL. Will override szPLuginDLLPath that was set in AkInitSettings.
@@ -616,13 +619,14 @@ namespace AK
 			AkUInt32 in_eLocation = AkGlobalCallbackLocation_BeginRender ///< Must match in_eLocation as passed to RegisterGlobalCallback for this callback.
 			);
 
-		/// Registers a resource monitor callback function. This function will be called from the audio rendering thread, at the
-		/// end of each frame.
+		/// Registers a resource monitor callback function that gets all of the resource usage data contained in the 
+		/// AkResourceMonitorDataSummary structure. This includes general information about the system, such as CPU usage, 
+		/// active Voices, and Events. This function will be called from the audio rendering thread at the end of each frame.
 		/// \remarks
 		/// If the callback is being timed, it will contribute to the Total Plug-in CPU measurement, and also appear in the Plug-ins tab of the Advanced Profiler by plug-in type and ID. 
 		/// It is illegal to call this function while already inside of a resource callback.
 		/// This function might stall for several milliseconds before returning.
-		/// this function will return AK_Fail in Release
+		/// This function will return AK_Fail in Release
 		/// \sa 
 		/// - <tt>AK::SoundEngine::UnregisterResourceMonitorCallback()</tt>
 		/// - AkResourceMonitorCallbackFunc
@@ -2133,7 +2137,7 @@ namespace AK
 		/// - \ref soundengine_banks
         AK_EXTERNAPIFUNC( AKRESULT, UnloadBank )(
 	        const wchar_t*      in_pszString,           ///< Name of the bank to unload
-			const void *		in_pInMemoryBankPtr		///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL only if NULL was passed when loading the bank.
+			const void *		in_pInMemoryBankPtr		///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL if NULL was passed when loading the bank or if LoadBankMemoryCopy was used to load the bank.
 	        );
 #endif //AK_SUPPORT_WCHAR
 
@@ -2153,7 +2157,7 @@ namespace AK
 		/// - \ref soundengine_banks
         AK_EXTERNAPIFUNC( AKRESULT, UnloadBank )(
 	        const char*         in_pszString,           ///< Name of the bank to unload
-			const void *		in_pInMemoryBankPtr		///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL only if NULL was passed when loading the bank.
+			const void *		in_pInMemoryBankPtr		///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL if NULL was passed when loading the bank or if LoadBankMemoryCopy was used to load the bank.
 	        );
 
 		/// Unloads a bank synchronously (by ID and memory pointer).\n
@@ -2167,7 +2171,7 @@ namespace AK
 		/// - \ref soundengine_banks
         AK_EXTERNAPIFUNC( AKRESULT, UnloadBank )(
 	        AkBankID            in_bankID,              ///< ID of the bank to unload
-			const void *		in_pInMemoryBankPtr		///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL only if NULL was passed when loading the bank.
+			const void *		in_pInMemoryBankPtr		///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL if NULL was passed when loading the bank or if LoadBankMemoryCopy was used to load the bank.
  	        );
 
 #ifdef AK_SUPPORT_WCHAR
@@ -2188,7 +2192,7 @@ namespace AK
 		/// - \ref soundengine_banks
 		AK_EXTERNAPIFUNC( AKRESULT, UnloadBank )(
 	        const wchar_t*      in_pszString,           ///< Name of the bank to unload
-			const void *		in_pInMemoryBankPtr,	///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL only if NULL was passed when loading the bank.
+			const void *		in_pInMemoryBankPtr,	///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL if NULL was passed when loading the bank or if LoadBankMemoryCopy was used to load the bank.
 			AkBankCallbackFunc  in_pfnBankCallback,	    ///< Callback function
 			void *              in_pCookie 				///< Callback cookie (reserved to user, passed to the callback function)
 	        );
@@ -2211,7 +2215,7 @@ namespace AK
 		/// - \ref soundengine_banks
 		AK_EXTERNAPIFUNC( AKRESULT, UnloadBank )(
 	        const char*         in_pszString,           ///< Name of the bank to unload
-			const void *		in_pInMemoryBankPtr,	///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL only if NULL was passed when loading the bank.
+			const void *		in_pInMemoryBankPtr,	///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL if NULL was passed when loading the bank or if LoadBankMemoryCopy was used to load the bank.
 			AkBankCallbackFunc  in_pfnBankCallback,	    ///< Callback function
 			void *              in_pCookie 				///< Callback cookie (reserved to user, passed to the callback function)
 	        );
@@ -2229,7 +2233,7 @@ namespace AK
 		/// - \ref soundengine_banks
 		AK_EXTERNAPIFUNC( AKRESULT, UnloadBank )(
 	        AkBankID            in_bankID,				///< ID of the bank to unload
-			const void *		in_pInMemoryBankPtr,	///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL only if NULL was passed when loading the bank.
+			const void *		in_pInMemoryBankPtr,	///< Memory pointer from where the bank was initially loaded from. (REQUIRED to determine which bank associated to a memory pointer must be unloaded). Pass NULL if NULL was passed when loading the bank or if LoadBankMemoryCopy was used to load the bank.
 			AkBankCallbackFunc  in_pfnBankCallback,		///< Callback function
 			void *              in_pCookie				///< Callback cookie (reserved to user, passed to the callback function)
 	        );
@@ -2626,12 +2630,40 @@ namespace AK
 			AkUInt32			in_uNumSourceSettings	///< Number of Source Settings in the array
 			);
 
-		/// Removes the specified source from the list of loaded media.
+		/// Removes the specified source from the list of loaded media, even if this media is already in use.
 		/// The sources are identified by their ID (refer to \ref soundengine_banks_general for a discussion on using strings and IDs).
-		/// \return AK_Success if operation was successful, AK_InvalidParameter if in_pSourceSettings is invalid, and AK_Fail otherwise.
+		/// \aknote This function is unsafe and deprecated. Use TryUnsetMedia() in its place.
+		/// Media that is still in use by the sound engine should not be unset by this function. 
+		/// If the media is still in use, this function will attempt to forcibly kill all sounds and effects referencing this media,
+		/// and then return AK_ResourceInUse. The client should NOT presume that the memory can be safely released at this point.
+		/// The moment at which the memory can be safely released is unknown, and the only safe course of action is to keep the memory
+		/// alive until the sound engine is terminated.
+		/// \endaknote
+		/// \return
+		/// - AK_Success: Operation was successful, and the memory can be released on the client side.
+		/// - AK_ResourceInUse: Specified media is still in use by the sound engine, the client should not release the memory.
+		/// - AK_InvalidParameter: in_pSourceSettings is invalid
 		AK_EXTERNAPIFUNC( AKRESULT, UnsetMedia )( 
 			AkSourceSettings *	in_pSourceSettings,		///< Array of Source Settings
 			AkUInt32			in_uNumSourceSettings	///< Number of Source Settings in the array
+			);
+
+		/// Removes the specified source from the list of loaded media, only if this media is not already in use.
+		/// The sources are identified by their ID (refer to \ref soundengine_banks_general for a discussion on using strings and IDs).
+		/// \aknote Media that is still in use by the sound engine should not be unset. 
+		/// If this function returns AK_ResourceInUse, then the operation is a no-op and the client must not release memory for this media.
+		/// Instead, the client should retry the TryUnsetMedia operation later with the same parameters and check for AK_Success.
+		/// \endaknote
+		/// If out_pUnsetResults is not null, then it is assumed to point to an array of result codes of the same length as in_pSourceSettings.
+		/// out_pUnsetResults will be filled with either AK_Success or AK_ResourceInUse, indicating which media was still in use and not unset.
+		/// \return
+		/// - AK_Success: Operation was successful, and the memory can be released on the client side.
+		/// - AK_ResourceInUse: Specified media is still in use by the sound engine, and the media was not unset. Do not release memory, and try again later.
+		/// - AK_InvalidParameter: in_pSourceSettings is invalid
+		AK_EXTERNAPIFUNC(AKRESULT, TryUnsetMedia)(
+			AkSourceSettings* in_pSourceSettings,       ///< Array of Source Settings
+			AkUInt32          in_uNumSourceSettings,    ///< Number of Source Settings in the array
+			AKRESULT*         out_pUnsetResults         ///< (optional, can be null) Array of result codes
 			);
 
 #ifdef AK_SUPPORT_WCHAR
@@ -3890,18 +3922,18 @@ namespace AK
 		/// if your game still runs in background and you must keep some kind of coherent state between the audio engine and game, then allow rendering.
 		/// If you want to minimize CPU when in background, then don't allow rendering and never call RenderAudio from the game.
 		///
-		/// - Android: Call for APP_CMD_PAUSE
-		/// - iOS: Don't call. All audio interrupts are handled internally.
-		/// - XBoxOne: Use when entering constrained mode or suspended mode (see ResourceAvailability in Xbox One documentation).
+		/// Consult \ref workingwithsdks_system_calls to learn when it is appropriate to call this function for each platform.
 		/// \sa WakeupFromSuspend
+		/// \sa \ref workingwithsdks_system_calls
 		AK_EXTERNAPIFUNC( AKRESULT, Suspend )(
 			bool in_bRenderAnyway = false /// If set to true, audio processing will still occur, but not outputted. When set to false, no audio will be processed at all, even upon reception of RenderAudio().
 			);
 
 		/// This function should be called to wake up the sound engine and start processing audio again. This needs to be called if the console has a background mode or some suspended state.
-		/// - Android: Call for APP_CMD_RESUME
-		/// - iOS: Don't call. All audio interrupts are handled internally.		
-		/// - XBoxOne: Use when the game is back to Full resources (see ResourceAvailability in Xbox One documentation).
+		///
+		/// Consult \ref workingwithsdks_system_calls to learn when it is appropriate to call this function for each platform.
+		/// \sa Suspend
+		/// \sa \ref workingwithsdks_system_calls
 		AK_EXTERNAPIFUNC( AKRESULT, WakeupFromSuspend )(); 
 
 		/// Obtains the current audio output buffer tick. This corresponds to the number of buffers produced by

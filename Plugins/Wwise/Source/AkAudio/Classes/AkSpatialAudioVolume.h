@@ -24,8 +24,6 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "AkRoomComponent.h"
 #include "AkSpatialAudioVolume.generated.h"
 
-bool IsAkSpatialAudioActorClass(AActor* Actor);
-
 UENUM()
 enum class EAkFitToGeometryMode : uint32
 {
@@ -61,6 +59,10 @@ class AKAUDIO_API AAkSpatialAudioVolume : public AVolume
 #if WITH_EDITOR
 	void FitRaycast();
 	void FitBox(bool bPreviewOnly = false);
+	bool bBrushNeedsRebuild = false;
+	virtual bool ShouldTickIfViewportsOnly() const override;
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void PostTransacted(const FTransactionObjectEvent& TransactionEvent) override;
 	virtual void PostEditMove(bool bFinished) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 
@@ -142,5 +144,8 @@ public:
 	// Used by the visualizer when scaling the preview text components.
 	float LongestEdgeLength = 0.0f;
 	mutable TArray<UTextRenderComponent*> PreviewTextureNameComponents;
+
+private:
+	FBoxSphereBounds PreviousBounds = FBoxSphereBounds();
 #endif
 };

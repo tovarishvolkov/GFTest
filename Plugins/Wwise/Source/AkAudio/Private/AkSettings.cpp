@@ -1147,8 +1147,22 @@ void UAkSettings::EnsureSoundDataPathIsInAlwaysCook() const
 
 	for (int32 i = PackagingSettings->DirectoriesToAlwaysCook.Num() - 1; i >= 0; --i)
 	{
-		auto ContentPath = FPackageName::LongPackageNameToFilename(PackagingSettings->DirectoriesToAlwaysCook[i].Path);
+		FString ContentPath = PackagingSettings->DirectoriesToAlwaysCook[i].Path;
+		if (ContentPath.IsEmpty()) 
+		{
+			continue;
+		}
 
+		if (ContentPath.StartsWith(TEXT("/"), ESearchCase::CaseSensitive))
+		{
+			// If this starts with /, this includes a root like /engine
+			ContentPath = FPackageName::LongPackageNameToFilename(ContentPath / TEXT(""));
+		}
+		else
+		{
+			ContentPath = FPackageName::LongPackageNameToFilename(ContentPath);
+		}
+		
 		if (!FPaths::DirectoryExists(ContentPath))
 		{
 			PackagingSettings->DirectoriesToAlwaysCook.RemoveAt(i);

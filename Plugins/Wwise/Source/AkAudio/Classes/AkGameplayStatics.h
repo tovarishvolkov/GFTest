@@ -286,8 +286,38 @@ class AKAUDIO_API UAkGameplayStatics : public UBlueprintFunctionLibrary
 	* @param Order - The order of Reflection. Can be 0 to 4.
 	* @param RefreshPaths - whether the paths should be refreshed immediately.
 	*/
-	UFUNCTION(BlueprintCallable, Category = "Audiokinetic|Actor")
+	UFUNCTION(BlueprintCallable, Category = "Audiokinetic|Spatial Audio")
 	static void SetReflectionsOrder(int Order, bool RefreshPaths);
+
+	/**
+	* Sets the obstruction and occlusion value of sounds going through this portal.
+	*
+	* @param PortalComponent - The portal through which sound path need to pass to get obstructed and occluded.
+	* @param ObstructionValue - The obstruction value. Can be 0 to 1.
+	* @param OcclusionValue - The occlusion value. Can be 0 to 1.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Audiokinetic|Spatial Audio")
+	static void SetPortalObstructionAndOcclusion(UAkPortalComponent* PortalComponent, float ObstructionValue, float OcclusionValue);
+
+	/**
+	* Sets the obstruction value of sounds going from this game object through this portal.
+	*
+	* @param GameObjectAkComponent - The game object emitting the sound that we want to obstruct.
+	* @param PortalComponent - The portal through which the sound from the game object can go.
+	* @param OcclusionValue - The occlusion value. Can be 0 to 1.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Audiokinetic|Spatial Audio")
+	static void SetGameObjectToPortalObstruction(UAkComponent* GameObjectAkComponent, UAkPortalComponent* PortalComponent, float ObstructionValue);
+
+	/**
+	* Sets the obstruction value of sounds going from a first portal through the next portal.
+	*
+	* @param PortalComponent0 - The first portal through which a sound path goes.
+	* @param PortalComponent1 - The next portal throuh which the sound path goes from the first portal.
+	* @param OcclusionValue - The occlusion value. Can be 0 to 1.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Audiokinetic|Spatial Audio")
+	static void SetPortalToPortalObstruction(UAkPortalComponent* PortalComponent0, UAkPortalComponent* PortalComponent1, float ObstructionValue);
 
 	/**
 	* Set the output bus volume (direct) to be used for the specified game object.
@@ -322,6 +352,16 @@ class AKAUDIO_API UAkGameplayStatics : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "Audiokinetic")
 	static void SetPanningRule(PanningRule PanRule);
 	
+	/**
+	 * Replaces the main output device previously created during engine initialization with a new output device.
+	 * In addition to simply removing one output device and adding a new one, the new output device will also be used on all of the master buses
+	 * that the old output device was associated with, and preserve all listeners that were attached to the old output device.
+	 *
+	 * @param MainOutputSettings	Creation parameters for this output
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Audiokinetic")
+	static void ReplaceMainOutput(const FAkOutputSettings& MainOutputSettings);
+
 	/**
 	 * Gets speaker angles of the specified device. Speaker angles are used for 3D positioning of sounds over standard configurations.
 	 * Note that the current version of Wwise only supports positioning on the plane.

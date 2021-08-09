@@ -24,6 +24,7 @@ Copyright (c) 2021 Audiokinetic Inc.
 
 #pragma once
 #include "Engine/Engine.h"
+#include "AkUEFeatures.h"
 
 #if PLATFORM_WINDOWS
 
@@ -42,7 +43,6 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "XboxOne/XboxOneMinApi.h"
 #endif
 
-#include "AkUEFeatures.h"
 
 #include "CoreTypes.h" // includes platform defines
 

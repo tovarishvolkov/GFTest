@@ -15,16 +15,17 @@ Copyright (c) 2021 Audiokinetic Inc.
 
 
 #include "AkEnvironmentIndex.h"
+#include "AkAudioDevice.h"
 
 void FAkEnvironmentOctreeSemantics::SetElementId(AK_OCTREE_TYPE<FAkEnvironmentOctreeElement, FAkEnvironmentOctreeSemantics>& OctreeOwner, const FAkEnvironmentOctreeElement& Element, AK_OCTREE_ELEMENT_ID Id)
 {
 	static_cast<UAkEnvironmentOctree&>(OctreeOwner).ObjectToOctreeId.Add(Element.Component->GetUniqueID(), Id);
 }
 
-void FAkEnvironmentIndex::Add(USceneComponent* in_EnvironmentToAdd)
+void FAkEnvironmentIndex::Add(USceneComponent* EnvironmentToAdd)
 {
-	UWorld* CurrentWorld = in_EnvironmentToAdd->GetWorld();
-	auto& Octree = Map.FindOrAdd(CurrentWorld);
+	UWorld* CurrentWorld = EnvironmentToAdd->GetWorld();
+	TUniquePtr<UAkEnvironmentOctree>& Octree = Map.FindOrAdd(CurrentWorld);
 	
 	if (Octree == nullptr)
 	{
@@ -33,32 +34,35 @@ void FAkEnvironmentIndex::Add(USceneComponent* in_EnvironmentToAdd)
 
 	if (Octree != nullptr)
 	{
-		FAkEnvironmentOctreeElement element(in_EnvironmentToAdd);
-		Octree->AddElement(element);
+		FAkEnvironmentOctreeElement Element(EnvironmentToAdd);
+		Octree->AddElement(Element);
 	}
 }
 
-void FAkEnvironmentIndex::Remove(USceneComponent* in_EnvironmentToRemove)
+bool FAkEnvironmentIndex::Remove(USceneComponent* EnvironmentToRemove)
 {
-	UWorld* CurrentWorld = in_EnvironmentToRemove->GetWorld();
-	auto* Octree = Map.Find(CurrentWorld);
+	UWorld* CurrentWorld = EnvironmentToRemove->GetWorld();
+	TUniquePtr<UAkEnvironmentOctree>* Octree = Map.Find(CurrentWorld);
 
-	if (Octree != nullptr)
+	if (Octree != nullptr && EnvironmentToRemove != nullptr)
 	{
-		auto id = (*Octree)->ObjectToOctreeId.Find(in_EnvironmentToRemove->GetUniqueID());
-		if (id != nullptr && (*Octree)->IsValidElementId(*id))
+		AK_OCTREE_ELEMENT_ID* Id = (*Octree)->ObjectToOctreeId.Find(EnvironmentToRemove->GetUniqueID());
+		if (Id != nullptr && (*Octree)->IsValidElementId(*Id))
 		{
-			(*Octree)->RemoveElement(*id);
+			(*Octree)->RemoveElement(*Id);
 		}
 
-		(*Octree)->ObjectToOctreeId.Remove(in_EnvironmentToRemove->GetUniqueID());
+		(*Octree)->ObjectToOctreeId.Remove(EnvironmentToRemove->GetUniqueID());
+		return true;
 	}
+
+	return false;
 }
 
-void FAkEnvironmentIndex::Update(USceneComponent* in_Environment)
+void FAkEnvironmentIndex::Update(USceneComponent* Environment)
 {
-	Remove(in_Environment);
-	Add(in_Environment);
+	Remove(Environment);
+	Add(Environment);
 }
 
 void FAkEnvironmentIndex::Clear(const UWorld* World)
@@ -68,7 +72,6 @@ void FAkEnvironmentIndex::Clear(const UWorld* World)
 
 bool FAkEnvironmentIndex::IsEmpty(const UWorld* World)
 {
-	auto* Octree = Map.Find(World);
-
+	TUniquePtr<UAkEnvironmentOctree>* Octree = Map.Find(World);
 	return Octree == nullptr;
 }

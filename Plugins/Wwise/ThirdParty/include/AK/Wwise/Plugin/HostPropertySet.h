@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -726,6 +726,7 @@ struct ak_wwise_plugin_host_property_set_v1
 	 * \param[in] in_guidPlatform The unique ID of the queried platform.
 	 * \param[in] in_pszPropertyName The name of the queried property, based on the XML definition file.
 	 * \param[out] out_propertyValue The returned value of the property.
+	 *   The buffer is owned by Authoring and is valid until the next API call.
 	 * \return true if successful.
 	 */
 	bool(*GetValueString)(
@@ -1731,6 +1732,7 @@ namespace AK::Wwise::Plugin
 			 * \param[in] in_guidPlatform The unique ID of the queried platform.
 			 * \param[in] in_pszPropertyName The name of the queried property, based on the XML definition file.
 			 * \param[out] out_propertyValue The returned value of the property.
+			 *   The buffer is owned by Authoring and is valid until the next API call.
 			 * \return true if successful.
 			 */
 			inline bool GetValueString(

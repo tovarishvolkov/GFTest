@@ -18,6 +18,8 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "Engine/EngineTypes.h"
 #include "AkInclude.h"
 #include "InitializationSettings/AkInitializationSettings.h"
+#include "InitializationSettings/AkPlatformInitialisationSettingsBase.h"
+
 #include "AkAndroidInitializationSettings.generated.h"
 
 UENUM(Meta = (Bitmask))
@@ -43,12 +45,12 @@ struct FAkAndroidAdvancedInitializationSettings : public FAkAdvancedInitializati
 
 
 UCLASS(config = Game, defaultconfig)
-class AKAUDIO_API UAkAndroidInitializationSettings : public UObject
+class AKAUDIO_API UAkAndroidInitializationSettings : public UObject, public IAkPlatformInitialisationSettingsBase
 {
 	GENERATED_UCLASS_BODY()
 
 public:
-	void FillInitializationStructure(FAkInitializationStructure& InitializationStructure) const;
+	void FillInitializationStructure(FAkInitializationStructure& InitializationStructure) const override;
 
 	UPROPERTY(Config, EditAnywhere, Category = "Initialization")
 	FAkCommonInitializationSettingsWithSampleRate CommonSettings;

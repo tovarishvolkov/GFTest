@@ -184,14 +184,26 @@ void AkEventBasedIntegrationBehavior::AkAudioDevice_SetCurrentAudioCulture(const
 	}
 }
 
-void AkEventBasedIntegrationBehavior::AkAudioDevice_SetCurrentAudioCultureAsync(FAkAudioDevice* AkAudioDevice, const FString& NewWwiseLanguage, const FOnSetCurrentAudioCultureCompleted& CompletedCallback)
+void AkEventBasedIntegrationBehavior::AkAudioDevice_SetCurrentAudioCultureAsync(FAkAudioDevice* AkAudioDevice, const FString& NewWwiseLanguage, FSetCurrentAudioCultureAction* LatentAction)
 {
-	FAkAudioDevice::SetCurrentAudioCultureAsyncTask* newTask = new FAkAudioDevice::SetCurrentAudioCultureAsyncTask{};
-	newTask->NewWwiseLanguage = NewWwiseLanguage;
-	newTask->CompletedCallback = CompletedCallback;
+	FAkAudioDevice::SetCurrentAudioCultureAsyncTask* newTask = new FAkAudioDevice::SetCurrentAudioCultureAsyncTask(NewWwiseLanguage, LatentAction);
 	if (newTask->Start())
 	{
-		AkAudioDevice->audioCultureAsyncTasks.Add(newTask);
+		AkAudioDevice->AudioCultureAsyncTasks.Add(newTask);
+	}
+	else
+	{
+		LatentAction->ActionDone = true;
+		delete newTask;
+	}
+}
+
+void AkEventBasedIntegrationBehavior::AkAudioDevice_SetCurrentAudioCultureAsync(FAkAudioDevice* AkAudioDevice, const FString& NewWwiseLanguage, const FOnSetCurrentAudioCultureCompleted& CompletedCallback)
+{
+	FAkAudioDevice::SetCurrentAudioCultureAsyncTask* newTask = new FAkAudioDevice::SetCurrentAudioCultureAsyncTask(NewWwiseLanguage, CompletedCallback);
+	if (newTask->Start())
+	{
+		AkAudioDevice->AudioCultureAsyncTasks.Add(newTask);
 	}
 	else
 	{

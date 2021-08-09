@@ -1,7 +1,14 @@
 Audio Bus	ID	Name			Wwise Object Path	Notes
 	183903552	Occlusion			\Default Work Unit\Master Audio Bus\Occlusion	
 	436743010	Character			\Default Work Unit\Master Audio Bus\Character	
+	983310469	AUX			\Default Work Unit\Master Audio Bus\AUX	
 	3803692087	Master Audio Bus			\Default Work Unit\Master Audio Bus	
+
+Auxiliary Bus	ID	Name			Wwise Object Path	Notes
+	769424364	RevTest			\Default Work Unit\Master Audio Bus\AUX\RevTest	
+
+Effect plug-ins	ID	Name	Type				Notes
+	2995775460	Room_Small	Wwise RoomVerb			
 
 Audio Devices	ID	Name	Type				Notes
 	2317455096	No_Output	No Output			

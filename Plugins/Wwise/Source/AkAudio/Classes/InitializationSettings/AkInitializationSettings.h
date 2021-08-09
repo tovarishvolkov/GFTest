@@ -302,7 +302,7 @@ struct FAkAdvancedInitializationSettings
 	uint32 ContinuousPlaybackLookAhead = 1;
 
 	UPROPERTY(EditAnywhere, Category = "Ak Initialization Settings", meta = (ToolTip = "Size of the monitoring queue pool. This parameter is not used in Release build."))
-	uint32 MonitorQueuePoolSize = 64 * 1024;
+	uint32 MonitorQueuePoolSize = 1024 * 1024;
 
 	UPROPERTY(EditAnywhere, Category = "Ak Initialization Settings", meta = (ToolTip = "Amount of time to wait for hardware devices to trigger an audio interrupt. If there is no interrupt after that time, the sound engine will revert to silent mode and continue operating until the hardware finally comes back."))
 	uint32 MaximumHardwareTimeoutMs = 1000;

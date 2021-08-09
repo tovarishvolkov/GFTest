@@ -61,6 +61,13 @@ UAkLateReverbComponent::UAkLateReverbComponent(const class FObjectInitializer& O
 
 	bEnable = true;
 	bWantsOnUpdateTransform = true;
+
+#if WITH_EDITOR
+	if (GEditor)
+	{
+		GEditor->OnObjectsReplaced().AddUObject(this, &UAkLateReverbComponent::HandleObjectsReplaced);
+	}
+#endif
 }
 
 void UAkLateReverbComponent::PostLoad()
@@ -161,17 +168,16 @@ void UAkLateReverbComponent::BeginDestroy()
 {
 	Super::BeginDestroy();
 	if (TextureSetComponent != nullptr)
-		TextureSetComponent->SetReverbDescriptor(nullptr);
-	ReverbDescriptor.SetPrimitive(nullptr);
-}
-
-void UAkLateReverbComponent::OnComponentDestroyed(bool bDestroyingHierarchy)
-{
-	FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
-	if (AkAudioDevice && IsIndexed)
 	{
-		AkAudioDevice->UnindexLateReverb(this);
+		TextureSetComponent->SetReverbDescriptor(nullptr);
 	}
+	ReverbDescriptor.SetPrimitive(nullptr);
+#if WITH_EDITOR
+	if (GEditor)
+	{
+		GEditor->OnObjectsReplaced().RemoveAll(this);
+	}
+#endif
 }
 
 void UAkLateReverbComponent::OnRegister()
@@ -179,43 +185,7 @@ void UAkLateReverbComponent::OnRegister()
 	Super::OnRegister();
 	SetRelativeLocation(FVector::ZeroVector);
 	InitializeParent();
-
-#if WITH_EDITOR
-	if (Parent != nullptr)
-	{
-		RegisterAuxBusMapChangedCallback();
-		RegisterReverbRTPCChangedCallback();
-	}
-#endif
-
-	// In the case where a blueprint class has a texture set component and a late reverb component as siblings, We can't know which will be registered first.
-	// We need to check for the sibling in each OnRegister function and associate the texture set component to the late reverb when they are both registered.
-	if (Parent != nullptr)
-	{
-		if (UAkSurfaceReflectorSetComponent* surfaceComponent = AkComponentHelpers::GetChildComponentOfType<UAkSurfaceReflectorSetComponent>(*Parent))
-		{
-			AssociateAkTextureSetComponent(surfaceComponent);
-		}
-		else if (UAkGeometryComponent* geometryComponent = AkComponentHelpers::GetChildComponentOfType<UAkGeometryComponent>(*Parent))
-		{
-			AssociateAkTextureSetComponent(geometryComponent);
-		}
-	}
-
-	// Edge case: For a Blueprint-added late reverb component whose default 'auto-assign aux bus' value is true,
-	// upon changing the aux bus from the details panel, the component is re-created. During this re-creation, when
-	// OnRegister() is called, the default values are applied. If auto-assign aux bus is changed to false from the
-	// details panel, OnRegister() will initially be called with auto-assign = true. This means the auto aux bus is 
-	// always applied during OnRegister. For this reason we defer the decay calculation to a later tick, at which 
-	// point the user-defined component property values will be applied, auto assign will be false, and no auto-assign 
-	// will take place to override the user-defined aux bus.
-	if (CreationMethod == EComponentCreationMethod::SimpleConstructionScript)
-		DecayEstimationNeedsUpdate = true;
-	else
-		RecalculateDecay();
-	// --------------------
-
-	RecalculatePredelay();
+	ParentChanged();
 
 	// During runtime (non editor), we only want to tick if we'll ever need to update the reverb parameters.
 	PrimaryComponentTick.bCanEverTick = ReverbDescriptor.RequiresUpdates();
@@ -228,9 +198,52 @@ void UAkLateReverbComponent::OnRegister()
 #endif
 }
 
+void UAkLateReverbComponent::ParentChanged()
+{
+	if (IsValid(Parent))
+	{
+#if WITH_EDITOR
+		RegisterAuxBusMapChangedCallback();
+		RegisterReverbRTPCChangedCallback();
+#endif
+		// In the case where a blueprint class has a texture set component and a late reverb component as siblings, We can't know which will be registered first.
+		// We need to check for the sibling in each OnRegister function and associate the texture set component to the late reverb when they are both registered.
+		if (UAkSurfaceReflectorSetComponent* surfaceComponent = AkComponentHelpers::GetChildComponentOfType<UAkSurfaceReflectorSetComponent>(*Parent))
+		{
+			AssociateAkTextureSetComponent(surfaceComponent);
+		}
+		else if (UAkGeometryComponent* geometryComponent = AkComponentHelpers::GetChildComponentOfType<UAkGeometryComponent>(*Parent))
+		{
+			AssociateAkTextureSetComponent(geometryComponent);
+		}
+	}
+
+	// Edge case: For a Blueprint-added late reverb component whose default 'auto-assign aux bus' value is true,
+	// updating the aux bus directly here can cause it to remain in a read-only state even after auto-assign aux 
+	// bus is disabled.
+	if (CreationMethod == EComponentCreationMethod::SimpleConstructionScript)
+		DecayEstimationNeedsUpdate = true;
+	else
+		RecalculateDecay();
+	// --------------------
+
+	RecalculatePredelay();
+}
+
+void UAkLateReverbComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
+	if (AkAudioDevice && IsIndexed)
+	{
+		AkAudioDevice->UnindexLateReverb(this);
+	}
+}
+
 void UAkLateReverbComponent::OnUnregister()
 {
 	Super::OnUnregister();
+
 #if WITH_EDITOR
 	DestroyTextVisualizers();
 	UAkSettings* AkSettings = GetMutableDefault<UAkSettings>();
@@ -370,6 +383,30 @@ void UAkLateReverbComponent::RecalculatePredelay()
 }
 
 #if WITH_EDITOR
+void UAkLateReverbComponent::HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap)
+{
+	if (ReplacementMap.Contains(Parent))
+	{
+		InitializeParent();
+		RecalculateDecay();
+		RecalculatePredelay();
+	}
+	if (ReplacementMap.Contains(TextureSetComponent))
+	{
+		if (Parent != nullptr)
+		{
+			if (UAkSurfaceReflectorSetComponent* SurfaceComponent = AkComponentHelpers::GetChildComponentOfType<UAkSurfaceReflectorSetComponent>(*Parent))
+			{
+				AssociateAkTextureSetComponent(SurfaceComponent);
+			}
+			else if (UAkGeometryComponent* GeomComponent = AkComponentHelpers::GetChildComponentOfType<UAkGeometryComponent>(*Parent))
+			{
+				AssociateAkTextureSetComponent(GeomComponent);
+			}
+		}
+	}
+}
+
 void UAkLateReverbComponent::UpdateTextVisualizerStatus()
 {
 	// The reverb descriptor may or may not require updates depending on which global RTPCs are in use, and whether auto assign aux bus is selected.
@@ -628,8 +665,16 @@ void UAkLateReverbComponent::PostEditChangeProperty(FPropertyChangedEvent& Prope
 			{
 				RoomCmpt = AkComponentHelpers::GetChildComponentOfType<UAkRoomComponent>(*Parent);
 			}
-
-			if (RoomCmpt && RoomCmpt->RoomIsActive())
+			if (!RoomCmpt || !RoomCmpt->RoomIsActive())
+			{
+				// No room, or inactive room. Update the late reverb in the oct tree.
+				FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
+				if (AkAudioDevice && bEnable && IsIndexed)
+				{
+					AkAudioDevice->ReindexLateReverb(this);
+				}
+			}
+			else if (RoomCmpt && RoomCmpt->RoomIsActive())
 			{
 				// Late reverb is inside an active room. Update the room such that the reverb aux bus is correctly updated.
 				RoomCmpt->UpdateSpatialAudioRoom();
@@ -668,6 +713,10 @@ void UAkLateReverbComponent::PostEditChangeProperty(FPropertyChangedEvent& Prope
 				RoomCmpt->UpdateSpatialAudioRoom();
 			}
 		}
+		else if (CreationMethod == EComponentCreationMethod::Instance && bEnable)
+		{
+			InitTextVisualizers();
+		}
 	}
 	if (MemberPropertyName == GET_MEMBER_NAME_CHECKED(UAkLateReverbComponent, SendLevel))
 	{
@@ -679,12 +728,31 @@ void UAkLateReverbComponent::PostEditChangeProperty(FPropertyChangedEvent& Prope
 			{
 				RoomCmpt = AkComponentHelpers::GetChildComponentOfType<UAkRoomComponent>(*Parent);
 			}
-			if (RoomCmpt && RoomCmpt->RoomIsActive())
+			if (!RoomCmpt || !RoomCmpt->RoomIsActive())
+			{
+				// No room, or inactive room. Update the late reverb in the oct tree.
+				FAkAudioDevice* AkAudioDevice = FAkAudioDevice::Get();
+				if (AkAudioDevice && bEnable && IsIndexed)
+				{
+					AkAudioDevice->ReindexLateReverb(this);
+				}
+			}
+			else if (RoomCmpt && RoomCmpt->RoomIsActive())
 			{
 				// Late reverb is inside an active room. Update the room such that the reverb send level is correctly updated.
 				RoomCmpt->UpdateSpatialAudioRoom();
 			}
 		}
+	}
+}
+
+void UAkLateReverbComponent::OnAttachmentChanged()
+{
+	Super::OnAttachmentChanged();
+	if (CreationMethod == EComponentCreationMethod::Instance)
+	{
+		InitializeParent();
+		ParentChanged();
 	}
 }
 

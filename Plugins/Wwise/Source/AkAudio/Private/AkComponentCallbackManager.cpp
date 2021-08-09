@@ -107,6 +107,12 @@ void FAkBlueprintDelegateEventCallbackPackage::CancelCallback()
 
 void FAkLatentActionEventCallbackPackage::HandleAction(AkCallbackType in_eType, AkCallbackInfo* in_pCallbackInfo)
 {
+	// Don't access EndOfEventLatentAction if it's been deleted already
+	if (!LatentActionValidityToken->bValid)
+	{
+		return;
+	}
+
 	if (EndOfEventLatentAction)
 	{
 		EndOfEventLatentAction->EventFinished = true;

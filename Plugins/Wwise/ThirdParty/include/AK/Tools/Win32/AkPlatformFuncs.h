@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -611,8 +611,8 @@ namespace AKPLATFORM
 	/// - The AkOSChar string is used within this scope only -- for example, do NOT
 	///   return that string from a function (for cases where it is allocated on the stack)
 	#define CONVERT_OSCHAR_TO_CHAR( _osstring_, _astring_ ) \
-			_astring_ = (char*)AkAlloca( 1 + wcslen( _osstring_ )); \
-			AKPLATFORM::AkWideCharToChar( _osstring_, AkUInt32(1 + wcslen( _osstring_ )), _astring_ );
+			_astring_ = (char*)AkAlloca( 1 + AKPLATFORM::AkWideCharToChar( _osstring_, 0, NULL )); \
+			AKPLATFORM::AkWideCharToChar( _osstring_, AkUInt32(1 + AKPLATFORM::AkWideCharToChar( _osstring_, 0, NULL )), _astring_ );
 
 	/// Get the length, in characters, of a NULL-terminated AkUtf16 string
 	/// \return The length, in characters, of the specified string (excluding terminating NULL)

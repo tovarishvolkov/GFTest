@@ -40,11 +40,16 @@ public:
 
 	void Parse();
 
-	FString const& CacheDirectory() const { return cacheDirectory; }
+	void ParseCacheDirectory(const FString ProjectFileString);
 
-	TArray<FWwisePlatformInfo> const& SupportedPlatforms() const { return supportedPlatforms; }
-	TArray<FWwiseLanguageInfo> const& SupportedLanguages() const { return supportedLanguages; }
-	FString DefaultLanguage() const { return defaultLanguage; }
+	static void SanitizeProjectFileString(FString& InOutProjectFileString);
+
+	FString const& GetCacheDirectory() const { return CacheDirectory; }
+
+	const TArray<FWwisePlatformInfo>& GetSupportedPlatforms() const { return SupportedPlatforms; }
+	const TArray<FWwiseLanguageInfo>& GetSupportedLanguages() const { return SupportedLanguages; }
+	const FString& GetDefaultLanguage() { return DefaultLanguage; }
+
 
 	bool ProcessAttribute(const TCHAR* AttributeName, const TCHAR* AttributeValue) override;
 	bool ProcessClose(const TCHAR* Element) override;
@@ -56,18 +61,16 @@ private:
 	FString GetProjectPath() const;
 
 private:
-	TArray<FWwiseLanguageInfo> supportedLanguages;
-	TArray<FWwisePlatformInfo> supportedPlatforms;
-	FString defaultLanguage;
-	FString cacheDirectory;
+	TArray<FWwiseLanguageInfo> SupportedLanguages;
+	TArray<FWwisePlatformInfo> SupportedPlatforms;
+	FString DefaultLanguage;
+	FString CacheDirectory;
 
-	bool insidePlatformElement = false;
-	bool insideLanguageElement = false;
-	bool insideMiscSettingEntryElement = false;
-	bool insideCacheSettings = false;
-	bool insidePropertyElement = false;
-	bool insideDefaultLanguage = false;
+	bool bInsidePlatformElement = false;
+	bool bInsideLanguageElement = false;
+	bool bInsidePropertyElement = false;
+	bool bInsideDefaultLanguage = false;
 
-	FWwiseLanguageInfo currentLanguageInfo;
-	FWwisePlatformInfo currentPlatformInfo;
+	FWwiseLanguageInfo CurrentLanguageInfo;
+	FWwisePlatformInfo CurrentPlatformInfo;
 };

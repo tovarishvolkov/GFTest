@@ -25,7 +25,7 @@
 	<StreamedFiles/>
 	<MediaFilesNotInAnyBank/>
 	<SoundBanks>
-		<SoundBank Id="412724365" Language="SFX" Hash="746953384">
+		<SoundBank Id="412724365" Language="SFX" Hash="1872671220">
 			<ObjectPath>\SoundBanks\Default Work Unit\BGM</ObjectPath>
 			<ShortName>BGM</ShortName>
 			<Path>BGM.bnk</Path>
@@ -69,7 +69,7 @@
 				<Source Id="978954801" Name="Extern_3rd_number" ObjectPath="\Actor-Mixer Hierarchy\External Sources\Three Numbers in a Row\3rd Number\Extern_3rd_number"/>
 			</ExternalSources>
 		</SoundBank>
-		<SoundBank Id="983016381" Language="SFX" Hash="2443300474">
+		<SoundBank Id="983016381" Language="SFX" Hash="4167692301">
 			<ObjectPath>\SoundBanks\Default Work Unit\Car</ObjectPath>
 			<ShortName>Car</ShortName>
 			<Path>Car.bnk</Path>
@@ -96,7 +96,7 @@
 				<GameParameter Id="796049864" Name="RPM" ObjectPath="\Game Parameters\Default Work Unit\RPM"/>
 			</GameParameters>
 		</SoundBank>
-		<SoundBank Id="1028808198" Language="English(US)" Hash="4069970928">
+		<SoundBank Id="1028808198" Language="English(US)" Hash="1680533965">
 			<ObjectPath>\SoundBanks\Default Work Unit\DynamicDialogue</ObjectPath>
 			<ShortName>DynamicDialogue</ShortName>
 			<Path>English(US)\DynamicDialogue.bnk</Path>
@@ -389,53 +389,53 @@
 				</File>
 			</IncludedMemoryFiles>
 			<StateGroups>
-				<StateGroup Id="6899006" Name="Objective" ObjectPath="\States\Dialogue\Objective">
+				<StateGroup Id="6899006" Name="Objective" ObjectPath="\States\Dialogue\Objective" GUID="{D9391B7B-44F2-49E3-8756-9A592468BDAA}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Objective\None"/>
-						<State Id="141419130" Name="NeutralizeHostile" ObjectPath="\States\Dialogue\Objective\NeutralizeHostile"/>
-						<State Id="3841112373" Name="RescueHostage" ObjectPath="\States\Dialogue\Objective\RescueHostage"/>
-						<State Id="3261872615" Name="DefuseBomb" ObjectPath="\States\Dialogue\Objective\DefuseBomb"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Objective\None" GUID="{04364FDE-6872-433E-852E-4223D75FB54C}"/>
+						<State Id="141419130" Name="NeutralizeHostile" ObjectPath="\States\Dialogue\Objective\NeutralizeHostile" GUID="{CE911D1E-00AF-4330-B216-2B933BB1ADA0}"/>
+						<State Id="3841112373" Name="RescueHostage" ObjectPath="\States\Dialogue\Objective\RescueHostage" GUID="{A5CF8DAF-3C4B-4838-80C2-DF81E5303024}"/>
+						<State Id="3261872615" Name="DefuseBomb" ObjectPath="\States\Dialogue\Objective\DefuseBomb" GUID="{8F3721D6-5D95-4EB9-BB3A-E12839A98B4B}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="1176052424" Name="Location" ObjectPath="\States\Dialogue\Location">
+				<StateGroup Id="1176052424" Name="Location" ObjectPath="\States\Dialogue\Location" GUID="{587FB8C3-591C-469F-87BF-7334E1821AB4}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Location\None"/>
-						<State Id="4142189312" Name="Street" ObjectPath="\States\Dialogue\Location\Street"/>
-						<State Id="2192450996" Name="Hangar" ObjectPath="\States\Dialogue\Location\Hangar"/>
-						<State Id="672587556" Name="Alley" ObjectPath="\States\Dialogue\Location\Alley"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Location\None" GUID="{773B6879-8D78-40FF-BAA1-F94F245EEAA5}"/>
+						<State Id="4142189312" Name="Street" ObjectPath="\States\Dialogue\Location\Street" GUID="{B61C7481-E82D-4B9E-80DF-EAFF6C531B01}"/>
+						<State Id="2192450996" Name="Hangar" ObjectPath="\States\Dialogue\Location\Hangar" GUID="{4499006D-4DCC-47C2-A71E-F7841B2D8B77}"/>
+						<State Id="672587556" Name="Alley" ObjectPath="\States\Dialogue\Location\Alley" GUID="{A1915FDE-C459-4E8E-97EA-7EBDAE394DD9}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="1304109583" Name="Unit" ObjectPath="\States\Dialogue\Unit">
+				<StateGroup Id="1304109583" Name="Unit" ObjectPath="\States\Dialogue\Unit" GUID="{AB619779-DBCA-455C-B1FA-3DA0D1BFEAF1}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Unit\None"/>
-						<State Id="3004848132" Name="Unit_B" ObjectPath="\States\Dialogue\Unit\Unit_B"/>
-						<State Id="3004848135" Name="Unit_A" ObjectPath="\States\Dialogue\Unit\Unit_A"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Unit\None" GUID="{891960EA-D6B3-4A08-898E-881EFDA7D7D9}"/>
+						<State Id="3004848132" Name="Unit_B" ObjectPath="\States\Dialogue\Unit\Unit_B" GUID="{AE09F08E-89EA-4E99-990D-60216073FC4D}"/>
+						<State Id="3004848135" Name="Unit_A" ObjectPath="\States\Dialogue\Unit\Unit_A" GUID="{611F2138-AEA5-41CC-8848-E4A9A0DD8D5F}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="3299963692" Name="ObjectiveStatus" ObjectPath="\States\Dialogue\ObjectiveStatus">
+				<StateGroup Id="3299963692" Name="ObjectiveStatus" ObjectPath="\States\Dialogue\ObjectiveStatus" GUID="{5034CAD2-36B1-41F8-8249-CA8FBF8AD4AE}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\ObjectiveStatus\None"/>
-						<State Id="1655200910" Name="Failed" ObjectPath="\States\Dialogue\ObjectiveStatus\Failed"/>
-						<State Id="94054856" Name="Completed" ObjectPath="\States\Dialogue\ObjectiveStatus\Completed"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\ObjectiveStatus\None" GUID="{75CE2BD5-3F8B-4297-BECC-5A0CAE0F9037}"/>
+						<State Id="1655200910" Name="Failed" ObjectPath="\States\Dialogue\ObjectiveStatus\Failed" GUID="{FCB7B551-8690-4861-B30C-8295EB311CB7}"/>
+						<State Id="94054856" Name="Completed" ObjectPath="\States\Dialogue\ObjectiveStatus\Completed" GUID="{79AFFBD8-8AD6-4ED3-B206-8178B812FE39}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="3712907969" Name="Hostile" ObjectPath="\States\Dialogue\Hostile">
+				<StateGroup Id="3712907969" Name="Hostile" ObjectPath="\States\Dialogue\Hostile" GUID="{2A19ADA9-B6C0-4C4F-AD5A-E811629C83B5}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Hostile\None"/>
-						<State Id="685704824" Name="Gang" ObjectPath="\States\Dialogue\Hostile\Gang"/>
-						<State Id="714721627" Name="Bum" ObjectPath="\States\Dialogue\Hostile\Bum"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Hostile\None" GUID="{AD836B14-B84E-43A1-918A-B6500F67C0D9}"/>
+						<State Id="685704824" Name="Gang" ObjectPath="\States\Dialogue\Hostile\Gang" GUID="{264FF8D0-E732-4C6B-8423-AEEC7C45FC8A}"/>
+						<State Id="714721627" Name="Bum" ObjectPath="\States\Dialogue\Hostile\Bum" GUID="{397F1531-B376-416C-B488-DBBF8E1B3E8D}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="4110439188" Name="WalkieTalkie" ObjectPath="\States\Dialogue\WalkieTalkie">
+				<StateGroup Id="4110439188" Name="WalkieTalkie" ObjectPath="\States\Dialogue\WalkieTalkie" GUID="{37B800E1-46C8-4DB3-AB5F-94C347246482}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\WalkieTalkie\None"/>
-						<State Id="1856010785" Name="Comm_In" ObjectPath="\States\Dialogue\WalkieTalkie\Comm_In"/>
-						<State Id="1553720736" Name="Comm_Out" ObjectPath="\States\Dialogue\WalkieTalkie\Comm_Out"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\WalkieTalkie\None" GUID="{2915E0CB-12BE-42ED-A1E9-871FF289AF14}"/>
+						<State Id="1856010785" Name="Comm_In" ObjectPath="\States\Dialogue\WalkieTalkie\Comm_In" GUID="{1923BF16-E5D2-4E58-979A-D4DEFCD1018F}"/>
+						<State Id="1553720736" Name="Comm_Out" ObjectPath="\States\Dialogue\WalkieTalkie\Comm_Out" GUID="{CF6FCE92-B34B-4FA1-AC28-596EF4CA0BFB}"/>
 					</States>
 				</StateGroup>
 			</StateGroups>
 		</SoundBank>
-		<SoundBank Id="1028808198" Language="French(Canada)" Hash="3123440741">
+		<SoundBank Id="1028808198" Language="French(Canada)" Hash="4086564240">
 			<ObjectPath>\SoundBanks\Default Work Unit\DynamicDialogue</ObjectPath>
 			<ShortName>DynamicDialogue</ShortName>
 			<Path>French(Canada)\DynamicDialogue.bnk</Path>
@@ -728,53 +728,53 @@
 				</File>
 			</IncludedMemoryFiles>
 			<StateGroups>
-				<StateGroup Id="6899006" Name="Objective" ObjectPath="\States\Dialogue\Objective">
+				<StateGroup Id="6899006" Name="Objective" ObjectPath="\States\Dialogue\Objective" GUID="{D9391B7B-44F2-49E3-8756-9A592468BDAA}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Objective\None"/>
-						<State Id="141419130" Name="NeutralizeHostile" ObjectPath="\States\Dialogue\Objective\NeutralizeHostile"/>
-						<State Id="3841112373" Name="RescueHostage" ObjectPath="\States\Dialogue\Objective\RescueHostage"/>
-						<State Id="3261872615" Name="DefuseBomb" ObjectPath="\States\Dialogue\Objective\DefuseBomb"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Objective\None" GUID="{04364FDE-6872-433E-852E-4223D75FB54C}"/>
+						<State Id="141419130" Name="NeutralizeHostile" ObjectPath="\States\Dialogue\Objective\NeutralizeHostile" GUID="{CE911D1E-00AF-4330-B216-2B933BB1ADA0}"/>
+						<State Id="3841112373" Name="RescueHostage" ObjectPath="\States\Dialogue\Objective\RescueHostage" GUID="{A5CF8DAF-3C4B-4838-80C2-DF81E5303024}"/>
+						<State Id="3261872615" Name="DefuseBomb" ObjectPath="\States\Dialogue\Objective\DefuseBomb" GUID="{8F3721D6-5D95-4EB9-BB3A-E12839A98B4B}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="1176052424" Name="Location" ObjectPath="\States\Dialogue\Location">
+				<StateGroup Id="1176052424" Name="Location" ObjectPath="\States\Dialogue\Location" GUID="{587FB8C3-591C-469F-87BF-7334E1821AB4}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Location\None"/>
-						<State Id="4142189312" Name="Street" ObjectPath="\States\Dialogue\Location\Street"/>
-						<State Id="2192450996" Name="Hangar" ObjectPath="\States\Dialogue\Location\Hangar"/>
-						<State Id="672587556" Name="Alley" ObjectPath="\States\Dialogue\Location\Alley"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Location\None" GUID="{773B6879-8D78-40FF-BAA1-F94F245EEAA5}"/>
+						<State Id="4142189312" Name="Street" ObjectPath="\States\Dialogue\Location\Street" GUID="{B61C7481-E82D-4B9E-80DF-EAFF6C531B01}"/>
+						<State Id="2192450996" Name="Hangar" ObjectPath="\States\Dialogue\Location\Hangar" GUID="{4499006D-4DCC-47C2-A71E-F7841B2D8B77}"/>
+						<State Id="672587556" Name="Alley" ObjectPath="\States\Dialogue\Location\Alley" GUID="{A1915FDE-C459-4E8E-97EA-7EBDAE394DD9}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="1304109583" Name="Unit" ObjectPath="\States\Dialogue\Unit">
+				<StateGroup Id="1304109583" Name="Unit" ObjectPath="\States\Dialogue\Unit" GUID="{AB619779-DBCA-455C-B1FA-3DA0D1BFEAF1}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Unit\None"/>
-						<State Id="3004848132" Name="Unit_B" ObjectPath="\States\Dialogue\Unit\Unit_B"/>
-						<State Id="3004848135" Name="Unit_A" ObjectPath="\States\Dialogue\Unit\Unit_A"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Unit\None" GUID="{891960EA-D6B3-4A08-898E-881EFDA7D7D9}"/>
+						<State Id="3004848132" Name="Unit_B" ObjectPath="\States\Dialogue\Unit\Unit_B" GUID="{AE09F08E-89EA-4E99-990D-60216073FC4D}"/>
+						<State Id="3004848135" Name="Unit_A" ObjectPath="\States\Dialogue\Unit\Unit_A" GUID="{611F2138-AEA5-41CC-8848-E4A9A0DD8D5F}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="3299963692" Name="ObjectiveStatus" ObjectPath="\States\Dialogue\ObjectiveStatus">
+				<StateGroup Id="3299963692" Name="ObjectiveStatus" ObjectPath="\States\Dialogue\ObjectiveStatus" GUID="{5034CAD2-36B1-41F8-8249-CA8FBF8AD4AE}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\ObjectiveStatus\None"/>
-						<State Id="1655200910" Name="Failed" ObjectPath="\States\Dialogue\ObjectiveStatus\Failed"/>
-						<State Id="94054856" Name="Completed" ObjectPath="\States\Dialogue\ObjectiveStatus\Completed"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\ObjectiveStatus\None" GUID="{75CE2BD5-3F8B-4297-BECC-5A0CAE0F9037}"/>
+						<State Id="1655200910" Name="Failed" ObjectPath="\States\Dialogue\ObjectiveStatus\Failed" GUID="{FCB7B551-8690-4861-B30C-8295EB311CB7}"/>
+						<State Id="94054856" Name="Completed" ObjectPath="\States\Dialogue\ObjectiveStatus\Completed" GUID="{79AFFBD8-8AD6-4ED3-B206-8178B812FE39}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="3712907969" Name="Hostile" ObjectPath="\States\Dialogue\Hostile">
+				<StateGroup Id="3712907969" Name="Hostile" ObjectPath="\States\Dialogue\Hostile" GUID="{2A19ADA9-B6C0-4C4F-AD5A-E811629C83B5}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Hostile\None"/>
-						<State Id="685704824" Name="Gang" ObjectPath="\States\Dialogue\Hostile\Gang"/>
-						<State Id="714721627" Name="Bum" ObjectPath="\States\Dialogue\Hostile\Bum"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\Hostile\None" GUID="{AD836B14-B84E-43A1-918A-B6500F67C0D9}"/>
+						<State Id="685704824" Name="Gang" ObjectPath="\States\Dialogue\Hostile\Gang" GUID="{264FF8D0-E732-4C6B-8423-AEEC7C45FC8A}"/>
+						<State Id="714721627" Name="Bum" ObjectPath="\States\Dialogue\Hostile\Bum" GUID="{397F1531-B376-416C-B488-DBBF8E1B3E8D}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="4110439188" Name="WalkieTalkie" ObjectPath="\States\Dialogue\WalkieTalkie">
+				<StateGroup Id="4110439188" Name="WalkieTalkie" ObjectPath="\States\Dialogue\WalkieTalkie" GUID="{37B800E1-46C8-4DB3-AB5F-94C347246482}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\WalkieTalkie\None"/>
-						<State Id="1856010785" Name="Comm_In" ObjectPath="\States\Dialogue\WalkieTalkie\Comm_In"/>
-						<State Id="1553720736" Name="Comm_Out" ObjectPath="\States\Dialogue\WalkieTalkie\Comm_Out"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Dialogue\WalkieTalkie\None" GUID="{2915E0CB-12BE-42ED-A1E9-871FF289AF14}"/>
+						<State Id="1856010785" Name="Comm_In" ObjectPath="\States\Dialogue\WalkieTalkie\Comm_In" GUID="{1923BF16-E5D2-4E58-979A-D4DEFCD1018F}"/>
+						<State Id="1553720736" Name="Comm_Out" ObjectPath="\States\Dialogue\WalkieTalkie\Comm_Out" GUID="{CF6FCE92-B34B-4FA1-AC28-596EF4CA0BFB}"/>
 					</States>
 				</StateGroup>
 			</StateGroups>
 		</SoundBank>
-		<SoundBank Id="1265494800" Language="SFX" Hash="3689431088">
+		<SoundBank Id="1265494800" Language="SFX" Hash="804569989">
 			<ObjectPath>\SoundBanks\Default Work Unit\ThreeD_Audio_Demo</ObjectPath>
 			<ShortName>ThreeD_Audio_Demo</ShortName>
 			<Path>ThreeD_Audio_Demo.bnk</Path>
@@ -845,11 +845,11 @@
 				<GameParameter Id="2451442924" Name="Enable_Effect" ObjectPath="\Game Parameters\Default Work Unit\Enable_Effect"/>
 			</GameParameters>
 			<StateGroups>
-				<StateGroup Id="151362964" Name="PlayerHealth" ObjectPath="\States\Default Work Unit\PlayerHealth">
+				<StateGroup Id="151362964" Name="PlayerHealth" ObjectPath="\States\Default Work Unit\PlayerHealth" GUID="{04DA61D8-C090-4BA1-A0A3-CCAD0587AE0E}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Default Work Unit\PlayerHealth\None"/>
-						<State Id="1160234136" Name="Normal" ObjectPath="\States\Default Work Unit\PlayerHealth\Normal"/>
-						<State Id="868398962" Name="Blasted" ObjectPath="\States\Default Work Unit\PlayerHealth\Blasted"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Default Work Unit\PlayerHealth\None" GUID="{77978341-EB33-48DF-BC59-343B5460E692}"/>
+						<State Id="1160234136" Name="Normal" ObjectPath="\States\Default Work Unit\PlayerHealth\Normal" GUID="{37201C8B-7D86-4077-ABFE-12AAD2FBF798}"/>
+						<State Id="868398962" Name="Blasted" ObjectPath="\States\Default Work Unit\PlayerHealth\Blasted" GUID="{AD983F7E-AFAE-4BD6-A9D8-ADB456C0A6BA}"/>
 					</States>
 				</StateGroup>
 			</StateGroups>
@@ -862,7 +862,7 @@
 				<Event Id="330151568" Name="Play_Hello_RSX" ObjectPath="\Events\Default Work Unit\Play_Hello_RSX"/>
 			</IncludedEvents>
 		</SoundBank>
-		<SoundBank Id="2058049674" Language="SFX" Hash="3404075094">
+		<SoundBank Id="2058049674" Language="SFX" Hash="114479786">
 			<ObjectPath>\SoundBanks\Surface Related Banks\Wood</ObjectPath>
 			<ShortName>Wood</ShortName>
 			<Path>Wood.bnk</Path>
@@ -896,29 +896,29 @@
 				<GameParameter Id="3182548923" Name="Footstep_Speed" ObjectPath="\Game Parameters\Footsteps With Multiple Variables\Footstep_Speed"/>
 			</GameParameters>
 			<SwitchGroups>
-				<SwitchGroup Id="246300162" Name="Footstep_Weight" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight">
+				<SwitchGroup Id="246300162" Name="Footstep_Weight" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight" GUID="{648DF293-402C-4794-BB75-E8DAA57AB5CB}">
 					<Switches>
-						<Switch Id="2732489590" Name="Heavy" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Heavy"/>
-						<Switch Id="1935470627" Name="Light" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Light"/>
+						<Switch Id="2732489590" Name="Heavy" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Heavy" GUID="{3C5F6B43-FB4B-4BFC-B08E-A8DA90D676D4}"/>
+						<Switch Id="1935470627" Name="Light" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Light" GUID="{B0F764A0-8171-4899-A530-67C404CEF373}"/>
 					</Switches>
 				</SwitchGroup>
-				<SwitchGroup Id="1834394558" Name="Surface" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface">
+				<SwitchGroup Id="1834394558" Name="Surface" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface" GUID="{EAB62AA7-5069-491B-BC8F-495B01CA7501}">
 					<Switches>
-						<Switch Id="2058049674" Name="Wood" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Wood"/>
-						<Switch Id="2473969246" Name="Metal" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Metal"/>
-						<Switch Id="2185786256" Name="Gravel" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Gravel"/>
-						<Switch Id="2195636714" Name="Dirt" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Dirt"/>
+						<Switch Id="2058049674" Name="Wood" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Wood" GUID="{D39B1CCE-63E5-474F-84C9-D94E3131B78A}"/>
+						<Switch Id="2473969246" Name="Metal" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Metal" GUID="{6A7D1036-445A-44D8-8D83-127D4907232D}"/>
+						<Switch Id="2185786256" Name="Gravel" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Gravel" GUID="{D164CA81-CBB5-45A3-91D2-C1D5C81C7C4A}"/>
+						<Switch Id="2195636714" Name="Dirt" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Dirt" GUID="{44339A11-DC69-4A1B-9771-66244391C6ED}"/>
 					</Switches>
 				</SwitchGroup>
-				<SwitchGroup Id="4202554577" Name="Footstep_Gait" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait">
+				<SwitchGroup Id="4202554577" Name="Footstep_Gait" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait" GUID="{BB88E245-BA7F-4FCB-9108-08751641F08B}">
 					<Switches>
-						<Switch Id="2108779966" Name="Walk" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Walk"/>
-						<Switch Id="712161704" Name="Run" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Run"/>
+						<Switch Id="2108779966" Name="Walk" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Walk" GUID="{BC1ACFB8-2BAC-4A89-8AB2-9B2335C7F29A}"/>
+						<Switch Id="712161704" Name="Run" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Run" GUID="{A991037B-FAD9-4BC2-A2F8-14E509D512AC}"/>
 					</Switches>
 				</SwitchGroup>
 			</SwitchGroups>
 		</SoundBank>
-		<SoundBank Id="2185786256" Language="SFX" Hash="4030969968">
+		<SoundBank Id="2185786256" Language="SFX" Hash="368663306">
 			<ObjectPath>\SoundBanks\Surface Related Banks\Gravel</ObjectPath>
 			<ShortName>Gravel</ShortName>
 			<Path>Gravel.bnk</Path>
@@ -944,29 +944,29 @@
 				<GameParameter Id="3182548923" Name="Footstep_Speed" ObjectPath="\Game Parameters\Footsteps With Multiple Variables\Footstep_Speed"/>
 			</GameParameters>
 			<SwitchGroups>
-				<SwitchGroup Id="246300162" Name="Footstep_Weight" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight">
+				<SwitchGroup Id="246300162" Name="Footstep_Weight" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight" GUID="{648DF293-402C-4794-BB75-E8DAA57AB5CB}">
 					<Switches>
-						<Switch Id="2732489590" Name="Heavy" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Heavy"/>
-						<Switch Id="1935470627" Name="Light" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Light"/>
+						<Switch Id="2732489590" Name="Heavy" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Heavy" GUID="{3C5F6B43-FB4B-4BFC-B08E-A8DA90D676D4}"/>
+						<Switch Id="1935470627" Name="Light" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Light" GUID="{B0F764A0-8171-4899-A530-67C404CEF373}"/>
 					</Switches>
 				</SwitchGroup>
-				<SwitchGroup Id="1834394558" Name="Surface" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface">
+				<SwitchGroup Id="1834394558" Name="Surface" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface" GUID="{EAB62AA7-5069-491B-BC8F-495B01CA7501}">
 					<Switches>
-						<Switch Id="2058049674" Name="Wood" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Wood"/>
-						<Switch Id="2473969246" Name="Metal" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Metal"/>
-						<Switch Id="2185786256" Name="Gravel" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Gravel"/>
-						<Switch Id="2195636714" Name="Dirt" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Dirt"/>
+						<Switch Id="2058049674" Name="Wood" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Wood" GUID="{D39B1CCE-63E5-474F-84C9-D94E3131B78A}"/>
+						<Switch Id="2473969246" Name="Metal" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Metal" GUID="{6A7D1036-445A-44D8-8D83-127D4907232D}"/>
+						<Switch Id="2185786256" Name="Gravel" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Gravel" GUID="{D164CA81-CBB5-45A3-91D2-C1D5C81C7C4A}"/>
+						<Switch Id="2195636714" Name="Dirt" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Dirt" GUID="{44339A11-DC69-4A1B-9771-66244391C6ED}"/>
 					</Switches>
 				</SwitchGroup>
-				<SwitchGroup Id="4202554577" Name="Footstep_Gait" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait">
+				<SwitchGroup Id="4202554577" Name="Footstep_Gait" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait" GUID="{BB88E245-BA7F-4FCB-9108-08751641F08B}">
 					<Switches>
-						<Switch Id="2108779966" Name="Walk" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Walk"/>
-						<Switch Id="712161704" Name="Run" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Run"/>
+						<Switch Id="2108779966" Name="Walk" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Walk" GUID="{BC1ACFB8-2BAC-4A89-8AB2-9B2335C7F29A}"/>
+						<Switch Id="712161704" Name="Run" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Run" GUID="{A991037B-FAD9-4BC2-A2F8-14E509D512AC}"/>
 					</Switches>
 				</SwitchGroup>
 			</SwitchGroups>
 		</SoundBank>
-		<SoundBank Id="2195636714" Language="SFX" Hash="2359485278">
+		<SoundBank Id="2195636714" Language="SFX" Hash="4248837756">
 			<ObjectPath>\SoundBanks\Surface Related Banks\Dirt</ObjectPath>
 			<ShortName>Dirt</ShortName>
 			<Path>Dirt.bnk</Path>
@@ -996,29 +996,29 @@
 				<GameParameter Id="3182548923" Name="Footstep_Speed" ObjectPath="\Game Parameters\Footsteps With Multiple Variables\Footstep_Speed"/>
 			</GameParameters>
 			<SwitchGroups>
-				<SwitchGroup Id="246300162" Name="Footstep_Weight" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight">
+				<SwitchGroup Id="246300162" Name="Footstep_Weight" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight" GUID="{648DF293-402C-4794-BB75-E8DAA57AB5CB}">
 					<Switches>
-						<Switch Id="2732489590" Name="Heavy" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Heavy"/>
-						<Switch Id="1935470627" Name="Light" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Light"/>
+						<Switch Id="2732489590" Name="Heavy" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Heavy" GUID="{3C5F6B43-FB4B-4BFC-B08E-A8DA90D676D4}"/>
+						<Switch Id="1935470627" Name="Light" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Light" GUID="{B0F764A0-8171-4899-A530-67C404CEF373}"/>
 					</Switches>
 				</SwitchGroup>
-				<SwitchGroup Id="1834394558" Name="Surface" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface">
+				<SwitchGroup Id="1834394558" Name="Surface" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface" GUID="{EAB62AA7-5069-491B-BC8F-495B01CA7501}">
 					<Switches>
-						<Switch Id="2058049674" Name="Wood" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Wood"/>
-						<Switch Id="2473969246" Name="Metal" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Metal"/>
-						<Switch Id="2185786256" Name="Gravel" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Gravel"/>
-						<Switch Id="2195636714" Name="Dirt" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Dirt"/>
+						<Switch Id="2058049674" Name="Wood" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Wood" GUID="{D39B1CCE-63E5-474F-84C9-D94E3131B78A}"/>
+						<Switch Id="2473969246" Name="Metal" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Metal" GUID="{6A7D1036-445A-44D8-8D83-127D4907232D}"/>
+						<Switch Id="2185786256" Name="Gravel" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Gravel" GUID="{D164CA81-CBB5-45A3-91D2-C1D5C81C7C4A}"/>
+						<Switch Id="2195636714" Name="Dirt" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Dirt" GUID="{44339A11-DC69-4A1B-9771-66244391C6ED}"/>
 					</Switches>
 				</SwitchGroup>
-				<SwitchGroup Id="4202554577" Name="Footstep_Gait" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait">
+				<SwitchGroup Id="4202554577" Name="Footstep_Gait" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait" GUID="{BB88E245-BA7F-4FCB-9108-08751641F08B}">
 					<Switches>
-						<Switch Id="2108779966" Name="Walk" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Walk"/>
-						<Switch Id="712161704" Name="Run" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Run"/>
+						<Switch Id="2108779966" Name="Walk" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Walk" GUID="{BC1ACFB8-2BAC-4A89-8AB2-9B2335C7F29A}"/>
+						<Switch Id="712161704" Name="Run" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Run" GUID="{A991037B-FAD9-4BC2-A2F8-14E509D512AC}"/>
 					</Switches>
 				</SwitchGroup>
 			</SwitchGroups>
 		</SoundBank>
-		<SoundBank Id="2279279248" Language="SFX" Hash="1920818032">
+		<SoundBank Id="2279279248" Language="SFX" Hash="2328499282">
 			<ObjectPath>\SoundBanks\Default Work Unit\InteractiveMusic</ObjectPath>
 			<ShortName>InteractiveMusic</ShortName>
 			<Path>InteractiveMusic.bnk</Path>
@@ -1253,46 +1253,46 @@
 				</Event>
 			</IncludedEvents>
 			<StateGroups>
-				<StateGroup Id="514064485" Name="Fight" ObjectPath="\States\Default Work Unit\Music\Fight">
+				<StateGroup Id="514064485" Name="Fight" ObjectPath="\States\Default Work Unit\Music\Fight" GUID="{FE408534-BD64-4F58-BEEA-DE18BEA509BB}">
 					<States/>
 				</StateGroup>
-				<StateGroup Id="886139701" Name="Fight_Damaged" ObjectPath="\States\Default Work Unit\Music\Fight_Damaged">
+				<StateGroup Id="886139701" Name="Fight_Damaged" ObjectPath="\States\Default Work Unit\Music\Fight_Damaged" GUID="{854E9525-151B-4E72-9BE7-7A70D391CBA8}">
 					<States/>
 				</StateGroup>
-				<StateGroup Id="1323211483" Name="Winning_TheFight" ObjectPath="\States\Default Work Unit\Music\Winning_TheFight">
+				<StateGroup Id="1323211483" Name="Winning_TheFight" ObjectPath="\States\Default Work Unit\Music\Winning_TheFight" GUID="{8F368476-25B8-460B-9760-F53397657B0D}">
 					<States/>
 				</StateGroup>
-				<StateGroup Id="1420167880" Name="Fight_LowHealth" ObjectPath="\States\Default Work Unit\Music\Fight_LowHealth">
+				<StateGroup Id="1420167880" Name="Fight_LowHealth" ObjectPath="\States\Default Work Unit\Music\Fight_LowHealth" GUID="{9E38F9B5-E631-4D13-A8B1-C3D45C405DE5}">
 					<States/>
 				</StateGroup>
-				<StateGroup Id="1823678183" Name="Exploring" ObjectPath="\States\Default Work Unit\Music\Exploring">
+				<StateGroup Id="1823678183" Name="Exploring" ObjectPath="\States\Default Work Unit\Music\Exploring" GUID="{6C0BB16B-B1C8-42CD-A760-50995219C615}">
 					<States/>
 				</StateGroup>
-				<StateGroup Id="1852808225" Name="Playing" ObjectPath="\States\Default Work Unit\Music\Playing">
+				<StateGroup Id="1852808225" Name="Playing" ObjectPath="\States\Default Work Unit\Music\Playing" GUID="{FB2C1D99-74D1-4E63-80A2-296AACFFBBC2}">
 					<States/>
 				</StateGroup>
-				<StateGroup Id="3991942870" Name="Music" ObjectPath="\States\Default Work Unit\Music">
+				<StateGroup Id="3991942870" Name="Music" ObjectPath="\States\Default Work Unit\Music" GUID="{382C9FD3-80EA-4989-8640-23D88CB9F8ED}">
 					<States>
-						<State Id="748895195" Name="None" ObjectPath="\States\Default Work Unit\Music\None"/>
-						<State Id="1823678183" Name="Exploring" ObjectPath="\States\Default Work Unit\Music\Exploring"/>
-						<State Id="1852808225" Name="Playing" ObjectPath="\States\Default Work Unit\Music\Playing"/>
-						<State Id="514064485" Name="Fight" ObjectPath="\States\Default Work Unit\Music\Fight"/>
-						<State Id="886139701" Name="Fight_Damaged" ObjectPath="\States\Default Work Unit\Music\Fight_Damaged"/>
-						<State Id="1420167880" Name="Fight_LowHealth" ObjectPath="\States\Default Work Unit\Music\Fight_LowHealth"/>
-						<State Id="4222988787" Name="Fight_Dying" ObjectPath="\States\Default Work Unit\Music\Fight_Dying"/>
-						<State Id="1323211483" Name="Winning_TheFight" ObjectPath="\States\Default Work Unit\Music\Winning_TheFight"/>
-						<State Id="4158285989" Name="GameOver" ObjectPath="\States\Default Work Unit\Music\GameOver"/>
+						<State Id="748895195" Name="None" ObjectPath="\States\Default Work Unit\Music\None" GUID="{242493C8-D1A5-4C38-9675-A788F8C2E1FA}"/>
+						<State Id="1823678183" Name="Exploring" ObjectPath="\States\Default Work Unit\Music\Exploring" GUID="{6C0BB16B-B1C8-42CD-A760-50995219C615}"/>
+						<State Id="1852808225" Name="Playing" ObjectPath="\States\Default Work Unit\Music\Playing" GUID="{FB2C1D99-74D1-4E63-80A2-296AACFFBBC2}"/>
+						<State Id="514064485" Name="Fight" ObjectPath="\States\Default Work Unit\Music\Fight" GUID="{FE408534-BD64-4F58-BEEA-DE18BEA509BB}"/>
+						<State Id="886139701" Name="Fight_Damaged" ObjectPath="\States\Default Work Unit\Music\Fight_Damaged" GUID="{854E9525-151B-4E72-9BE7-7A70D391CBA8}"/>
+						<State Id="1420167880" Name="Fight_LowHealth" ObjectPath="\States\Default Work Unit\Music\Fight_LowHealth" GUID="{9E38F9B5-E631-4D13-A8B1-C3D45C405DE5}"/>
+						<State Id="4222988787" Name="Fight_Dying" ObjectPath="\States\Default Work Unit\Music\Fight_Dying" GUID="{6DADFB0C-9D0E-4C01-B6A3-B888EB4E345C}"/>
+						<State Id="1323211483" Name="Winning_TheFight" ObjectPath="\States\Default Work Unit\Music\Winning_TheFight" GUID="{8F368476-25B8-460B-9760-F53397657B0D}"/>
+						<State Id="4158285989" Name="GameOver" ObjectPath="\States\Default Work Unit\Music\GameOver" GUID="{C0E5D5E8-C130-47CC-98E5-7C29A9638A35}"/>
 					</States>
 				</StateGroup>
-				<StateGroup Id="4158285989" Name="GameOver" ObjectPath="\States\Default Work Unit\Music\GameOver">
+				<StateGroup Id="4158285989" Name="GameOver" ObjectPath="\States\Default Work Unit\Music\GameOver" GUID="{C0E5D5E8-C130-47CC-98E5-7C29A9638A35}">
 					<States/>
 				</StateGroup>
-				<StateGroup Id="4222988787" Name="Fight_Dying" ObjectPath="\States\Default Work Unit\Music\Fight_Dying">
+				<StateGroup Id="4222988787" Name="Fight_Dying" ObjectPath="\States\Default Work Unit\Music\Fight_Dying" GUID="{6DADFB0C-9D0E-4C01-B6A3-B888EB4E345C}">
 					<States/>
 				</StateGroup>
 			</StateGroups>
 		</SoundBank>
-		<SoundBank Id="2309453583" Language="SFX" Hash="3946115755">
+		<SoundBank Id="2309453583" Language="SFX" Hash="2952513924">
 			<ObjectPath>\SoundBanks\Default Work Unit\MarkerTest</ObjectPath>
 			<ShortName>MarkerTest</ShortName>
 			<Path>MarkerTest.bnk</Path>
@@ -1307,7 +1307,7 @@
 				</Event>
 			</IncludedEvents>
 		</SoundBank>
-		<SoundBank Id="2473969246" Language="SFX" Hash="1290496155">
+		<SoundBank Id="2473969246" Language="SFX" Hash="2431115621">
 			<ObjectPath>\SoundBanks\Surface Related Banks\Metal</ObjectPath>
 			<ShortName>Metal</ShortName>
 			<Path>Metal.bnk</Path>
@@ -1361,24 +1361,24 @@
 				<GameParameter Id="3182548923" Name="Footstep_Speed" ObjectPath="\Game Parameters\Footsteps With Multiple Variables\Footstep_Speed"/>
 			</GameParameters>
 			<SwitchGroups>
-				<SwitchGroup Id="246300162" Name="Footstep_Weight" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight">
+				<SwitchGroup Id="246300162" Name="Footstep_Weight" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight" GUID="{648DF293-402C-4794-BB75-E8DAA57AB5CB}">
 					<Switches>
-						<Switch Id="2732489590" Name="Heavy" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Heavy"/>
-						<Switch Id="1935470627" Name="Light" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Light"/>
+						<Switch Id="2732489590" Name="Heavy" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Heavy" GUID="{3C5F6B43-FB4B-4BFC-B08E-A8DA90D676D4}"/>
+						<Switch Id="1935470627" Name="Light" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Weight\Light" GUID="{B0F764A0-8171-4899-A530-67C404CEF373}"/>
 					</Switches>
 				</SwitchGroup>
-				<SwitchGroup Id="1834394558" Name="Surface" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface">
+				<SwitchGroup Id="1834394558" Name="Surface" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface" GUID="{EAB62AA7-5069-491B-BC8F-495B01CA7501}">
 					<Switches>
-						<Switch Id="2058049674" Name="Wood" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Wood"/>
-						<Switch Id="2473969246" Name="Metal" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Metal"/>
-						<Switch Id="2185786256" Name="Gravel" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Gravel"/>
-						<Switch Id="2195636714" Name="Dirt" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Dirt"/>
+						<Switch Id="2058049674" Name="Wood" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Wood" GUID="{D39B1CCE-63E5-474F-84C9-D94E3131B78A}"/>
+						<Switch Id="2473969246" Name="Metal" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Metal" GUID="{6A7D1036-445A-44D8-8D83-127D4907232D}"/>
+						<Switch Id="2185786256" Name="Gravel" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Gravel" GUID="{D164CA81-CBB5-45A3-91D2-C1D5C81C7C4A}"/>
+						<Switch Id="2195636714" Name="Dirt" ObjectPath="\Switches\Footsteps With Multiple Variables\Surface\Dirt" GUID="{44339A11-DC69-4A1B-9771-66244391C6ED}"/>
 					</Switches>
 				</SwitchGroup>
-				<SwitchGroup Id="4202554577" Name="Footstep_Gait" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait">
+				<SwitchGroup Id="4202554577" Name="Footstep_Gait" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait" GUID="{BB88E245-BA7F-4FCB-9108-08751641F08B}">
 					<Switches>
-						<Switch Id="2108779966" Name="Walk" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Walk"/>
-						<Switch Id="712161704" Name="Run" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Run"/>
+						<Switch Id="2108779966" Name="Walk" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Walk" GUID="{BC1ACFB8-2BAC-4A89-8AB2-9B2335C7F29A}"/>
+						<Switch Id="712161704" Name="Run" ObjectPath="\Switches\Footsteps With Multiple Variables\Footstep_Gait\Run" GUID="{A991037B-FAD9-4BC2-A2F8-14E509D512AC}"/>
 					</Switches>
 				</SwitchGroup>
 			</SwitchGroups>
@@ -1402,7 +1402,7 @@
 				<Event Id="2710399919" Name="Metronome_PostMIDI" ObjectPath="\Events\MIDI\Metronome_PostMIDI"/>
 			</IncludedEvents>
 		</SoundBank>
-		<SoundBank Id="3682547786" Language="SFX" Hash="71109246">
+		<SoundBank Id="3682547786" Language="SFX" Hash="3877899677">
 			<ObjectPath>\SoundBanks\Default Work Unit\Bus3d_Demo</ObjectPath>
 			<ShortName>Bus3d_Demo</ShortName>
 			<Path>Bus3d_Demo.bnk</Path>
@@ -1454,7 +1454,7 @@
 				<Event Id="1327221850" Name="Resume_All_Global" ObjectPath="\Events\Default Work Unit\Resume_All_Global"/>
 			</IncludedEvents>
 		</SoundBank>
-		<SoundBank Id="3887404748" Language="English(US)" Hash="394707363">
+		<SoundBank Id="3887404748" Language="English(US)" Hash="2735512144">
 			<ObjectPath>\SoundBanks\Default Work Unit\Human</ObjectPath>
 			<ShortName>Human</ShortName>
 			<Path>English(US)\Human.bnk</Path>
@@ -1469,7 +1469,7 @@
 				</Event>
 			</IncludedEvents>
 		</SoundBank>
-		<SoundBank Id="3887404748" Language="French(Canada)" Hash="2792625432">
+		<SoundBank Id="3887404748" Language="French(Canada)" Hash="3474315012">
 			<ObjectPath>\SoundBanks\Default Work Unit\Human</ObjectPath>
 			<ShortName>Human</ShortName>
 			<Path>French(Canada)\Human.bnk</Path>
@@ -1484,7 +1484,7 @@
 				</Event>
 			</IncludedEvents>
 		</SoundBank>
-		<SoundBank Id="4146461094" Language="SFX" Hash="1515542610">
+		<SoundBank Id="4146461094" Language="SFX" Hash="3686540730">
 			<ObjectPath>\SoundBanks\Default Work Unit\MusicCallbacks</ObjectPath>
 			<ShortName>MusicCallbacks</ShortName>
 			<Path>MusicCallbacks.bnk</Path>

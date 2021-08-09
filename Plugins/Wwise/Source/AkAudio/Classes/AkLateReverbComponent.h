@@ -81,9 +81,9 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void BeginDestroy() override;
-	virtual void OnComponentDestroyed(bool bDestroyingHierarchy) override;
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual bool MoveComponentImpl(
 		const FVector & Delta,
 		const FQuat & NewRotation,
@@ -99,6 +99,7 @@ public:
 #if WITH_EDITOR
 	virtual void PreEditChange(FProperty* PropertyAboutToChange) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
+	virtual void OnAttachmentChanged() override;
 	void UpdateHFDampingEstimation(float hfDamping);
 	void UpdatePredelayEstimation(float predelay);
 #endif
@@ -141,16 +142,20 @@ private:
 	void RecalculatePredelay();
 
 	void InitializeParent();
+	void ParentChanged();
 	bool EncompassesPoint(FVector Point, float SphereRadius = 0.f, float* OutDistanceToPoint = nullptr) const;
 	// Used to track when the parameters of an Acoustic Texture asset change.
 	FDelegateHandle TextureParamChangedHandle;
 
+#if WITH_EDITOR
+	void HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap);
+#endif
 #if WITH_EDITORONLY_DATA
 	static float TextVisualizerHeightOffset;
 	// The text visualizers display the values of the parameter estimations directly in the level (or blueprint editor).
-	UPROPERTY(NonTransactional)
+	UPROPERTY(SkipSerialization, NonTransactional)
 	UTextRenderComponent* TextVisualizerLabels = nullptr;
-	UPROPERTY(NonTransactional)
+	UPROPERTY(SkipSerialization, NonTransactional)
 	UTextRenderComponent* TextVisualizerValues = nullptr;
 	void UpdateTextVisualizerStatus();
 	bool TextVisualizersInitialized() const;

@@ -96,6 +96,8 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "MatineeToLevelSequenceModule.h"
 #endif
 
+#include "ToolBehavior/AkToolBehavior.h"
+
 #include "WwisePicker/SWwisePicker.h"
 #include "WwiseProject/WwiseProjectInfo.h"
 #include "WwiseProject/WwiseWorkUnitParser.h"
@@ -203,37 +205,111 @@ class FAudiokineticToolsModule : public IAudiokineticTools
 		FPlatformProcess::LaunchFileInDefaultExternalApplication(TEXT("https://www.audiokinetic.com/library/?source=UE4&id=index.html"));
 	}
 
-#if UE_4_24_OR_LATER
-	void RegisterWwiseHelpMenu()
+	void RegisterWwiseMenus()
 	{
-		FToolMenuOwnerScoped ownerScoped(this);
-		UToolMenu* helpMenu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Help");
-		FToolMenuSection& wwiseSection = helpMenu->AddSection("AkHelp", LOCTEXT("AkHelpLabel", "Audiokinetic"), FToolMenuInsert("HelpBrowse", EToolMenuInsertType::Default));
+		// Extend the build menu to handle Audiokinetic-specific entries
+#if UE_5_0_OR_LATER
+		{
+			UToolMenu* BuildMenu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Build");
+			FToolMenuSection& WwiseBuildSection = BuildMenu->AddSection("AkBuild", LOCTEXT("AkBuildLabel", "Audiokinetic"), FToolMenuInsert("LevelEditorGeometry", EToolMenuInsertType::Default));
 
-		wwiseSection.AddEntry(FToolMenuEntry::InitMenuEntry(
-			NAME_None,
-			LOCTEXT("AkWwiseHelpEntry", "Wwise Help"),
-			LOCTEXT("AkWwiseHelpEntryToolTip", "Shows the online Wwise documentation."),
-			FSlateIcon(),
-			FUIAction(FExecuteAction::CreateRaw(this, &FAudiokineticToolsModule::OpenOnlineHelp))
-		));
-	}
+			FUIAction GenerateSoundDataUIAction;
+			GenerateSoundDataUIAction.ExecuteAction.BindStatic(&AkAudioBankGenerationHelper::CreateGenerateSoundDataWindow, (TArray<TWeakObjectPtr<UAkAudioBank>>*)nullptr, false);
+			WwiseBuildSection.AddMenuEntry(
+				NAME_None,
+				LOCTEXT("AkAudioBank_GenerateSoundBanks", "Generate Sound Data..."),
+				LOCTEXT("AkAudioBank_GenerateSoundBanksTooltip", "Generates Wwise Sound Data."),
+				FSlateIcon(),
+				GenerateSoundDataUIAction
+			);
+
+			FUIAction ClearSoundDataUIAction;
+			ClearSoundDataUIAction.ExecuteAction.BindStatic(&AkAudioBankGenerationHelper::CreateClearSoundDataWindow);
+			WwiseBuildSection.AddMenuEntry(
+				NAME_None,
+				LOCTEXT("AkAudioBank_ClearSoundData", "Clear Sound Data..."),
+				LOCTEXT("AkAudioBank_ClearSoundDataTooltip", "Clear Wwise Sound Data."),
+				FSlateIcon(),
+				ClearSoundDataUIAction
+			);
+
+			if (AkUnrealHelper::IsUsingEventBased())
+			{
+				FUIAction ForceAssetSynchronizationUIAction;
+				ForceAssetSynchronizationUIAction.ExecuteAction.BindRaw(&assetManagementManager, &AkAssetManagementManager::DoAssetSynchronization);
+
+				WwiseBuildSection.AddMenuEntry(
+					NAME_None,
+					LOCTEXT("AkAudioMenu_ForceAssetSynchronization", "Force Asset Synchronization"),
+					LOCTEXT("AkAudioMenu_ForceAssetSynchronizationTooltip", "Force synchronization of assets from the Wwise project by parsing the work units"),
+					FSlateIcon(),
+					ForceAssetSynchronizationUIAction
+				);
+			}
+		}
 #else
-	void AddWwiseHelp(FMenuBuilder& MenuBuilder)
-	{
-#if !UE_4_24_OR_LATER
-		MenuBuilder.BeginSection("AkHelp", LOCTEXT("AkHelpLabel", "Audiokinetic"));
+		FLevelEditorModule& LevelEditorModule = FModuleManager::GetModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));
+		LevelViewportToolbarBuildMenuExtenderAk = FLevelEditorModule::FLevelEditorMenuExtender::CreateLambda([this](const TSharedRef<FUICommandList> CommandList)
+			{
+				TSharedPtr<FExtender> Extender = MakeShared<FExtender>();
+				Extender->AddMenuExtension("LevelEditorGeometry", EExtensionHook::After, CommandList, FMenuExtensionDelegate::CreateLambda([this](FMenuBuilder& MenuBuilder)
+					{
+						MenuBuilder.BeginSection("Audiokinetic", LOCTEXT("Audiokinetic", "Audiokinetic"));
+						{
+							FUIAction GenerateSoundDataUIAction;
+							GenerateSoundDataUIAction.ExecuteAction.BindStatic(&AkAudioBankGenerationHelper::CreateGenerateSoundDataWindow, (TArray<TWeakObjectPtr<UAkAudioBank>>*)nullptr, false);
+							MenuBuilder.AddMenuEntry(
+								LOCTEXT("AkAudioBank_GenerateSoundBanks", "Generate Sound Data..."),
+								LOCTEXT("AkAudioBank_GenerateSoundBanksTooltip", "Generates Wwise Sound Data."),
+								FSlateIcon(),
+								GenerateSoundDataUIAction
+							);
+
+							FUIAction ClearSoundDataUIAction;
+							ClearSoundDataUIAction.ExecuteAction.BindStatic(&AkAudioBankGenerationHelper::CreateClearSoundDataWindow);
+							MenuBuilder.AddMenuEntry(
+								LOCTEXT("AkAudioBank_ClearSoundData", "Clear Sound Data..."),
+								LOCTEXT("AkAudioBank_ClearSoundDataTooltip", "Clear Wwise Sound Data."),
+								FSlateIcon(),
+								ClearSoundDataUIAction
+							);
+						}
+						MenuBuilder.EndSection();
+
+						if (AkUnrealHelper::IsUsingEventBased())
+						{
+							FUIAction ForceAssetSynchronizationUIAction;
+							ForceAssetSynchronizationUIAction.ExecuteAction.BindRaw(&assetManagementManager, &AkAssetManagementManager::DoAssetSynchronization);
+
+							MenuBuilder.AddMenuEntry(
+								LOCTEXT("AkAudioMenu_ForceAssetSynchronization", "Force Asset Synchronization"),
+								LOCTEXT("AkAudioMenu_ForceAssetSynchronizationTooltip", "Force synchronization of assets from the Wwise project by parsing the work units"),
+								FSlateIcon(),
+								ForceAssetSynchronizationUIAction
+							);
+						}
+					}));
+
+				return Extender.ToSharedRef();
+			});
+		LevelEditorModule.GetAllLevelEditorToolbarBuildMenuExtenders().Add(LevelViewportToolbarBuildMenuExtenderAk);
+		LevelViewportToolbarBuildMenuExtenderAkHandle = LevelEditorModule.GetAllLevelEditorToolbarBuildMenuExtenders().Last().GetHandle();
 #endif
-		MenuBuilder.AddMenuEntry(
-			LOCTEXT("AkWwiseHelpEntry", "Wwise Help"),
-			LOCTEXT("AkWwiseHelpEntryToolTip", "Shows the online Wwise documentation."),
-			FSlateIcon(),
-			FUIAction(FExecuteAction::CreateRaw(this, &FAudiokineticToolsModule::OpenOnlineHelp)));
-#if !UE_4_24_OR_LATER
-		MenuBuilder.EndSection();
-#endif
+
+		// Extend the Help menu to display a link to our documentation
+		{
+			UToolMenu* HelpMenu = UToolMenus::Get()->ExtendMenu("LevelEditor.MainMenu.Help");
+			FToolMenuSection& WwiseHelpSection = HelpMenu->AddSection("AkHelp", LOCTEXT("AkHelpLabel", "Audiokinetic"), FToolMenuInsert("HelpBrowse", EToolMenuInsertType::Default));
+
+			WwiseHelpSection.AddEntry(FToolMenuEntry::InitMenuEntry(
+				NAME_None,
+				LOCTEXT("AkWwiseHelpEntry", "Wwise Help"),
+				LOCTEXT("AkWwiseHelpEntryToolTip", "Shows the online Wwise documentation."),
+				FSlateIcon(),
+				FUIAction(FExecuteAction::CreateRaw(this, &FAudiokineticToolsModule::OpenOnlineHelp))
+			));
+		}
 	}
-#endif
 
 	void UpdateUnrealCultureToWwiseCultureMap(const WwiseProjectInfo& wwiseProjectInfo)
 	{
@@ -257,7 +333,7 @@ class FAudiokineticToolsModule : public IAudiokineticTools
 
 		TMap<FString, int> languageCountMap;
 
-		for (auto& language : wwiseProjectInfo.SupportedLanguages())
+		for (auto& language : wwiseProjectInfo.GetSupportedLanguages())
 		{
 			if (auto* foundUnrealCulture = wwiseToUnrealMap.Find(language.Name))
 			{
@@ -274,7 +350,7 @@ class FAudiokineticToolsModule : public IAudiokineticTools
 		TSet<FString> foundCultures;
 
 		bool modified = false;
-		for (auto& language : wwiseProjectInfo.SupportedLanguages())
+		for (auto& language : wwiseProjectInfo.GetSupportedLanguages())
 		{
 			if (auto* foundUnrealCulture = wwiseToUnrealMap.Find(language.Name))
 			{
@@ -623,6 +699,7 @@ class FAudiokineticToolsModule : public IAudiokineticTools
 
 	void OnActivatedNewAssetManagement()
 	{
+		AkToolBehavior::ForceEventBasedToolBehavior();
 		assetManagementManager.ModifyProjectSettings();
 		assetManagementManager.DoAssetMigration();
 	}
@@ -651,20 +728,7 @@ class FAudiokineticToolsModule : public IAudiokineticTools
 
 		if (FModuleManager::Get().IsModuleLoaded("LevelEditor") && !IsRunningCommandlet())
 		{
-			// Extend the build menu to handle Audiokinetic-specific entries
-			FLevelEditorModule& LevelEditorModule = FModuleManager::GetModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));
-			LevelViewportToolbarBuildMenuExtenderAk = FLevelEditorModule::FLevelEditorMenuExtender::CreateRaw(this, &FAudiokineticToolsModule::ExtendBuildContextMenuForAudiokinetic);
-			LevelEditorModule.GetAllLevelEditorToolbarBuildMenuExtenders().Add(LevelViewportToolbarBuildMenuExtenderAk);
-			LevelViewportToolbarBuildMenuExtenderAkHandle = LevelEditorModule.GetAllLevelEditorToolbarBuildMenuExtenders().Last().GetHandle();
-
-			// Add Wwise to the help menu
-#if UE_4_24_OR_LATER
-			RegisterWwiseHelpMenu();
-#else
-			MainMenuExtender = MakeShareable(new FExtender);
-			MainMenuExtender->AddMenuExtension("HelpBrowse", EExtensionHook::After, NULL, FMenuExtensionDelegate::CreateRaw(this, &FAudiokineticToolsModule::AddWwiseHelp));
-			LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MainMenuExtender);
-#endif
+			RegisterWwiseMenus();
 		}
 
 		RegisterSettings();
@@ -817,53 +881,6 @@ class FAudiokineticToolsModule : public IAudiokineticTools
 		assetManagementManager.Uninit();
 	}
 
-	/**
-	* Extends the Build context menu with Audiokinetic-specific menu items
-	*/
-	TSharedRef<FExtender> ExtendBuildContextMenuForAudiokinetic(const TSharedRef<FUICommandList> CommandList)
-	{
-		TSharedPtr<FExtender> Extender = MakeShared<FExtender>();
-		Extender->AddMenuExtension("LevelEditorGeometry", EExtensionHook::After, CommandList, FMenuExtensionDelegate::CreateLambda([this](FMenuBuilder& MenuBuilder)
-		{
-			MenuBuilder.BeginSection("Audiokinetic", LOCTEXT("Audiokinetic", "Audiokinetic"));
-			{
-				FUIAction GenerateSoundDataUIAction;
-				GenerateSoundDataUIAction.ExecuteAction.BindStatic(&AkAudioBankGenerationHelper::CreateGenerateSoundDataWindow, (TArray<TWeakObjectPtr<UAkAudioBank>>*)nullptr, false);
-				MenuBuilder.AddMenuEntry(
-					LOCTEXT("AkAudioBank_GenerateSoundBanks", "Generate Sound Data..."),
-					LOCTEXT("AkAudioBank_GenerateSoundBanksTooltip", "Generates Wwise Sound Data."),
-					FSlateIcon(),
-					GenerateSoundDataUIAction
-				);
-
-				FUIAction ClearSoundDataUIAction;
-				ClearSoundDataUIAction.ExecuteAction.BindStatic(&AkAudioBankGenerationHelper::CreateClearSoundDataWindow);
-				MenuBuilder.AddMenuEntry(
-					LOCTEXT("AkAudioBank_ClearSoundData", "Clear Sound Data..."),
-					LOCTEXT("AkAudioBank_ClearSoundDataTooltip", "Clear Wwise Sound Data."),
-					FSlateIcon(),
-					ClearSoundDataUIAction
-				);
-			}
-			MenuBuilder.EndSection();
-
-			if (AkUnrealHelper::IsUsingEventBased())
-			{
-				FUIAction ForceAssetSynchronizationUIAction;
-				ForceAssetSynchronizationUIAction.ExecuteAction.BindRaw(&assetManagementManager, &AkAssetManagementManager::DoAssetSynchronization);
-
-				MenuBuilder.AddMenuEntry(
-					LOCTEXT("AkAudioMenu_ForceAssetSynchronization", "Force Asset Synchronization"),
-					LOCTEXT("AkAudioMenu_ForceAssetSynchronizationTooltip", "Force synchronization of assets from the Wwise project by parsing the work units"),
-					FSlateIcon(),
-					ForceAssetSynchronizationUIAction
-				);
-			}
-		}));
-
-		return Extender.ToSharedRef();
-	}
-
 	static EEditorBuildResult BuildAkEventData(UWorld* world, FName name)
 	{
 		auto& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>("AssetRegistry");
@@ -931,10 +948,16 @@ private:
 					FString CategoryNameKey = FString::Format(TEXT("Wwise{0}SettingsName"), { *AvailablePlatform });
 					FString DescriptionNameKey = FString::Format(TEXT("Wwise{0}SettingsDescription"), { *AvailablePlatform });
 					FString DescriptionText = FString::Format(TEXT("Configure the Wwise {0} Initialization Settings"), { *AvailablePlatform });
-					auto PlatformNameText = FText::FromString(*AvailablePlatform);
+					FText PlatformNameText = FText::FromString(*AvailablePlatform);
+					FString AdditionalDescriptionText = TEXT("");
+					if (AkUnrealPlatformHelper::IsEditorPlatform(AvailablePlatform)) 
+					{
+						AdditionalDescriptionText = TEXT("\nYou must restart the Unreal Editor for changes to be applied to the Wwise Sound Engine running in the Editor");
+					}
+					FText PlatformDescriptionText = FText::Format(LOCTEXT("WwiseSettingsDescription", "Configure the Wwise {0} Initialization Settings{1}"), PlatformNameText, FText::FromString(*AdditionalDescriptionText));
 					auto RegisterPlatform = SettingsRegistrationStruct(SettingsClass, FName(*AvailablePlatform),
 						PlatformNameText,
-						FText::Format(LOCTEXT("WwiseSettingsDescription", "Configure the Wwise {0} Initialization Settings"), PlatformNameText));
+						PlatformDescriptionText);
 					WwisePlatformNameToWwiseSettingsRegistrationMap.Add(*AvailablePlatform, RegisterPlatform);
 				}
 			}

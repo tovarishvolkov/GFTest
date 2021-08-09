@@ -133,12 +133,12 @@ float ConvexHullSurfaceArea(const FKConvexElem& convexElem, const FVector& scale
 	auto mesh = convexElem.GetChaosConvexMesh();
 	if (mesh.IsValid())
 	{
-		const Chaos::TParticles<Chaos::FReal, 3>& particles = mesh->GetSurfaceParticles();
+		const TArray<Chaos::FVec3>& Vertices = mesh->GetVertices();
 		TArray<TArray<int32>> FaceIndices;
 		TArray<Chaos::TPlaneConcrete<Chaos::FReal, 3>> Planes;
-		Chaos::TParticles<Chaos::FReal, 3> SurfaceParticles;
+		TArray<Chaos::FVec3> SurfaceVertices;
 		Chaos::TAABB<Chaos::FReal, 3> LocalBoundingBox;
-		Chaos::FConvexBuilder::Build(particles, Planes, FaceIndices, SurfaceParticles, LocalBoundingBox);
+		Chaos::FConvexBuilder::Build(Vertices, Planes, FaceIndices, SurfaceVertices, LocalBoundingBox);
 
 		for (int32 faceIdx = 0; faceIdx < FaceIndices.Num(); faceIdx++)
 		{
@@ -147,7 +147,7 @@ float ConvexHullSurfaceArea(const FKConvexElem& convexElem, const FVector& scale
 			FVector centroidPosition = FVector::ZeroVector;
 			for (int v = 0; v < numVerts; ++v)
 			{
-				FVector vert = particles.X(face[v]) * scale;
+				FVector vert = Vertices[face[v]] * scale;
 				centroidPosition += vert;
 			}
 			centroidPosition /= (float)numVerts;
@@ -155,12 +155,12 @@ float ConvexHullSurfaceArea(const FKConvexElem& convexElem, const FVector& scale
 			FVector v2 = FVector::ZeroVector;
 			for (int v = 0; v < numVerts - 1; ++v)
 			{
-				v1 = particles.X(face[v]) * scale;
-				v2 = particles.X(face[v+1]) * scale;
+				v1 = Vertices[face[v]] * scale;
+				v2 = Vertices[face[v+1]] * scale;
 				area += FAkReverbDescriptor::TriangleArea(centroidPosition, v1, v2);
 			}
-			v1 = particles.X(face[numVerts - 1]) * scale;
-			v1 = particles.X(face[0]) * scale;
+			v1 = Vertices[face[numVerts - 1]] * scale;
+			v1 = Vertices[face[0]] * scale;
 			area += FAkReverbDescriptor::TriangleArea(centroidPosition, v1, v2);
 		}
 	}
@@ -347,12 +347,15 @@ void FAkReverbDescriptor::CalculateT60()
 
 void FAkReverbDescriptor::CalculateTimeToFirstReflection()
 {
-	FTransform transform = Primitive->GetComponentTransform();
-	transform.SetRotation(FQuat::Identity);
-	transform.SetLocation(FVector::ZeroVector);
-	FBoxSphereBounds bounds = Primitive->CalcBounds(transform);
-	AkVector extentMeters = FAkAudioDevice::FVectorToAKVector(bounds.BoxExtent / AkComponentHelpers::UnrealUnitsPerMeter(Primitive));
-	AK::SpatialAudio::ReverbEstimation::EstimateTimeToFirstReflection(extentMeters, TimeToFirstReflection);
+	if (IsValid(Primitive))
+	{
+		FTransform transform = Primitive->GetComponentTransform();
+		transform.SetRotation(FQuat::Identity);
+		transform.SetLocation(FVector::ZeroVector);
+		FBoxSphereBounds bounds = Primitive->CalcBounds(transform);
+		AkVector extentMeters = FAkAudioDevice::FVectorToAKVector(bounds.BoxExtent / AkComponentHelpers::UnrealUnitsPerMeter(Primitive));
+		AK::SpatialAudio::ReverbEstimation::EstimateTimeToFirstReflection(extentMeters, TimeToFirstReflection);
+	}
 #if WITH_EDITOR
 	if (IsValid(ReverbComponent))
 		ReverbComponent->UpdatePredelayEstimation(TimeToFirstReflection);
@@ -397,6 +400,9 @@ void FAkReverbDescriptor::CalculateHFDamping(const UAkAcousticTextureSetComponen
 
 bool FAkReverbDescriptor::GetRTPCRoom(UAkRoomComponent*& room) const
 {
+	if (!IsValid(Primitive))
+		return false;
+
 	room = AkComponentHelpers::GetChildComponentOfType<UAkRoomComponent>(*Primitive);
 	if (!CanSetRTPCOnRoom(room))
 	{

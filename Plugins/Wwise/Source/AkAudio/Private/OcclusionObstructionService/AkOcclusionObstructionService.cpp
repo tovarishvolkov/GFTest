@@ -21,6 +21,7 @@ AkOcclusionObstructionService.cpp:
 #include "OcclusionObstructionService/AkOcclusionObstructionService.h"
 #include "AkAudioDevice.h"
 #include "AkComponent.h"
+#include "AkSpatialAudioHelper.h"
 #include "AkAcousticPortal.h"
 #include "Engine/World.h"
 #include "Engine/Engine.h"
@@ -288,15 +289,15 @@ void AkOcclusionObstructionService::CalculateObstructionOcclusionValues(const UA
 		if (bNowOccluded)
 		{
 			FBox BoundingBox;
-			if (OutHit.Actor.IsValid())
+			AActor* HitActor = AkSpatialAudioHelper::GetActorFromHitResult(OutHit);
+			if (HitActor)
 			{
-				BoundingBox = OutHit.Actor->GetComponentsBoundingBox();
+				BoundingBox = HitActor->GetComponentsBoundingBox();
 			}
 			else if (OutHit.Component.IsValid())
 			{
 				BoundingBox = OutHit.Component->Bounds.GetBox();
 			}
-
 			// Translate the impact point to the bounding box of the obstacle
 			const FVector Points[] =
 			{

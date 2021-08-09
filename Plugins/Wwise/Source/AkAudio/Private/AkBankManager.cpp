@@ -40,6 +40,12 @@ void FAkBankFunctionPtrCallbackInfo::HandleAction(AkUInt32 BankID, const void * 
 
 void FAkBankLatentActionCallbackInfo::HandleAction(AkUInt32 BankID, const void * InMemoryBankPtr, AKRESULT ActionResult)
 {
+	// Don't access BankLatentAction if it's been deleted already
+	if (!LatentActionValidityToken->bValid)
+	{
+		return;
+	}
+
 	if (BankLatentAction)
 	{
 		BankLatentAction->ActionDone = true;

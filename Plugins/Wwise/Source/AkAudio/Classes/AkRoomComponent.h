@@ -28,17 +28,20 @@ class AKAUDIO_API UAkRoomComponent : public UAkGameObject
 	GENERATED_UCLASS_BODY()
 
 	/** 
-	* Enable room transmission feature, additional properties are available in the Room category. 
-	* Chaning Enable Room during runtime will only have an effect if Is Dynamic = true.
+	* Enable room transmission feature. Additional properties are available in the Room category. 
+	* If Enable Room begins as false, changing Enable Room during runtime will only have an effect
+	* if Room Is Dynamic = true.
 	*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Toggle, meta = (DisplayName = "Enable Room"))
 	uint32 bEnable:1;
 
 	/** 
-	* If true, the portal connections for this room can change during runtime when this room moves, and
-	* the room can be enabled / disabled during runtime. For worlds containing many portals, this can be 
-	* expensive. Note that this room's portal connections may still change, even when bDynamic = false, 
-	* when dynamic portals are moved (i.e. when portals move who have bDynamic = true). */
+	* If true, the portal connections for this room can change during runtime when this room moves.
+	* For worlds containing many portals, this can be expensive. Note that this room's portal connections 
+	* may still change, even when Room Is Dynamic = false, when dynamic portals are moved (i.e. when portals
+	* move who have bDynamic = true).
+	* When Room Is Dynamic = true, enabling and disabling rooms will have immediate effect, without needing
+	* to update emitters and/or listeners directly. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Toggle, meta = (DisplayName = "Room Is Dynamic"))
 	bool bDynamic = false;
 
@@ -62,11 +65,11 @@ class AKAUDIO_API UAkRoomComponent : public UAkGameObject
 	/**
 	* Send level for sounds that are posted on the room. Valid range: (0.f-1.f). A value of 0 disables the aux send.
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room|AkEvent", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AkEvent", meta = (ClampMin = "0.0", ClampMax = "1.0"))
 	float AuxSendLevel;
 
 	/** Automatically post the associated AkAudioEvent on BeginPlay */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Room|AkEvent", SimpleDisplay)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AkEvent", SimpleDisplay)
 	bool AutoPost;
 
 	/** Posts this game object's AkAudioEvent to Wwise, using this as the game object source */
@@ -97,6 +100,7 @@ class AKAUDIO_API UAkRoomComponent : public UAkGameObject
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
 #if WITH_EDITOR
+	virtual void BeginDestroy() override;
 	virtual void OnComponentCreated() override;
 	virtual void InitializeComponent() override;
 	virtual void PostLoad() override;
@@ -130,6 +134,8 @@ class AKAUDIO_API UAkRoomComponent : public UAkGameObject
 
 private:
 	class UPrimitiveComponent* Parent;
+
+	UPROPERTY(Transient)
 	class UAkAcousticTextureSetComponent* GeometryComponent;
 
 	void InitializeParent();
@@ -141,8 +147,8 @@ private:
 	float SecondsSinceMovement = 0.0f;
 	bool Moving = false;
 #if WITH_EDITOR
+	void HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap);
 	bool bRequiresDeferredBeginPlay = false;
-	bool bRequiresInitParent = false;
 	class UDrawRoomComponent* DrawRoomComponent = nullptr;
 	void RegisterVisEnabledCallback();
 	void InitializeDrawComponent();

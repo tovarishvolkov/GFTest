@@ -137,9 +137,22 @@ void UAkAssetDataSwitchContainer::loadSwitchContainer(UAkAssetDataSwitchContaine
 {
 	if (switchContainer && IsValid(switchContainer->GroupValue.Get()))
 	{
-		for (auto& media : switchContainer->MediaList)
+		TArray<UAkMediaAsset*> InvalidMedia;
+		for (UAkMediaAsset* media : switchContainer->MediaList)
 		{
-			media->Load();
+			if (IsValid(media))
+			{
+				media->Load();
+			}
+			else 
+			{
+				InvalidMedia.Add(media);
+			}
+		}
+
+		for (UAkMediaAsset* media : InvalidMedia)
+		{
+			switchContainer->MediaList.Remove(media);
 		}
 
 		loadSwitchContainer(switchContainer->Children);
@@ -158,9 +171,12 @@ void UAkAssetDataSwitchContainer::unloadSwitchContainerMedia(UAkAssetDataSwitchC
 {
 	if (switchContainer)
 	{
-		for (auto media : switchContainer->MediaList)
+		for (UAkMediaAsset* media : switchContainer->MediaList)
 		{
-			media->Unload();
+			if (IsValid(media))
+			{
+				media->Unload();
+			}
 		}
 
 		unloadSwitchContainerMedia(switchContainer->Children);
@@ -631,8 +647,14 @@ UAkAssetData* UAkAudioEvent::FindOrAddAssetData(const FString& platform, const F
 
 void UAkAudioEvent::Reset()
 {
+	if (LocalizedPlatformAssetDataMap.Num() > 0)
+	{
+		bChangedDuringReset = true;
+	}
 	LocalizedPlatformAssetDataMap.Empty();
 
+	// ALWAYS call Super::Reset() last, since it will check if things have been modified
+	// before marking as dirty.
 	Super::Reset();
 }
 
@@ -722,7 +744,8 @@ void UAkAudioEvent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChange
 			UpdateRequiredBanks();
 		}
 	}
-	else if (UndoFlag) {
+	else if (UndoFlag) 
+	{
 		LastRequiredBank = UndoCompareBank;
 		UpdateRequiredBanks();
 	}
@@ -741,7 +764,8 @@ void UAkAudioEvent::ClearRequiredBank()
 	RequiredBank = nullptr;
 }
 
-void UAkAudioEvent::UpdateRequiredBanks() {
+void UAkAudioEvent::UpdateRequiredBanks() 
+{
 	if (LastRequiredBank->IsValidLowLevel())
 	{
 		LastRequiredBank->RemoveAkAudioEvent(this);

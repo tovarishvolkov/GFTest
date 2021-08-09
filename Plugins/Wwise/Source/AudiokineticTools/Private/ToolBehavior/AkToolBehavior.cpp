@@ -19,6 +19,8 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "AkEventBasedToolBehavior.h"
 #include "AkLegacyToolBehavior.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogAudiokineticToolBehavior, Log, All);
+
 AkToolBehavior* AkToolBehavior::s_Instance = nullptr;
 
 AkToolBehavior* AkToolBehavior::Get()
@@ -38,6 +40,12 @@ AkToolBehavior* AkToolBehavior::Get()
 	return s_Instance;
 }
 
+void AkToolBehavior::ForceEventBasedToolBehavior()
+{
+	delete s_Instance;
+	s_Instance = new AkEventBasedToolBehavior;
+}
+
 bool AkToolBehavior::AkAssetManagementManager_ModifyProjectSettings(FString& ProjectContent)
 {
 	static const TArray<PropertyToChange> PropertiesToAdd = {
@@ -54,7 +62,14 @@ bool AkToolBehavior::AkAssetManagementManager_ModifyProjectSettings(FString& Pro
 bool AkToolBehavior::InsertProperties(const TArray<PropertyToChange>& PropertiesToChange, FString& ProjectContent)
 {
 	static const auto PropertyListStart = TEXT("<PropertyList>");
-	static const FString ValueText = TEXT("Value=\"");
+	static const FString EndTag = TEXT(">");
+	static const TCHAR EmptyElementEndChar = '/';
+	static const FString ValueTag = TEXT("<Value>");
+	static const FString EndValueTag = TEXT("</Value>");
+
+	static const FString ValueAttribute = TEXT("Value=\"");
+	static const FString EndValueAttribute = TEXT("\"");
+
 	bool modified = false;
 
 	int32 propertyListPosition = ProjectContent.Find(PropertyListStart);
@@ -72,22 +87,42 @@ bool AkToolBehavior::InsertProperties(const TArray<PropertyToChange>& Properties
 			}
 			else
 			{
-				auto valueIdx = ProjectContent.Find(ValueText, ESearchCase::IgnoreCase, ESearchDir::FromStart, idx);
-				auto EndTagIdx = ProjectContent.Find(TEXT(">"), ESearchCase::IgnoreCase, ESearchDir::FromStart, idx);
-				if (valueIdx != -1 && valueIdx > idx && valueIdx < EndTagIdx)
+				FString ValueText;
+				FString EndValueText;
+				int32 EndTagIdx = ProjectContent.Find(EndTag, ESearchCase::IgnoreCase, ESearchDir::FromStart, idx);
+				if (ProjectContent[EndTagIdx - 1] == EmptyElementEndChar)
 				{
-					valueIdx += ValueText.Len();
-					auto valueEndIdx = ProjectContent.Find(TEXT("\""), ESearchCase::IgnoreCase, ESearchDir::FromStart, valueIdx);
-					if (valueEndIdx != -1)
+					// The property is an empty element, the value will be in an attribute
+					ValueText = ValueAttribute;
+					EndValueText = EndValueAttribute;
+				}
+				else
+				{
+					// We are in a ValueList
+					ValueText = ValueTag;
+					EndValueText = EndValueTag;
+				}
+
+				int32 ValueIdx = ProjectContent.Find(ValueText, ESearchCase::IgnoreCase, ESearchDir::FromStart, idx);
+				int32 EndValueIdx = ProjectContent.Find(EndValueText, ESearchCase::IgnoreCase, ESearchDir::FromStart, ValueIdx);
+				if (ValueIdx != -1 && ValueIdx > idx && ValueIdx < EndValueIdx)
+				{
+					ValueIdx += ValueText.Len();
+					auto ValueEndIdx = ProjectContent.Find(EndValueText, ESearchCase::IgnoreCase, ESearchDir::FromStart, ValueIdx);
+					if (ValueEndIdx != -1)
 					{
-						FString value = ProjectContent.Mid(valueIdx, valueEndIdx - valueIdx);
+						FString value = ProjectContent.Mid(ValueIdx, ValueEndIdx - ValueIdx);
 						if (value != itemToAdd.Value)
 						{
-							ProjectContent.RemoveAt(valueIdx, valueEndIdx - valueIdx, false);
-							ProjectContent.InsertAt(valueIdx, itemToAdd.Value);
+							ProjectContent.RemoveAt(ValueIdx, ValueEndIdx - ValueIdx, false);
+							ProjectContent.InsertAt(ValueIdx, itemToAdd.Value);
 							modified = true;
 						}
 					}
+				}
+				else
+				{
+					UE_LOG(LogAudiokineticToolBehavior, Log, TEXT("Could not change value for %s in Wwise project. Some features might not work properly."), *itemToAdd.Name);
 				}
 			}
 		}

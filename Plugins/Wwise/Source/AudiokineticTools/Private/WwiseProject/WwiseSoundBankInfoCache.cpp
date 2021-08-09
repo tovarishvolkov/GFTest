@@ -33,7 +33,7 @@ bool WwiseSoundBankInfoCache::Load(const FString& Path)
 	WwiseProjectInfo wwiseProjectInfo;
 	wwiseProjectInfo.Parse();
 
-	for (auto& platform : wwiseProjectInfo.SupportedPlatforms())
+	for (auto& platform : wwiseProjectInfo.GetSupportedPlatforms())
 	{
 		platformNameToGuidMap.Add(platform.Name, platform.ID);
 	}

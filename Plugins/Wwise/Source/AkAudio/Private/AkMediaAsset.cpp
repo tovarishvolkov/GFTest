@@ -73,6 +73,25 @@ void UAkMediaAssetData::Serialize(FArchive& Ar)
 		if (NeedsAutoLoading())
 		{
 			Load(true);
+			FExternalReadCallback ExternalReadCallback = [this](double RemainingTime)
+			{
+#if !WITH_EDITOR
+				if (LoadingRequest)
+				{
+					if (RemainingTime < 0.0 && !LoadingRequest->PollCompletion())
+					{
+						return false;
+					}
+					else if (RemainingTime >= 0.0 && !LoadingRequest->WaitCompletion(RemainingTime))
+					{
+						return false;
+					}
+					return true;
+				}
+#endif
+				return State == LoadState::Loaded || State == LoadState::Error;
+			};
+			Ar.AttachExternalReadDependency(ExternalReadCallback);
 		}
 	}
 }
@@ -89,27 +108,35 @@ bool UAkMediaAssetData::IsReadyForAsyncPostLoad() const
 
 void UAkMediaAssetData::Load(bool LoadAsync, const MediaAssetDataLoadAsyncCallback& LoadedCallback)
 {
+#if !WITH_EDITOR
+	if (LoadingRequest)
+	{
+		if (!LoadingRequest->PollCompletion())
+		{
+			LoadingRequest->Cancel();
+			LoadingRequest->WaitCompletion();
+		}
+		delete LoadingRequest; LoadingRequest = nullptr;
+	}
+#endif
 	if (DataChunks.Num() > 0 && !LoadedMediaData)
 	{
-#if UE_4_25_OR_LATER
-		FBulkDataIORequestCallBack LoadAsyncCompleted = [this, LoadedCallback](bool bWasCancelled, IBulkDataIORequest* ReadRequest)
-#else
-		FAsyncFileCallBack LoadAsyncCompleted = [this, LoadedCallback](bool bWasCancelled, IAsyncReadRequest* ReadRequest)
-#endif
+#if !WITH_EDITOR
+		BulkDataRequestCompletedCallback LoadAsyncCompleted = [this, LoadedCallback](bool bWasCancelled, ReadRequestArgumentType* ReadRequest) 
 		{
 			if (bWasCancelled)
 			{
+				FreeMediaMemory(ReadRequest->GetReadResults());
 				State = LoadState::Error;
-				freeMediaMemory(ReadRequest->GetReadResults());
-				FString mediaName;
+				FString MediaName;
 #if WITH_EDITORONLY_DATA
 				if (Parent)
 				{
-					mediaName = Parent->MediaName;
+					MediaName = Parent->MediaName;
 				}
 #endif
-				uint32 mediaID = Parent ? Parent->Id : 0;
-				UE_LOG(LogAkAudio, Error, TEXT("Bulk data streaming request for '%s' (ID: %u) was cancelled. Media will be unavailable."), *mediaName, mediaID);
+				uint32 MediaID = Parent ? Parent->Id : 0;
+				UE_LOG(LogAkAudio, Error, TEXT("Bulk data streaming request for '%s' (ID: %u) was cancelled. Media will be unavailable."), *MediaName, MediaID);
 				return;
 			}
 
@@ -122,24 +149,23 @@ void UAkMediaAssetData::Load(bool LoadAsync, const MediaAssetDataLoadAsyncCallba
 			}
 		};
 
-#if !WITH_EDITOR
 		if (DataChunks[0].Data.CanLoadFromDisk() && LoadAsync)
 		{
-			uint8* tempReadMediaMemory = allocateMediaMemory();
+			uint8* TempReadMediaMemory = AllocateMediaMemory();
 			State = LoadState::Loading;
-			DataChunks[0].Data.CreateStreamingRequest(EAsyncIOPriorityAndFlags::AIOP_High, &LoadAsyncCompleted, tempReadMediaMemory);
+			LoadingRequest = DataChunks[0].Data.CreateStreamingRequest(EAsyncIOPriorityAndFlags::AIOP_High, &LoadAsyncCompleted, TempReadMediaMemory);
 		}
 		else
 #endif
 		{
-			LoadedMediaData = allocateMediaMemory();
-			auto bulkMediaDataSize = DataChunks[0].Data.GetBulkDataSize();
+			LoadedMediaData = AllocateMediaMemory();
+			auto BulkMediaDataSize = DataChunks[0].Data.GetBulkDataSize();
 			DataChunks[0].Data.GetCopy((void**)&LoadedMediaData, false);
 			State = LoadState::Loaded;
 
 			if (LoadedCallback)
 			{
-				LoadedCallback(LoadedMediaData, bulkMediaDataSize);
+				LoadedCallback(LoadedMediaData, BulkMediaDataSize);
 			}
 		}
 	}
@@ -147,13 +173,61 @@ void UAkMediaAssetData::Load(bool LoadAsync, const MediaAssetDataLoadAsyncCallba
 
 void UAkMediaAssetData::Unload()
 {
+#if !WITH_EDITOR
+	if (LoadingRequest)
+	{
+		if (!LoadingRequest->PollCompletion())
+		{
+			LoadingRequest->Cancel();
+			LoadingRequest->WaitCompletion();
+		}
+		delete LoadingRequest; LoadingRequest = nullptr;
+	}
+#endif
 	if (LoadedMediaData)
 	{
-		freeMediaMemory(LoadedMediaData);
+		FreeMediaMemory(LoadedMediaData);
 		LoadedMediaData = nullptr;
 		State = LoadState::Unloaded;
 	}
 }
+
+void UAkMediaAssetData::BeginDestroy()
+{
+	Super::BeginDestroy();
+
+#if !WITH_EDITOR
+	if (LoadingRequest && !LoadingRequest->PollCompletion())
+	{
+		LoadingRequest->Cancel();
+	}
+#endif
+}
+
+bool UAkMediaAssetData::IsReadyForFinishDestroy()
+{
+#if !WITH_EDITOR
+	if (LoadingRequest)
+	{
+		if (LoadingRequest->WaitCompletion(0.01f))
+		{
+			delete LoadingRequest; LoadingRequest = nullptr;
+		}
+		else
+		{
+			return false;
+		}
+	}
+#endif
+	if (LoadedMediaData)
+	{
+		FreeMediaMemory(LoadedMediaData);
+		LoadedMediaData = nullptr;
+		State = LoadState::Unloaded;
+	}
+	return Super::IsReadyForFinishDestroy();
+}
+
 
 bool UAkMediaAssetData::NeedsAutoLoading() const
 {
@@ -171,29 +245,29 @@ bool UAkMediaAssetData::NeedsAutoLoading() const
 	return false;
 }
 
-uint8* UAkMediaAssetData::allocateMediaMemory()
+uint8* UAkMediaAssetData::AllocateMediaMemory()
 {
 	if (DataChunks.Num() > 0)
 	{
-		auto dataBulkSize = DataChunks[0].Data.GetBulkDataSize();
+		auto BulkMediaDataSize = DataChunks[0].Data.GetBulkDataSize();
 #if AK_SUPPORT_DEVICE_MEMORY
 		if (UseDeviceMemory)
 		{
-			return (AkUInt8*)AKPLATFORM::AllocDevice(dataBulkSize, 0);
+			return (AkUInt8*)AKPLATFORM::AllocDevice(BulkMediaDataSize, 0);
 		}
 		else
 #endif
 		{
-			return static_cast<uint8*>(FMemory::Malloc(dataBulkSize));
+			return static_cast<uint8*>(FMemory::Malloc(BulkMediaDataSize));
 		}
 	}
 
 	return nullptr;
 }
 
-void  UAkMediaAssetData::freeMediaMemory(uint8* mediaMemory)
+void  UAkMediaAssetData::FreeMediaMemory(uint8* MediaMemory)
 {
-	if (!mediaMemory)
+	if (!MediaMemory)
 	{
 		return;
 	}
@@ -201,12 +275,12 @@ void  UAkMediaAssetData::freeMediaMemory(uint8* mediaMemory)
 #if AK_SUPPORT_DEVICE_MEMORY
 	if (UseDeviceMemory)
 	{
-		AKPLATFORM::FreeDevice(mediaMemory, DataChunks[0].Data.GetBulkDataSize(), 0, true);
+		AKPLATFORM::FreeDevice(MediaMemory, DataChunks[0].Data.GetBulkDataSize(), 0, true);
 	}
 	else
 #endif
 	{
-		FMemory::Free(mediaMemory);
+		FMemory::Free(MediaMemory);
 	}
 }
 
@@ -229,8 +303,8 @@ void UAkMediaAsset::Serialize(FArchive& Ar)
 			{
 				PlatformName = *UAkPlatformInfo::UnrealNameToWwiseName.Find(PlatformName);
 			}
-			auto currentMediaData = MediaAssetDataPerPlatform.Find(*PlatformName);
-			CurrentMediaAssetData = currentMediaData ? *currentMediaData : nullptr;
+			auto CurrentMediaData = MediaAssetDataPerPlatform.Find(*PlatformName);
+			CurrentMediaAssetData = CurrentMediaData ? *CurrentMediaData : nullptr;
 		}
 
 		Ar << CurrentMediaAssetData;
@@ -245,9 +319,9 @@ void UAkMediaAsset::Serialize(FArchive& Ar)
 
 	if (Ar.IsLoading())
 	{
-		if (auto assetData = getMediaAssetData())
+		if (auto MediaAssetData = GetMediaAssetData())
 		{
-			assetData->Parent = this;
+			MediaAssetData->Parent = this;
 		}
 	}
 }
@@ -270,12 +344,6 @@ void UAkMediaAsset::PostLoad()
 
 }
 
-void UAkMediaAsset::FinishDestroy()
-{
-	unloadMedia(true);
-	Super::FinishDestroy();
-}
-
 #if WITH_EDITOR
 #include "Async/Async.h"
 void UAkMediaAsset::Reset()
@@ -286,50 +354,60 @@ void UAkMediaAsset::Reset()
 		Unload();
 	}
 
+	bool bChanged = false;
+	if (MediaAssetDataPerPlatform.Num() > 0 || !MediaName.IsEmpty() || CurrentMediaAssetData != nullptr)
+	{
+		bChanged = true;
+	}
+
 	MediaAssetDataPerPlatform.Empty();
 	MediaName.Empty();
 	CurrentMediaAssetData = nullptr;
-	AsyncTask(ENamedThreads::GameThread, [this] {
-		MarkPackageDirty();
-	});
+	
+	if (bChanged)
+	{
+		AsyncTask(ENamedThreads::GameThread, [this] {
+			MarkPackageDirty();
+			});
+	}
 }
 
-UAkMediaAssetData* UAkMediaAsset::FindOrAddMediaAssetData(const FString& platform)
+UAkMediaAssetData* UAkMediaAsset::FindOrAddMediaAssetData(const FString& Platform)
 {
-	auto platformData = MediaAssetDataPerPlatform.Find(platform);
-	if (platformData)
+	auto PlatformData = MediaAssetDataPerPlatform.Find(Platform);
+	if (PlatformData)
 	{
-		return *platformData;
+		return *PlatformData;
 	}
 
-	auto newPlatformData = NewObject<UAkMediaAssetData>(this);
-	MediaAssetDataPerPlatform.Add(platform, newPlatformData);
-	return newPlatformData;
+	auto NewPlatformData = NewObject<UAkMediaAssetData>(this);
+	MediaAssetDataPerPlatform.Add(Platform, NewPlatformData);
+	return NewPlatformData;
 }
 #endif
 
-void UAkMediaAsset::Load(bool FromSerialize /*= false*/)
+void UAkMediaAsset::Load(bool bFromSerialize /*= false*/)
 {
-	if (UNLIKELY(FromSerialize && !SerializeHasBeenCalled))
+	if (UNLIKELY(bFromSerialize && !SerializeHasBeenCalled))
 	{
 		LoadFromSerialize = true;
 	}
 	else
 	{
-		loadAndSetMedia(true);
+		LoadAndSetMedia(true);
 	}
 }
 
 void UAkMediaAsset::Unload()
 {
-	unloadMedia();
+	UnloadMedia();
 }
 
 bool UAkMediaAsset::IsReadyForAsyncPostLoad() const
 {
-	if (auto assetData = getMediaAssetData())
+	if (auto MediaAssetData = GetMediaAssetData())
 	{
-		return assetData->IsReadyForAsyncPostLoad();
+		return MediaAssetData->IsReadyForAsyncPostLoad();
 	}
 
 	return true;
@@ -337,29 +415,29 @@ bool UAkMediaAsset::IsReadyForAsyncPostLoad() const
 
 FAkMediaDataChunk const* UAkMediaAsset::GetStreamedChunk() const
 {
-	auto mediaData = getMediaAssetData();
-	if (!mediaData || mediaData->DataChunks.Num() <= 0)
+	auto MediaAssetData = GetMediaAssetData();
+	if (!MediaAssetData || MediaAssetData->DataChunks.Num() <= 0)
 	{
 		return nullptr;
 	}
 
-	if (!mediaData->DataChunks[0].IsPrefetch)
+	if (!MediaAssetData->DataChunks[0].IsPrefetch)
 	{
-		return &mediaData->DataChunks[0];
+		return &MediaAssetData->DataChunks[0];
 	}
 
-	if (mediaData->DataChunks.Num() >= 2)
+	if (MediaAssetData->DataChunks.Num() >= 2)
 	{
-		return &mediaData->DataChunks[1];
+		return &MediaAssetData->DataChunks[1];
 	}
 
 	return nullptr;
 }
 
-void UAkMediaAsset::loadAndSetMedia(bool LoadAsync)
+void UAkMediaAsset::LoadAndSetMedia(bool bLoadAsync)
 {
-	auto assetData = getMediaAssetData();
-	if (!assetData || assetData->DataChunks.Num() <= 0)
+	auto MediaAssetData = GetMediaAssetData();
+	if (!MediaAssetData || MediaAssetData->DataChunks.Num() <= 0)
 	{
 #if WITH_EDITOR
 		ForceAutoLoad = true;
@@ -367,10 +445,11 @@ void UAkMediaAsset::loadAndSetMedia(bool LoadAsync)
 		return;
 	}
 
-	auto& DataChunk = assetData->DataChunks[0];
-	if (assetData->IsStreamed && !DataChunk.IsPrefetch)
+	auto& DataChunk = MediaAssetData->DataChunks[0];
+	if (MediaAssetData->IsStreamed && !DataChunk.IsPrefetch)
 	{
 		FAkUnrealIOHook::AddStreamingMedia(this);
+		LoadRefCount.Increment();
 		return;
 	}
 
@@ -383,36 +462,16 @@ void UAkMediaAsset::loadAndSetMedia(bool LoadAsync)
 	
 	if (LoadRefCount.GetValue() == 0)
 	{
-		MediaAssetDataLoadAsyncCallback DoSetMedia = [this, assetData](uint8* MediaData, int64 MediaDataSize)
+		if (MediaAssetData->IsLoaded())
 		{
-			AkSourceSettings sourceSettings
-			{
-				Id, reinterpret_cast<AkUInt8*>(MediaData), static_cast<AkUInt32>(MediaDataSize)
-			};
-
-			if (auto akAudioDevice = FAkAudioDevice::Get())
-			{
-				if (akAudioDevice->SetMedia(&sourceSettings, 1) != AK_Success)
-				{
-					UE_LOG(LogAkAudio, Log, TEXT("SetMedia failed for ID: %u"), Id);
-				}
-			}
-
-			if (assetData->IsStreamed)
-			{
-				FAkUnrealIOHook::AddStreamingMedia(this);
-			}
-
-			LoadRefCount.Increment();
-		};
-
-		if (assetData->IsLoaded())
-		{
-			DoSetMedia(assetData->LoadedMediaData, assetData->DataChunks[0].Data.GetBulkDataSize());
+			DoSetMedia(MediaAssetData->LoadedMediaData, MediaAssetData->DataChunks[0].Data.GetBulkDataSize());
 		}
 		else
 		{
-			assetData->Load(LoadAsync, DoSetMedia);
+			MediaAssetData->Load(bLoadAsync, [this, MediaAssetData](uint8* MediaData, int64 MediaDataSize)
+				{
+					DoSetMedia(MediaAssetData->LoadedMediaData, MediaAssetData->DataChunks[0].Data.GetBulkDataSize());
+				});
 		}
 	}
 	else
@@ -421,53 +480,170 @@ void UAkMediaAsset::loadAndSetMedia(bool LoadAsync)
 	}
 }
 
-void UAkMediaAsset::unloadMedia(bool ForceUnload /* = false */)
+void UAkMediaAsset::DoSetMedia(uint8* LoadedMediaData, int64 MediaDataSize)
 {
-	auto assetData = getMediaAssetData();
-	if (!assetData)
+	auto MediaAssetData = GetMediaAssetData();
+	if (!MediaAssetData || MediaAssetData->DataChunks.Num() <= 0)
 	{
 		return;
 	}
 
-	if (LoadRefCount.GetValue() > 0)
+	if (Id != AK_INVALID_UNIQUE_ID)
 	{
-		LoadRefCount.Decrement();
-
-		if (LoadRefCount.GetValue() <= 0 || ForceUnload)
+		AkSourceSettings SourceSettings
 		{
-			if (assetData && assetData->IsStreamed)
+			Id, reinterpret_cast<AkUInt8*>(LoadedMediaData), static_cast<AkUInt32>(MediaDataSize)
+		};
+
+		if (auto AkAudioDevice = FAkAudioDevice::Get())
+		{
+			if (AkAudioDevice->SetMedia(&SourceSettings, 1) != AK_Success)
 			{
-				FAkUnrealIOHook::RemoveStreamingMedia(this);
+				UE_LOG(LogAkAudio, Log, TEXT("SetMedia failed for ID: %u"), Id);
 			}
-
-			if (assetData && assetData->DataChunks.Num() > 0)
-			{
-				if (auto audioDevice = FAkAudioDevice::Get())
-				{
-					AkSourceSettings sourceSettings
-					{
-						Id, reinterpret_cast<AkUInt8*>(assetData->LoadedMediaData), static_cast<AkUInt32>(assetData->DataChunks[0].Data.GetBulkDataSize())
-					};
-					audioDevice->UnsetMedia(&sourceSettings, 1);
-				}
-
-				assetData->Unload();
-			}
-
-			LoadRefCount.Set(0);
 		}
 	}
+	if (MediaAssetData->IsStreamed)
+	{
+		FAkUnrealIOHook::AddStreamingMedia(this);
+	}
+
+	LoadRefCount.Increment();
 }
 
-UAkMediaAssetData* UAkMediaAsset::getMediaAssetData() const
+void UAkMediaAsset::UnloadMedia()
+{
+	if (LoadRefCount.GetValue() <= 0 ||
+		LoadRefCount.Decrement() > 0 ||
+		TryUnloadMedia())
+	{
+		// Normal exit
+		return;
+	}
+
+	auto AudioDevice = FAkAudioDevice::Get();
+	if (!AudioDevice)
+	{
+		UE_LOG(LogAkAudio, Warning, TEXT("Failed unloading ID: %u. Resetting."), Id);
+		ResetMedia();
+		return;
+	}
+
+	UE_LOG(LogAkAudio, Warning, TEXT("Failed unloading ID: %u. Trying waiting."), Id);
+	bool bMediaUnloaded = false;
+	for ( ; !bMediaUnloaded && Leaked >= 0; --Leaked)
+	{
+		FPlatformProcess::Sleep(0.01);
+		AudioDevice->Update(0.0);
+		bMediaUnloaded = TryUnloadMedia();
+	}
+
+	if (!bMediaUnloaded)
+	{
+		UE_LOG(LogAkAudio, Error, TEXT("Failed unloading ID %u (2). Leaking media."), Id);
+		LoadRefCount.Set(0);
+		auto MediaAssetData = GetMediaAssetData();
+		MediaAssetData->LoadedMediaData = nullptr;
+		MediaAssetData->State = UAkMediaAssetData::LoadState::Unloaded;
+	}
+	Leaked = LeakedInitialCount;
+}
+
+bool UAkMediaAsset::TryUnloadMedia()
+{
+	auto MediaAssetData = GetMediaAssetData();
+	if (!MediaAssetData)
+	{
+		// We are already unloaded
+		return true;
+	}
+
+	auto AudioDevice = FAkAudioDevice::Get();
+	if (!AudioDevice
+		|| MediaAssetData->DataChunks.Num() == 0
+		|| (MediaAssetData->IsStreamed && !MediaAssetData->DataChunks[0].IsPrefetch))
+	{
+		// No media to unset. Stop using without unsetting the media.
+		ResetMedia();
+		return true;
+	}
+
+	if (Id != AK_INVALID_UNIQUE_ID)
+	{
+		AkSourceSettings SourceSettings
+		{
+			Id, reinterpret_cast<AkUInt8*>(MediaAssetData->LoadedMediaData), static_cast<AkUInt32>(MediaAssetData->DataChunks[0].Data.GetBulkDataSize())
+		};
+		if (AudioDevice->TryUnsetMedia(&SourceSettings, 1) == AK_ResourceInUse)
+		{
+			// Resource still in use. Try again later.
+			return false;
+		}
+	}
+
+	// Media was properly unset (or an error occured, in which case we should stop trying)
+	ResetMedia();
+	return true;
+}
+
+bool UAkMediaAsset::IsReadyForFinishDestroy()
+{
+	bool bResult = TryUnloadMedia();
+	if (!bResult)
+	{
+		if (--Leaked == 0)
+		{
+			UE_LOG(LogAkAudio, Error, TEXT("Failed destroying ID %u. Leaking media."), Id);
+			LoadRefCount.Set(0);
+			auto MediaAssetData = GetMediaAssetData();
+			MediaAssetData->LoadedMediaData = nullptr;
+			MediaAssetData->State = UAkMediaAssetData::LoadState::Unloaded;
+			Leaked = LeakedInitialCount;
+			return true;
+		}
+		if (auto* AudioDevice = FAkAudioDevice::Get())
+		{
+			AudioDevice->Update(0.0);
+		}
+		else
+		{
+			Leaked = LeakedInitialCount;
+			bResult = true;			// Forcibly close the system
+		}
+	}
+	else
+	{
+		Leaked = LeakedInitialCount;
+	}
+
+	return bResult;
+}
+
+void UAkMediaAsset::ResetMedia()
+{
+	auto MediaAssetData = GetMediaAssetData();
+	if (!MediaAssetData)
+	{
+		return;
+	}
+
+	if (MediaAssetData->IsStreamed)
+	{
+		FAkUnrealIOHook::RemoveStreamingMedia(this);
+	}
+	MediaAssetData->Unload();
+	LoadRefCount.Set(0);
+}
+
+UAkMediaAssetData* UAkMediaAsset::GetMediaAssetData() const
 {
 #if !WITH_EDITORONLY_DATA
 	return CurrentMediaAssetData;
 #else
-	const FString runningPlatformName(FPlatformProperties::IniPlatformName());
-	if (auto platformMediaData = MediaAssetDataPerPlatform.Find(runningPlatformName))
+	const FString RunningPlatformName(FPlatformProperties::IniPlatformName());
+	if (auto PlatformMediaData = MediaAssetDataPerPlatform.Find(RunningPlatformName))
 	{
-		return *platformMediaData;
+		return *PlatformMediaData;
 	}
 
 	return nullptr;
@@ -481,12 +657,12 @@ UAkExternalMediaAsset::UAkExternalMediaAsset()
 
 TTuple<void*, int64> UAkExternalMediaAsset::GetExternalSourceData()
 {
-	auto* mediaData = getMediaAssetData();
+	auto MediaAssetData = GetMediaAssetData();
 
-	if (mediaData && mediaData->DataChunks.Num() > 0)
+	if (MediaAssetData && MediaAssetData->DataChunks.Num() > 0)
 	{
-		loadAndSetMedia(false);
-		auto result = MakeTuple(static_cast<void*>(mediaData->LoadedMediaData), mediaData->DataChunks[0].Data.GetBulkDataSize());
+		LoadAndSetMedia(false);
+		auto result = MakeTuple(static_cast<void*>(MediaAssetData->LoadedMediaData), MediaAssetData->DataChunks[0].Data.GetBulkDataSize());
 		return result;
 	}
 
@@ -501,13 +677,12 @@ void UAkExternalMediaAsset::AddPlayingID(uint32 EventID, uint32 PlayingID)
 
 bool UAkExternalMediaAsset::HasActivePlayingIDs()
 {
-	AK::SoundEngine::RenderAudio();
 	if (auto* AudioDevice = FAkAudioDevice::Get())
 	{
-		for (auto pair : ActiveEventToPlayingIDMap)
+		for (auto ActiveEventToPlayingIDs : ActiveEventToPlayingIDMap)
 		{
-			uint32 EventID = pair.Key;
-			for (auto PlayingID : pair.Value)
+			uint32 EventID = ActiveEventToPlayingIDs.Key;
+			for (auto PlayingID : ActiveEventToPlayingIDs.Value)
 			{
 				if (AudioDevice->IsPlayingIDActive(EventID, PlayingID))
 				{
@@ -524,10 +699,10 @@ void UAkExternalMediaAsset::BeginDestroy()
 {
 	if (auto* AudioDevice = FAkAudioDevice::Get())
 	{
-		for (auto pair : ActiveEventToPlayingIDMap)
+		for (auto ActiveEventToPlayingIDs : ActiveEventToPlayingIDMap)
 		{
-			uint32 EventID = pair.Key;
-			for (auto PlayingID : pair.Value)
+			uint32 EventID = ActiveEventToPlayingIDs.Key;
+			for (auto PlayingID : ActiveEventToPlayingIDs.Value)
 			{
 				if (AudioDevice->IsPlayingIDActive(EventID, PlayingID))
 				{
@@ -536,29 +711,21 @@ void UAkExternalMediaAsset::BeginDestroy()
 				}
 			}
 		}
-
-		AudioDevice->Update(0.0);
 	}
-	
 	Super::BeginDestroy();
 }
 
-
 bool UAkExternalMediaAsset::IsReadyForFinishDestroy()
 {
-	bool IsReady = true;
-	if (auto* AudioDevice = FAkAudioDevice::Get())
+	if (HasActivePlayingIDs())
 	{
-		IsReady = !HasActivePlayingIDs();
-		if (!IsReady)
+		if (auto* AudioDevice = FAkAudioDevice::Get())
 		{
-			// Give time for the sounds what were stopped in BeginDestroy to finish processing
-			FPlatformProcess::Sleep(0.05);
 			AudioDevice->Update(0.0);
+			return false;
 		}
 	}
-
-	return IsReady;
+	return Super::IsReadyForFinishDestroy();
 }
 
 void UAkExternalMediaAsset::PinInGarbageCollector(uint32 PlayingID)

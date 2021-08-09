@@ -21,7 +21,6 @@ AkAudioInputComponent.cpp:
 #include "AkAudioInputComponent.h"
 #include "AkAudioDevice.h"
 #include "AkAudioEvent.h"
-#include "AkAudioInputManager.h"
 
 UAkAudioInputComponent::UAkAudioInputComponent(const class FObjectInitializer& ObjectInitializer) :
     Super(ObjectInitializer)
@@ -29,9 +28,20 @@ UAkAudioInputComponent::UAkAudioInputComponent(const class FObjectInitializer& O
 
 int32 UAkAudioInputComponent::PostAssociatedAudioInputEvent()
 {
-	AkPlayingID PlayingID = FAkAudioInputManager::PostAudioInputEvent(GET_AK_EVENT_NAME(AkAudioEvent, EventName), this,
-																	  FAkGlobalAudioInputDelegate::CreateUObject(this, &UAkAudioInputComponent::FillSamplesBuffer),
-																	  FAkGlobalAudioFormatDelegate::CreateUObject(this, &UAkAudioInputComponent::GetChannelConfig));
+	AudioInputDelegate = FAkGlobalAudioInputDelegate::CreateLambda(
+		[this](uint32 NumChannels, uint32 NumSamples, float** BufferToFill) -> bool
+		{
+			return FillSamplesBuffer(NumChannels, NumSamples, BufferToFill);
+		});
+
+	AudioFormatDelegate = FAkGlobalAudioFormatDelegate::CreateLambda([this](AkAudioFormat& AudioFormat)
+	{
+		return GetChannelConfig(AudioFormat);
+	});
+
+	AkPlayingID PlayingID = FAkAudioInputManager::PostAudioInputEvent(
+		GET_AK_EVENT_NAME(AkAudioEvent, EventName), this, AudioInputDelegate, AudioFormatDelegate);
+
 	if (PlayingID != AK_INVALID_PLAYING_ID)
 	{
 		CurrentlyPlayingIDs.Add(PlayingID);
@@ -41,6 +51,16 @@ int32 UAkAudioInputComponent::PostAssociatedAudioInputEvent()
 
 void UAkAudioInputComponent::PostUnregisterGameObject()
 {
+	if (AudioInputDelegate.IsBound())
+	{
+		AudioInputDelegate.Unbind();
+	}
+
+	if (AudioFormatDelegate.IsBound())
+	{
+		AudioFormatDelegate.Unbind();
+	}
+
 	auto Device = FAkAudioDevice::Get();
 	if (Device != nullptr)
 	{

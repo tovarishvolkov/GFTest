@@ -77,6 +77,7 @@ public:
 
 	virtual void BeginPlay() override;
 #if WITH_EDITOR
+	virtual void BeginDestroy() override;
 	virtual void InitializeComponent() override;
 	virtual void OnComponentCreated() override;
 	virtual void PostLoad() override;
@@ -109,9 +110,11 @@ private:
 #endif
 	static const float RoomsRefreshIntervalGame;
 	static const float RoomsRefreshDistanceThreshold;
+	static const float RoomsRefreshMinRotationThreshold_Degrees;
 	float RoomsRefreshIntervalSeconds = 0.5f;
 	float LastRoomsUpdate = 0.0f;
 	FVector PreviousLocation;
+	FRotator PreviousRotation;
 
 	bool RoomConnectionsNeedUpdated = false;
 	UAkRoomComponent* FrontRoom;
@@ -120,6 +123,7 @@ private:
 	AkPortalOcclusionObstructionService ObstructionService;
 
 #if WITH_EDITOR
+	void HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap);
 	class UDrawPortalComponent* DrawPortalComponent = nullptr;
 	void RegisterVisEnabledCallback();
 	void InitializeDrawComponent();

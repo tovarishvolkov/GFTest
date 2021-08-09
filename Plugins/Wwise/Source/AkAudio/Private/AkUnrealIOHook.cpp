@@ -57,9 +57,10 @@ struct AkFileCustomParam
 struct AkReadAssetCustomParam : public AkFileCustomParam
 {
 public:
-	AkReadAssetCustomParam(IAsyncReadFileHandle* handle, int64 bulkDataOffset)
-	: IORequestHandle(handle), BulkDataOffset(bulkDataOffset)
-	{}
+	AkReadAssetCustomParam(FByteBulkData* data)
+		: BulkData(data)
+	{
+	}
 
 	virtual ~AkReadAssetCustomParam()
 	{
@@ -71,8 +72,6 @@ public:
 				delete ioRequest;
 			}
 		}
-
-		delete IORequestHandle;
 	}
 
 	AKRESULT DoWork(AkAsyncIOTransferInfo& io_transferInfo) override
@@ -91,14 +90,14 @@ public:
 
 		IORequests.Remove(nullptr);
 
-		FAsyncFileCallBack AsyncFileCallBack = [AkTransferInfo](bool bWasCancelled, IAsyncReadRequest* Req) mutable
+		BulkDataRequestCompletedCallback AsyncFileCallBack = [AkTransferInfo](bool bWasCancelled, ReadRequestArgumentType* ReadRequest) mutable
 		{
 			if (AkTransferInfo.pCallback)
 			{
 				AkTransferInfo.pCallback(&AkTransferInfo, AK_Success);
 			}
 		};
-		auto PendingReadRequest = IORequestHandle->ReadRequest(BulkDataOffset + AkTransferInfo.uFilePosition, AkTransferInfo.uRequestedSize, AIOP_High, &AsyncFileCallBack, (uint8*)AkTransferInfo.pBuffer);
+		BulkDataIORequest* PendingReadRequest = BulkData->CreateStreamingRequest(AkTransferInfo.uFilePosition, AkTransferInfo.uRequestedSize, AIOP_High, &AsyncFileCallBack, (uint8*)AkTransferInfo.pBuffer);
 		if (PendingReadRequest)
 		{
 			IORequests.Add(PendingReadRequest);
@@ -108,9 +107,8 @@ public:
 	}
 
 public:
-	IAsyncReadFileHandle* IORequestHandle = nullptr;
-	TArray<IAsyncReadRequest*, TInlineAllocator<8>> IORequests;
-	int64 BulkDataOffset = 0;
+	FByteBulkData* BulkData = nullptr;
+	TArray<BulkDataIORequest*, TInlineAllocator<8>> IORequests;
 };
 
 struct AkEditorReadCustomParam : AkFileCustomParam
@@ -343,7 +341,11 @@ AKRESULT FAkUnrealIOHook::doAssetOpen(UAkMediaAsset* mediaAsset, AkFileDesc& out
 	out_fileDesc.iFileSize = streamedChunk->Data.GetBulkDataSize();
 
 #if WITH_EDITOR
+#if UE_5_0_OR_LATER
+	if (streamedChunk->Data.GetBulkDataOffsetInFile() == -1 || streamedChunk->Data.GetPackagePath().IsEmpty())
+#else
 	if (streamedChunk->Data.GetBulkDataOffsetInFile() == -1 || streamedChunk->Data.GetFilename().Len() == 0)
+#endif
 	{
 		auto customParam = new AkEditorReadCustomParam(streamedChunk->Data);
 		AkFileCustomParam::SetupAkFileDesc(out_fileDesc, customParam);
@@ -351,13 +353,7 @@ AKRESULT FAkUnrealIOHook::doAssetOpen(UAkMediaAsset* mediaAsset, AkFileDesc& out
 	}
 #endif
 
-	auto ioRequestHandle = FPlatformFileManager::Get().GetPlatformFile().OpenAsyncRead(*streamedChunk->Data.GetFilename());
-	if (!ioRequestHandle)
-	{
-		return AK_Fail;
-	}
-
-	auto customParam = new AkReadAssetCustomParam(ioRequestHandle, streamedChunk->Data.GetBulkDataOffsetInFile());
+	auto customParam = new AkReadAssetCustomParam(const_cast<FByteBulkData*>(&(streamedChunk->Data)));
 	AkFileCustomParam::SetupAkFileDesc(out_fileDesc, customParam);
 	return AK_Success;
 }

@@ -38,6 +38,9 @@ void FAkPortalComponentDetailsCustomization::CustomizeDetails(IDetailLayoutBuild
 	TArray<TWeakObjectPtr<UObject>> ObjectsBeingCustomized;
 	DetailLayout.GetObjectsBeingCustomized(ObjectsBeingCustomized);
 
+	DetailLayout.EditCategory("AkPortalComponent", FText::GetEmpty(), ECategoryPriority::TypeSpecific);
+	DetailLayout.EditCategory("Fit To Geometry", FText::GetEmpty(), ECategoryPriority::TypeSpecific);
+	
 	for (TWeakObjectPtr<UObject>& Object : ObjectsBeingCustomized)
 	{
 		UAkPortalComponent* PortalBeingCustomized = Cast<UAkPortalComponent>(Object.Get());

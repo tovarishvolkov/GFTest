@@ -20,6 +20,7 @@ UAkAudioInputComponent.h:
 
 #pragma once
 
+#include "AkAudioInputManager.h"
 #include "AkInclude.h"
 #include "AkComponent.h"
 #include "AkAudioInputComponent.generated.h"
@@ -29,7 +30,7 @@ UAkAudioInputComponent.h:
 UAkAudioInputComponent
 ------------------------------------------------------------------------------------*/
 UCLASS(ClassGroup = Audiokinetic, abstract, BlueprintType, hidecategories = (Transform, Rendering, Mobility, LOD, Component, Activation), meta = (BlueprintSpawnableComponent))
-class AKAUDIO_API UAkAudioInputComponent : public UAkComponent 
+class AKAUDIO_API UAkAudioInputComponent : public UAkComponent
 {
     GENERATED_UCLASS_BODY()
 
@@ -52,4 +53,8 @@ protected:
 	virtual void GetChannelConfig(AkAudioFormat& AudioFormat) PURE_VIRTUAL(UAkAudioInputComponent::GetChannelConfig,);
 
 	TArray<AkPlayingID> CurrentlyPlayingIDs;
+
+private:
+	FAkGlobalAudioInputDelegate AudioInputDelegate;
+	FAkGlobalAudioFormatDelegate AudioFormatDelegate;
 };

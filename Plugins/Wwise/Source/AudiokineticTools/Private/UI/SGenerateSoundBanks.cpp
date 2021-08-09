@@ -184,14 +184,14 @@ void SGenerateSoundBanks::PopulateList(void)
 		}
 
 		if (!PlatformNames.ContainsByPredicate([PlatformInfo](TSharedPtr<FString> Platform) { return PlatformInfo->WwisePlatform == *Platform; })
-			&& wwiseProjectInfo.SupportedPlatforms().ContainsByPredicate([PlatformInfo](auto& x) { return x.Name == PlatformInfo->WwisePlatform; }))
+			&& wwiseProjectInfo.GetSupportedPlatforms().ContainsByPredicate([PlatformInfo](auto& x) { return x.Name == PlatformInfo->WwisePlatform; }))
 		{
 			PlatformNames.Add(MakeShared<FString>(PlatformInfo->WwisePlatform));
 		}
 	}
 
 	LanguagesNames.Empty();
-	for (const auto& language : wwiseProjectInfo.SupportedLanguages())
+	for (const auto& language : wwiseProjectInfo.GetSupportedLanguages())
 	{
 		LanguagesNames.Add(MakeShared<FString>(language.Name));
 	}
@@ -233,7 +233,7 @@ FReply SGenerateSoundBanks::OnGenerateButtonClicked()
 
 	for (auto& selectedLanguage : languagesToGenerate)
 	{
-		for (auto& entry : wwiseProjectInfo.SupportedLanguages())
+		for (auto& entry : wwiseProjectInfo.GetSupportedLanguages())
 		{
 			if (*selectedLanguage == entry.Name)
 			{

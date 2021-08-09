@@ -34,6 +34,7 @@ public:
 	bool AkAudioDevice_UnloadAllFilePackages(FAkAudioDevice* AkAudioDevice) override;
 	void AkAudioDevice_LoadAllReferencedBanks(FAkAudioDevice* AkAudioDevice) override;
 	void AkAudioDevice_SetCurrentAudioCulture(const FString& NewWwiseLanguage) override;
+	void AkAudioDevice_SetCurrentAudioCultureAsync(FAkAudioDevice* AkAudioDevice, const FString& NewWwiseLanguage, FSetCurrentAudioCultureAction* LatentAction) override;
 	void AkAudioDevice_SetCurrentAudioCultureAsync(FAkAudioDevice* AkAudioDevice, const FString& NewWwiseLanguage, const FOnSetCurrentAudioCultureCompleted& CompletedCallback) override;
 	void AkAudioDevice_CreateIOHook(FAkAudioDevice* AkAudioDevice) override;
 	void AkAudioDevice_LoadInitialData(FAkAudioDevice* AkAudioDevice) override;

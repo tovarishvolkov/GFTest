@@ -41,6 +41,8 @@ struct PropertyToChange
 class AkToolBehavior
 {
 public:
+	virtual ~AkToolBehavior() {}
+
 	// CreateSoundDataWidget
 	virtual bool CreateSoundDataWidget(const TSharedRef<SWindow>& Window, TArray<TWeakObjectPtr<UAkAudioBank>>* SoundBanks, bool ProjectSave) = 0;
 
@@ -66,6 +68,7 @@ public:
 	virtual bool AkAssetFactory_ValidNewAssetPath(FName Name, const FString& AssetPath, const UClass* AssetClass) const = 0;
 
 	static AkToolBehavior* Get();
+	static void ForceEventBasedToolBehavior();
 
 protected:
 	bool InsertProperties(const TArray<PropertyToChange>& PropertiesToChange, FString& ProjectContent);

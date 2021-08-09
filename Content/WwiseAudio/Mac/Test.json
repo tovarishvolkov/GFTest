@@ -1,0 +1,90 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "12",
+  "SoundbankVersion": "140",
+  "RootPaths": {
+   "ProjectRoot": "/Users/tovarish_volkov/Library/Application Support/Wwise2019/Bottles/Wwise2019x64/dosdevices/z:/Volumes/Library/UnrealProjects/GFTest/GFTest_WwiseProject/",
+   "SourceFilesRoot": "/Users/tovarish_volkov/Library/Application Support/Wwise2019/Bottles/Wwise2019x64/dosdevices/z:/Volumes/Library/UnrealProjects/GFTest/GFTest_WwiseProject/.cache/Mac/",
+   "SoundBanksRoot": "/Users/tovarish_volkov/Library/Application Support/Wwise2019/Bottles/Wwise2019x64/dosdevices/z:/Volumes/Library/UnrealProjects/GFTest/Content/WwiseAudio/Mac/",
+   "ExternalSourcesInputFile": "",
+   "ExternalSourcesOutputRoot": "/Users/tovarish_volkov/Library/Application Support/Wwise2019/Bottles/Wwise2019x64/dosdevices/z:/Volumes/Library/UnrealProjects/GFTest/GFTest_WwiseProject/GeneratedSoundBanks/Mac"
+  },
+  "SoundBanks": [
+   {
+    "Id": "3157003241",
+    "GUID": "{003B787B-1D1D-44FE-AA1B-6C791BE4C061}",
+    "Language": "SFX",
+    "Hash": "3593611148",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\Test",
+    "ShortName": "Test",
+    "Path": "Test.bnk",
+    "IncludedEvents": [
+     {
+      "Id": "3157003241",
+      "Name": "Test",
+      "ObjectPath": "\\Events\\test\\Test",
+      "GUID": "{F4E24975-DB7A-493A-B11C-3A8BD7BB6303}",
+      "MaxAttenuation": "3000.000000",
+      "DurationType": "Infinite",
+      "IncludedMemoryFiles": [
+       {
+        "Id": "604898225",
+        "Language": "SFX",
+        "ShortName": "vox.wav",
+        "Path": "SFX/vox_D79FB2B7.wem"
+       }
+      ],
+      "AuxBusSends": [
+       {
+        "Id": "769424364",
+        "Name": "RevTest",
+        "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\AUX\\RevTest",
+        "GUID": "{FB9DD9F9-93AE-47CE-9A9E-2BB6CDD60CAF}"
+       }
+      ]
+     }
+    ],
+    "GameParameters": [
+     {
+      "Id": "1295424488",
+      "Name": "testRevLP",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\testRevLP",
+      "GUID": "{478755AA-1456-49C6-AD35-FBA63AAE4796}"
+     },
+     {
+      "Id": "1298737518",
+      "Name": "testPan",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\testPan",
+      "GUID": "{8B133E62-2A85-4D55-B20C-6A45DDB620C0}"
+     },
+     {
+      "Id": "1362534804",
+      "Name": "testRevHP",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\testRevHP",
+      "GUID": "{8E58925F-AECC-4A29-B029-F2BC5E52FCE9}"
+     },
+     {
+      "Id": "2237989772",
+      "Name": "testRev",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\testRev",
+      "GUID": "{8D5B08AA-E9F7-4422-9BBA-CD52D908D2DF}"
+     },
+     {
+      "Id": "3046093717",
+      "Name": "testLP",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\testLP",
+      "GUID": "{A523C67D-FE6D-4D1C-BC37-1F97D1BA336B}"
+     },
+     {
+      "Id": "3299578263",
+      "Name": "testVolume",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\testVolume",
+      "GUID": "{4DD22DA4-AB9E-4C64-A0C5-8002FF3B7B0E}"
+     }
+    ]
+   }
+  ]
+ }
+}

@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -559,12 +559,14 @@ public:
 	/// The invalid frames are made valid (zeroed out) for all channels and the validFrames count will be made equal to uMaxFrames.
 	void ZeroPadToMaxFrames()
 	{
+		AKASSERT(pData != nullptr || MaxFrames() == 0);
 		// The following members MUST be copied locally due to multi-core calls to this function.
 		const AkUInt32 uNumChannels = NumChannels();
-		const AkUInt32 uNumCurrentFrames = uValidFrames;
+		const AkUInt32 uNumCurrentFrames = AkMin(uValidFrames, MaxFrames());
 		const AkUInt32 uNumZeroFrames = MaxFrames() - uNumCurrentFrames;
 		if ( uNumZeroFrames )
 		{
+			AKASSERT(pData != nullptr);
 			for ( AkUInt32 i = 0; i < uNumChannels; ++i )
 			{
 				AKPLATFORM::AkMemSet( GetChannel(i) + uNumCurrentFrames, 0, uNumZeroFrames * sizeof(AkSampleType) );

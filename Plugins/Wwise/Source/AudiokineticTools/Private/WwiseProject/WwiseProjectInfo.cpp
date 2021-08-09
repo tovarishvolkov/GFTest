@@ -19,51 +19,93 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "HAL/FileManager.h"
 #include "Misc/Paths.h"
 #include "XmlFile.h"
+#include "Internationalization/Regex.h"
+#include "Misc/FileHelper.h"
 
 #include <AK/Tools/Common/AkFNVHash.h>
 
+DEFINE_LOG_CATEGORY_STATIC(LogWwiseProjectParser, Log, All);
+
 void WwiseProjectInfo::Parse()
 {
-	supportedPlatforms.Empty();
-	supportedLanguages.Empty();
-	defaultLanguage.Empty();
-	cacheDirectory.Empty();
+	SupportedPlatforms.Empty();
+	SupportedLanguages.Empty();
+	DefaultLanguage.Empty();
+	CacheDirectory.Empty();
 
-	FString projectPath = GetProjectPath();
-	if (projectPath.Len() > 0)
+	FString ProjectPath = GetProjectPath();
+	if (ProjectPath.Len() > 0)
 	{
 		FText errorMessage;
 		int32 errorLineNumber;
+		FString ProjectFileString;
 
-		FFastXml::ParseXmlFile(this, *projectPath, nullptr, nullptr, false, false, errorMessage, errorLineNumber);
-
-		if (cacheDirectory.Len() == 0)
+		if (!FFileHelper::LoadFileToString(ProjectFileString, *ProjectPath))
 		{
-			cacheDirectory = FPaths::Combine(FPaths::GetPath(projectPath), TEXT(".cache"));
+			UE_LOG(LogWwiseProjectParser, Error, TEXT("Could not read the Wwise project file '<%s>'."), *ProjectPath);
+			return;
 		}
 
-		if (defaultLanguage.Len() == 0 || defaultLanguage == TEXT(""))
+		ParseCacheDirectory(*ProjectFileString);
+		SanitizeProjectFileString(ProjectFileString);
+		FFastXml::ParseXmlFile(this, nullptr, ProjectFileString.GetCharArray().GetData(), nullptr, false, false, errorMessage, errorLineNumber);
+
+		if (DefaultLanguage.Len() == 0 || DefaultLanguage == TEXT(""))
 		{
-			defaultLanguage = TEXT("English(US)");
+			DefaultLanguage = TEXT("English(US)");
 		}
+	}
+}
+
+void WwiseProjectInfo::ParseCacheDirectory(const FString ProjectFileString)
+{
+	FString PatternString(TEXT("<MiscSettingEntry Name=\"Cache\">([\\s\\S]*?)</MiscSettingEntry>"));
+	FRegexPattern Pattern(PatternString);
+	FRegexMatcher Matcher(Pattern, ProjectFileString);
+	if (Matcher.FindNext())
+	{
+		CacheDirectory = Matcher.GetCaptureGroup(1);
+		CacheDirectory.RemoveFromStart(TEXT("<![CDATA["));
+		CacheDirectory.RemoveFromEnd(TEXT("]]>"));
+	}
+	else if (CacheDirectory.IsEmpty())
+	{
+		CacheDirectory = TEXT(".cache");
+		UE_LOG(LogWwiseProjectParser, Log, TEXT("Could not parse the Cache directory from the Wwise project file. Using default value : .cache"));
+	}
+
+	if (FPaths::IsRelative(CacheDirectory))
+	{
+		CacheDirectory = FPaths::ConvertRelativePathToFull(FPaths::GetPath(GetProjectPath()), CacheDirectory);
+	}
+}
+
+void WwiseProjectInfo::SanitizeProjectFileString(FString& InOutProjectFileString)
+{
+	FString PatternString(TEXT("<\\!\\[CDATA[\\s\\S]*?>"));
+	FRegexPattern Pattern(PatternString);
+	FRegexMatcher Matcher(Pattern, InOutProjectFileString);
+	while (Matcher.FindNext())
+	{
+		InOutProjectFileString = InOutProjectFileString.Replace(*Matcher.GetCaptureGroup(0), TEXT(""));
 	}
 }
 
 bool WwiseProjectInfo::ProcessAttribute(const TCHAR* AttributeName, const TCHAR* AttributeValue)
 {
-	if (insidePlatformElement)
+	if (bInsidePlatformElement)
 	{
 		if (FCString::Strcmp(AttributeName, TEXT("Name")) == 0)
 		{
-			currentPlatformInfo.Name = AttributeValue;
+			CurrentPlatformInfo.Name = AttributeValue;
 		}
 		else if (FCString::Strcmp(AttributeName, TEXT("ID")) == 0)
 		{
-			FGuid::ParseExact(AttributeValue, EGuidFormats::DigitsWithHyphensInBraces, currentPlatformInfo.ID);
+			FGuid::ParseExact(AttributeValue, EGuidFormats::DigitsWithHyphensInBraces, CurrentPlatformInfo.ID);
 		}
 	}
 
-	if (insideLanguageElement)
+	if (bInsideLanguageElement)
 	{
 		if (FCString::Strcmp(AttributeName, TEXT("Name")) == 0)
 		{
@@ -71,43 +113,38 @@ bool WwiseProjectInfo::ProcessAttribute(const TCHAR* AttributeName, const TCHAR*
 				|| FCString::Strcmp(AttributeValue, TEXT("Mixed")) == 0
 				|| FCString::Strcmp(AttributeValue, TEXT("SFX")) == 0)
 			{
-				insideLanguageElement = false;
+				bInsideLanguageElement = false;
 			}
 			else
 			{
-				if (currentLanguageInfo.Name.IsEmpty())
+				if (CurrentLanguageInfo.Name.IsEmpty())
 				{
-					currentLanguageInfo.Name = AttributeValue;
+					CurrentLanguageInfo.Name = AttributeValue;
 
 					AK::FNVHash32 hash;
-					FTCHARToUTF8 utf8(*currentLanguageInfo.Name.ToLower());
-					currentLanguageInfo.ShortID = hash.Compute(utf8.Get(), utf8.Length());
+					FTCHARToUTF8 utf8(*CurrentLanguageInfo.Name.ToLower());
+					CurrentLanguageInfo.ShortID = hash.Compute(utf8.Get(), utf8.Length());
 				}
 			}
 		}
 		else if (FCString::Strcmp(AttributeName, TEXT("ID")) == 0)
 		{
-			FGuid::ParseExact(AttributeValue, EGuidFormats::DigitsWithHyphensInBraces, currentLanguageInfo.ID);
+			FGuid::ParseExact(AttributeValue, EGuidFormats::DigitsWithHyphensInBraces, CurrentLanguageInfo.ID);
 		}
 	}
 
-	if (insideMiscSettingEntryElement && FCString::Strcmp(AttributeValue, TEXT("Cache")) == 0)
-	{
-		insideCacheSettings = true;
-	}
-
-	if (insidePropertyElement
+	if (bInsidePropertyElement
 		&& FCString::Strcmp(AttributeName, TEXT("Name")) == 0
 		&& FCString::Strcmp(AttributeValue, TEXT("DefaultLanguage")) == 0
 		)
 	{
-		insideDefaultLanguage = true;
+		bInsideDefaultLanguage = true;
 	}
 
-	if (insideDefaultLanguage && FCString::Strcmp(AttributeName, TEXT("Value")) == 0)
+	if (bInsideDefaultLanguage && FCString::Strcmp(AttributeName, TEXT("Value")) == 0)
 	{
-		defaultLanguage = AttributeValue;
-		insideDefaultLanguage = false;
+		DefaultLanguage = AttributeValue;
+		bInsideDefaultLanguage = false;
 	}
 
 	return true;
@@ -115,19 +152,19 @@ bool WwiseProjectInfo::ProcessAttribute(const TCHAR* AttributeName, const TCHAR*
 
 bool WwiseProjectInfo::ProcessClose(const TCHAR* Element)
 {
-	if (insidePlatformElement && FCString::Strcmp(Element, TEXT("Platform")) == 0)
+	if (bInsidePlatformElement && FCString::Strcmp(Element, TEXT("Platform")) == 0)
 	{
-		supportedPlatforms.Add(currentPlatformInfo);
-		insidePlatformElement = false;
+		SupportedPlatforms.Add(CurrentPlatformInfo);
+		bInsidePlatformElement = false;
 	}
-	if (insideLanguageElement && FCString::Strcmp(Element, TEXT("Language")) == 0)
+	if (bInsideLanguageElement && FCString::Strcmp(Element, TEXT("Language")) == 0)
 	{
-		supportedLanguages.Add(currentLanguageInfo);
-		insideLanguageElement = false;
+		SupportedLanguages.Add(CurrentLanguageInfo);
+		bInsideLanguageElement = false;
 	}
-	if (insidePropertyElement && FCString::Strcmp(Element, TEXT("Property")) == 0)
+	if (bInsidePropertyElement && FCString::Strcmp(Element, TEXT("Property")) == 0)
 	{
-		insidePropertyElement = false;
+		bInsidePropertyElement = false;
 	}
 	return true;
 }
@@ -139,50 +176,33 @@ bool WwiseProjectInfo::ProcessComment(const TCHAR* Comment)
 
 bool WwiseProjectInfo::ProcessElement(const TCHAR* ElementName, const TCHAR* ElementData, int32 XmlFileLineNumber)
 {
-	if (insideMiscSettingEntryElement && insideCacheSettings && FCString::Strstr(ElementName, TEXT("CDATA")))
-	{
-		cacheDirectory = ElementName;
-		cacheDirectory.RemoveFromStart(TEXT("![CDATA["));
-		cacheDirectory.RemoveFromEnd(TEXT("]]"));
-
-		if (auto* settings = GetDefault<UAkSettings>())
-		{
-			if (FPaths::IsRelative(cacheDirectory))
-			{
-				cacheDirectory = FPaths::ConvertRelativePathToFull(FPaths::GetPath(GetProjectPath()), cacheDirectory);
-			}
-		}
-
-		return false;
-	}
-
 	if (FCString::Strcmp(ElementName, TEXT("Platform")) == 0)
 	{
-		insidePlatformElement = true;
+		bInsidePlatformElement = true;
 
-		// Clear currentPlatformInfo
-		new (&currentPlatformInfo) FWwisePlatformInfo();
+		// Clear CurrentPlatformInfo
+		new (&CurrentPlatformInfo) FWwisePlatformInfo();
 	}
 	else if (FCString::Strcmp(ElementName, TEXT("Language")) == 0)
 	{
-		insideLanguageElement = true;
+		bInsideLanguageElement = true;
 
-		// Clear currentLanguageInfo
-		new (&currentLanguageInfo) FWwiseLanguageInfo();
+		// Clear CurrentLanguageInfo
+		new (&CurrentLanguageInfo) FWwiseLanguageInfo();
 	}
 	else if (FCString::Strcmp(ElementName, TEXT("Property")) == 0)
 	{
-		insidePropertyElement = true;
-	}
-	else if (FCString::Strcmp(ElementName, TEXT("MiscSettingEntry")) == 0)
-	{
-		insideMiscSettingEntryElement = true;
+		bInsidePropertyElement = true;
 	}
 
-	if (insideDefaultLanguage && FCString::Strcmp(ElementName, TEXT("Value")) == 0)
+	if (bInsideDefaultLanguage && FCString::Strcmp(ElementName, TEXT("Value")) == 0)
 	{
-		defaultLanguage = ElementData;
-		insideDefaultLanguage = false;
+		// Only use this as a backup
+		if (DefaultLanguage.IsEmpty())
+		{
+			DefaultLanguage = ElementData;
+		}
+		bInsideDefaultLanguage = false;
 	}
 
 	return true;
@@ -195,17 +215,17 @@ bool WwiseProjectInfo::ProcessXmlDeclaration(const TCHAR* ElementData, int32 Xml
 
 FString WwiseProjectInfo::GetProjectPath() const
 {
-	FString projectPath;
+	FString ProjectPath;
 
-	if (auto* settings = GetDefault<UAkSettings>())
+	if (const UAkSettings* Settings = GetDefault<UAkSettings>())
 	{
-		projectPath = settings->WwiseProjectPath.FilePath;
+		ProjectPath = Settings->WwiseProjectPath.FilePath;
 
-		if (FPaths::IsRelative(projectPath))
+		if (FPaths::IsRelative(ProjectPath))
 		{
-			projectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir(), projectPath);
+			ProjectPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir(), ProjectPath);
 		}
 	}
 
-	return projectPath;
+	return ProjectPath;
 }

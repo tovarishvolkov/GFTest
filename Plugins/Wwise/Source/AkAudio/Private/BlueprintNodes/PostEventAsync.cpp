@@ -63,12 +63,13 @@ void UPostEventAsync::Activate()
 		AkCallbackType AkCallbackMask = AkCallbackTypeHelpers::GetCallbackMaskFromBlueprintMask(CallbackMask);
 		if (ExternalSources.Num() > 0)
 		{
-			FAkSDKExternalSourceArray SDKExternalSrcInfo(ExternalSources);
-			playingIDFuture = DeviceAndWorld.AkAudioDevice->PostEventAsync(AkEvent, Actor, PostEventCallback, AkCallbackMask, false, SDKExternalSrcInfo.ExternalSourceArray);
+
+			TSharedPtr<FAkSDKExternalSourceArray, ESPMode::ThreadSafe> SDKExternalSrcInfo = MakeShared<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>(ExternalSources);
+			PlayingIDFuture = DeviceAndWorld.AkAudioDevice->PostEventAsync(AkEvent, Actor, PostEventCallback, AkCallbackMask, false, SDKExternalSrcInfo);
 		}
 		else
 		{
-			playingIDFuture = DeviceAndWorld.AkAudioDevice->PostEventAsync(AkEvent, Actor, PostEventCallback, AkCallbackMask);
+			PlayingIDFuture = DeviceAndWorld.AkAudioDevice->PostEventAsync(AkEvent, Actor, PostEventCallback, AkCallbackMask);
 		}
 
 		WorldContextObject->GetWorld()->GetTimerManager().SetTimer(Timer, this, &UPostEventAsync::PollPostEventFuture, 1.f / 60.f, true);
@@ -81,33 +82,33 @@ void UPostEventAsync::Activate()
 
 void UPostEventAsync::PollPostEventFuture()
 {
-	if (playingIDFuture.IsReady())
+	if (PlayingIDFuture.IsReady())
 	{
-		AkPlayingID playingID = playingIDFuture.Get();
-		if (playingID != AK_INVALID_PLAYING_ID)
+		AkPlayingID PlayingID = PlayingIDFuture.Get();
+		if (PlayingID != AK_INVALID_PLAYING_ID)
 		{
 			AkDeviceAndWorld DeviceAndWorld(Actor);
 			for (auto ExtSrc : ExternalSources)
 			{
 				if (ExtSrc.ExternalSourceAsset)
 				{
-					ExtSrc.ExternalSourceAsset->AddPlayingID(AkEvent->ShortID, playingID);
+					ExtSrc.ExternalSourceAsset->AddPlayingID(AkEvent->ShortID, PlayingID);
 					if (ExtSrc.ExternalSourceAsset)
 					{
-						ExtSrc.ExternalSourceAsset->AddPlayingID(AkEvent->ShortID, playingID);
+						ExtSrc.ExternalSourceAsset->AddPlayingID(AkEvent->ShortID, PlayingID);
 						if (!bStopWhenAttachedToDestroyed)
 						{
-							ExtSrc.ExternalSourceAsset->PinInGarbageCollector(playingID);
+							ExtSrc.ExternalSourceAsset->PinInGarbageCollector(PlayingID);
 						}
 					}
 				}
 			}
 
-			AkEvent->PinInGarbageCollector(playingID);
+			AkEvent->PinInGarbageCollector(PlayingID);
 		}
 
 		WorldContextObject->GetWorld()->GetTimerManager().ClearTimer(Timer);
 		Timer.Invalidate();
-		Completed.Broadcast(playingID);
+		Completed.Broadcast(PlayingID);
 	}
 }

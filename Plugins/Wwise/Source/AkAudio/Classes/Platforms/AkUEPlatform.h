@@ -56,4 +56,5 @@ namespace AkUnrealPlatformHelper
 	AKAUDIO_API TSet<FString> GetAllSupportedUnrealPlatforms();
 	AKAUDIO_API TSet<FString> GetAllSupportedUnrealPlatformsForProject();
 	AKAUDIO_API TArray<TSharedPtr<FString> > GetAllSupportedWwisePlatforms(bool ProjectScope = false);
+	AKAUDIO_API bool IsEditorPlatform(FString Platform);
 }

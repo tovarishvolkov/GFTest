@@ -265,6 +265,7 @@ bool AkAssetDatabase::Add(const FGuid& Id, const FAssetData& AssetData)
 			}
 		}
 	}
+
 	else if (assetKlass->IsChildOf<UAkAudioEvent>())
 	{
 		EventMap.Add(finalId, AssetData);
@@ -308,30 +309,32 @@ bool AkAssetDatabase::Add(const FGuid& Id, const FAssetData& AssetData)
 
 bool AkAssetDatabase::Remove(const FAssetData& AssetData)
 {
-	auto assetKlass = AssetData.GetClass();
+	auto AssetKlass = AssetData.GetClass();
 
-	if (assetKlass->IsChildOf<UAkFolder>() || assetKlass->IsChildOf<UAkAuxBus>())
+	if (AssetKlass->IsChildOf<UAkFolder>() || AssetKlass->IsChildOf<UAkAuxBus>())
 	{
 		removeFolder(AssetData.PackagePath.ToString());
 	}
 
-	auto successfullyRemoved = false;
-	auto assetID = AssetData.GetTagValueRef<FGuid>(GET_MEMBER_NAME_CHECKED(UAkAudioType, ID));
-	if (ignoreDeletes.Contains(assetID))
+	auto bSuccessfullyRemoved = false;
+	auto AssetID = AssetData.GetTagValueRef<FGuid>(GET_MEMBER_NAME_CHECKED(UAkAudioType, ID));
+	if (ignoreDeletes.Contains(AssetID))
 	{
-		ignoreDeletes.Remove(assetID);
+		ignoreDeletes.Remove(AssetID);
 	}
 	else
 	{
-		if (assetKlass->IsChildOf<UAkAudioEvent>())
+		if (AssetKlass->IsChildOf<UAkAudioEvent>())
 		{
-			auto akAudioEvent = Cast<UAkAudioEvent>(AssetData.GetAsset());
-			akAudioEvent->ClearRequiredBank();
+			if (auto AkAudioEvent = Cast<UAkAudioEvent>(AssetData.GetAsset()))
+			{
+				AkAudioEvent->ClearRequiredBank();
+			}
 		}
-		successfullyRemoved = AkToolBehavior::Get()->AkAssetDatabase_Remove(this, AssetData);
+		bSuccessfullyRemoved = AkToolBehavior::Get()->AkAssetDatabase_Remove(this, AssetData);
 	}
 
-	return successfullyRemoved;
+	return bSuccessfullyRemoved;
 }
 
 void AkAssetDatabase::CreateInitBankIfNeeded()
@@ -430,8 +433,6 @@ UPackage* AkAssetDatabase::CreateOrRenameAsset(const UClass* Klass, const FGuid&
 	auto AssetPath = FPaths::Combine(AssetPackagePath, AssetName + TEXT(".") + AssetName);
 
 	auto assetDataPtr = AudioTypeMap.Find(Id);
-	TArray<FAssetData> allAssets;
-	AssetRegistryModule->Get().GetAssetsByClass(UAkAudioType::StaticClass()->GetFName(), allAssets, true);
 	if (!assetDataPtr)
 	{
 		FString ValueName = AssetName;

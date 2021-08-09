@@ -1129,6 +1129,16 @@ void UAkSurfaceReflectorSetComponent::UpdateSurfaceReflectorSet()
 }
 
 #if WITH_EDITOR
+void UAkSurfaceReflectorSetComponent::HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap)
+{
+	Super::HandleObjectsReplaced(ReplacementMap);
+	if (ReplacementMap.Contains(ParentBrush))
+	{
+		InitializeParentBrush();
+		SendSurfaceReflectorSet();
+	}
+}
+
 bool UAkSurfaceReflectorSetComponent::ContainsTexture(const FGuid& textureID)
 {
 	for (const auto& poly : AcousticPolys)

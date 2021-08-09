@@ -23,6 +23,9 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "AkGeometryComponent.generated.h"
 
 class UAkSettings;
+#if UE_5_0_OR_LATER
+class UMaterialInterface;
+#endif
 
 DECLARE_DELEGATE(FOnMeshTypeChanged);
 
@@ -185,6 +188,7 @@ private:
 
 	void BeginPlayInternal();
 #if WITH_EDITOR
+	virtual void HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap) override;
 	bool bRequiresDeferredBeginPlay = false;
 	void RegisterAllTextureParamCallbacks() override;
 	bool ContainsTexture(const FGuid& textureID) override;

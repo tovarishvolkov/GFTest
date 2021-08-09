@@ -42,6 +42,8 @@ public:
 protected:
 	void RecalculateHFDamping();
 #if WITH_EDITOR
+	virtual void BeginDestroy() override;
+	virtual void HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap);
 	void RegisterReverbRTPCChangedCallback();
 	FDelegateHandle RTPCChangedHandle;
 	virtual void RegisterAllTextureParamCallbacks() { check(0 && "This function must be overidden"); }

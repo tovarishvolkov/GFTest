@@ -29,7 +29,6 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "AkSettings.h"
 #include "AkSwitchValue.h"
 #include "AkTrigger.h"
-#include "AkUnrealHelper.h"
 #include "AssetRegistry/Public/AssetRegistryModule.h"
 #include "AssetTools/Public/AssetToolsModule.h"
 #include "Async/Async.h"
@@ -111,8 +110,8 @@ void AkSoundDataBuilder::Init()
 
 	wwiseProjectInfo.Parse();
 
-	cacheDirectory = wwiseProjectInfo.CacheDirectory();
-	defaultLanguage = wwiseProjectInfo.DefaultLanguage();
+	cacheDirectory = wwiseProjectInfo.GetCacheDirectory();
+	defaultLanguage = wwiseProjectInfo.GetDefaultLanguage();
 
 	auto& akAssetDatabase = AkAssetDatabase::Get();
 	if (!akAssetDatabase.IsInited())
@@ -193,6 +192,47 @@ void AkSoundDataBuilder::notifyProfilingInProgress()
 			GEditor->PlayEditorSound(TEXT("/Engine/EditorSounds/Notifications/CompileFailed_Cue.CompileFailed_Cue"));
 		});
 	}
+}
+
+void AkSoundDataBuilder::WrapUpGeneration(const bool& bSuccess, const FString& BuilderName)
+{
+	FTaskGraphInterface::Get().WaitUntilTasksComplete(allParseTask);
+
+	DispatchAndWaitMediaCookTasks();
+
+	for (TObjectIterator<UAkAudioType> AudioTypeIt; AudioTypeIt; ++AudioTypeIt)
+	{
+		AudioTypeIt->ValidateShortId(true);
+	}
+
+	AutoSaveAssetsBlocking();
+
+	FString SuccessMessage;
+
+	if (!bSuccess)
+	{
+		SuccessMessage = BuilderName + TEXT(" Sound Data Builder task failed");
+		notifyGenerationFailed();
+	}
+	else
+	{
+		SuccessMessage = BuilderName + TEXT(" Sound Data Builder task was successful");
+		notifyGenerationSucceeded();
+	}
+
+	if (!IsRunningCommandlet())
+	{
+		AsyncTask(ENamedThreads::Type::GameThread, []
+			{
+				if (FAkAudioDevice* AudioDevice = FAkAudioDevice::Get())
+				{
+					AudioDevice->ReloadAllSoundData();
+				}
+			});
+	}
+
+	auto EndTime = FPlatformTime::Cycles64();
+	UE_LOG(LogAkSoundData, Display, TEXT("%s and took %f seconds."), *SuccessMessage, FPlatformTime::ToSeconds64(EndTime - StartTime));
 }
 
 void AkSoundDataBuilder::notifyCookingData()
@@ -624,9 +664,7 @@ bool AkSoundDataBuilder::ParseMediaAndSwitchContainers(TSharedPtr<FJsonObject> E
 			{
 				auto& switchContainerJson = switchContainerValueJson->AsObject();
 
-				UAkAssetDataSwitchContainerData* switchContainerEntry = NewObject<UAkAssetDataSwitchContainerData>(AssetData);
-				parseSwitchContainer(switchContainerJson, switchContainerEntry, NewMediaList, AssetData, MediaToCookMap);
-				NewSwitchContainerData.Add(switchContainerEntry);
+				ParseSwitchContainer(switchContainerJson, NewSwitchContainerData, NewMediaList, AssetData, MediaToCookMap);
 			}
 		}
 
@@ -801,17 +839,30 @@ bool AkSoundDataBuilder::parseEventInfo(UAkAudioEvent* akEvent, UAkAudioEventDat
 	return changed;
 }
 
-void AkSoundDataBuilder::parseSwitchContainer(const TSharedPtr<FJsonObject>& SwitchContainerJson, UAkAssetDataSwitchContainerData* SwitchContainerEntry, TArray<TSoftObjectPtr<UAkMediaAsset>>& MediaList, UObject* Parent, MediaToCookMap& MediaToCookMap)
+void AkSoundDataBuilder::ParseSwitchContainer(const TSharedPtr<FJsonObject>& SwitchContainerJson, TArray<UAkAssetDataSwitchContainerData*>& InOutSwitchContainerData, TArray<TSoftObjectPtr<UAkMediaAsset>>& InOutMediaList, UObject* Parent, MediaToCookMap& InOutMediaToCookMap)
 {
 	FString stringSwitchValue = SwitchContainerJson->GetStringField("SwitchValue");
 	FGuid switchValueGuid;
 	FGuid::ParseExact(stringSwitchValue, EGuidFormats::DigitsWithHyphensInBraces, switchValueGuid);
 
+	UAkAssetDataSwitchContainerData* SwitchContainerEntry;
 	auto groupValue = AkAssetDatabase::Get().GroupValueMap.FindLiveAsset(switchValueGuid);
-
 	if (groupValue)
 	{
+		UAkAssetDataSwitchContainerData** SwitchContainerEntryPtr = InOutSwitchContainerData.FindByPredicate([=](UAkAssetDataSwitchContainerData* ItemInArray) { return ItemInArray->GroupValue.GetAssetName() == groupValue->GetName(); });
+		if (SwitchContainerEntryPtr == nullptr)
+		{
+			SwitchContainerEntry = NewObject<UAkAssetDataSwitchContainerData>(Parent);
+		}
+		else
+		{
+			SwitchContainerEntry = *SwitchContainerEntryPtr;
+		}
 		SwitchContainerEntry->GroupValue = groupValue;
+	}
+	else 
+	{
+		SwitchContainerEntry = NewObject<UAkAssetDataSwitchContainerData>(Parent);
 	}
 
 	FString stringDefaultSwitchValue;
@@ -843,7 +894,7 @@ void AkSoundDataBuilder::parseSwitchContainer(const TSharedPtr<FJsonObject>& Swi
 				FScopeLock autoLock(&mediaLock);
 				mediaAssetPath = mediaIdToAssetPath.Find(mediaFileId);
 
-				TSharedPtr<MediaAssetToCook>* assetToCook = MediaToCookMap.Find(mediaFileId);
+				TSharedPtr<MediaAssetToCook>* assetToCook = InOutMediaToCookMap.Find(mediaFileId);
 				if (assetToCook)
 				{
 					assetToCook->Get()->AutoLoad = false;
@@ -854,7 +905,7 @@ void AkSoundDataBuilder::parseSwitchContainer(const TSharedPtr<FJsonObject>& Swi
 			{
 				SwitchContainerEntry->TempMediaList.Emplace(*mediaAssetPath);
 
-				MediaList.RemoveAll([mediaAssetPath](const TSoftObjectPtr<UAkMediaAsset>& item) {
+				InOutMediaList.RemoveAll([mediaAssetPath](const TSoftObjectPtr<UAkMediaAsset>& item) {
 					return item.GetUniqueID() == *mediaAssetPath;
 				});
 
@@ -862,9 +913,17 @@ void AkSoundDataBuilder::parseSwitchContainer(const TSharedPtr<FJsonObject>& Swi
 			}
 		}
 
-		if (groupValue)
 		{
-			TempMediaDependenciesList.FindOrAdd(groupValue).Append(MediaDependenciesInJson);
+			FScopeLock AutoLock(&MediaDependenciesLock);
+			if (groupValue)
+			{
+				TempMediaDependenciesList.FindOrAdd(groupValue).Append(MediaDependenciesInJson);
+			}
+			else
+			{
+				UE_LOG(LogAkAudio, Log, TEXT("Couldn't find group value asset with GUID %s, likely due to a generic path being used in a music switch container.\n The media in switch container %s will be set to AutoLoad with events that reference it."), *stringSwitchValue, *SwitchContainerEntry->GetFullName());
+				MediaAssetsInSwitchContainersMissingGroupValues.Append(MediaDependenciesInJson);
+			}
 		}
 	}
 
@@ -875,11 +934,11 @@ void AkSoundDataBuilder::parseSwitchContainer(const TSharedPtr<FJsonObject>& Swi
 		{
 			auto& childJsonObject = childJsonValue->AsObject();
 
-			UAkAssetDataSwitchContainerData* childEntry = NewObject<UAkAssetDataSwitchContainerData>(Parent);
-			parseSwitchContainer(childJsonObject, childEntry, MediaList, Parent, MediaToCookMap);
-			SwitchContainerEntry->Children.Add(childEntry);
+			ParseSwitchContainer(childJsonObject, SwitchContainerEntry->Children, InOutMediaList, Parent, InOutMediaToCookMap);
 		}
 	}
+
+	InOutSwitchContainerData.AddUnique(SwitchContainerEntry);
 }
 
 bool AkSoundDataBuilder::parseAssetInfo(UAkAuxBus* akAuxBus, UAkAssetData* auxBusPlatformData, const FString& platform, const FString& language, const TSharedPtr<FJsonObject>& soundBankData, MediaToCookMap& mediaToCookMap)
@@ -996,12 +1055,12 @@ bool AkSoundDataBuilder::parseAssetInfo(UAkAudioBank* akAudioBank, UAkAssetData*
 			FString eventStringId;
 			FGuid eventId;
 			if (eventJson->TryGetStringField("GUID", eventStringId) && !eventStringId.IsEmpty())
-			{ 
+			{
 				FGuid::ParseExact(eventStringId, EGuidFormats::DigitsWithHyphensInBraces, eventId);
 			}
 
 			FAssetData eventByName;
-			FAssetData const* eventIt = nullptr;
+			const FAssetData* eventIt = nullptr;
 
 			eventIt = akAssetDatabase.EventMap.Find(eventId);
 			if (!eventIt)
@@ -1034,20 +1093,14 @@ bool AkSoundDataBuilder::parseAssetInfo(UAkAudioBank* akAudioBank, UAkAssetData*
 						requiredData->eventPlatformData = requiredData->akAudioEvent->FindOrAddAssetData(platform, FString());
 					}
 				}, GET_STATID(STAT_EventPlatformDataEventGroup), nullptr, ENamedThreads::GameThread);
+
+				FTaskGraphInterface::Get().WaitUntilTaskCompletes(fetchPlatformDataTask);
+
+				if (requiredData->akAudioEvent && requiredData->eventPlatformData)
 				{
-					FScopeLock autoLock(&parseTasksLock);
-					allParseTask.Add(fetchPlatformDataTask);
-				}
+					bool bChanged = false;
 
-				auto parseMediaAndSwitchContainersTask = FFunctionGraphTask::CreateAndDispatchWhenReady([sharedThis, requiredData, eventJson, platform, language, isUsingNewAssetManagement]
-				{
-					if (!requiredData->akAudioEvent || !requiredData->eventPlatformData)
-						return;
-
-					bool changed = false;
-
-					MediaToCookMap& mediaToCookMap = sharedThis->getMediaToCookMap(platform);
-					changed |= sharedThis->parseEventInfo(requiredData->akAudioEvent, Cast<UAkAudioEventData>(requiredData->eventPlatformData), eventJson);
+					bChanged |= sharedThis->parseEventInfo(requiredData->akAudioEvent, Cast<UAkAudioEventData>(requiredData->eventPlatformData), eventJson);
 
 					if (isUsingNewAssetManagement)
 					{
@@ -1056,24 +1109,19 @@ bool AkSoundDataBuilder::parseAssetInfo(UAkAudioBank* akAudioBank, UAkAssetData*
 							if (language.Len() > 0)
 							{
 								auto localizedMediaInfo = eventPlatformData->FindOrAddLocalizedData(language);
-								changed |= sharedThis->ParseMediaAndSwitchContainers(eventJson, localizedMediaInfo, platform, mediaToCookMap);
+								bChanged |= sharedThis->ParseMediaAndSwitchContainers(eventJson, localizedMediaInfo, platform, mediaToCookMap);
 							}
 							else
 							{
-								changed |= sharedThis->ParseMediaAndSwitchContainers(eventJson, eventPlatformData, platform, mediaToCookMap);
+								bChanged |= sharedThis->ParseMediaAndSwitchContainers(eventJson, eventPlatformData, platform, mediaToCookMap);
 							}
 						}
 					}
-
-					if (changed)
+					if (bChanged)
 					{
 						sharedThis->markAssetDirty(requiredData->akAudioEvent);
 						sharedThis->markAssetDirty(requiredData->eventPlatformData);
 					}
-				}, GET_STATID(STAT_ParseEventInfoEventGroup), fetchPlatformDataTask);
-				{
-					FScopeLock autoLock(&parseTasksLock);
-					allParseTask.Add(parseMediaAndSwitchContainersTask);
 				}
 			}
 		}
@@ -1259,7 +1307,7 @@ void AkSoundDataBuilder::cookMediaAsset(const MediaAssetToCook& mediaToCook, con
 	}
 }
 
-void AkSoundDataBuilder::dispatchAndWaitMediaCookTasks()
+void AkSoundDataBuilder::DispatchAndWaitMediaCookTasks()
 {
 	for (auto& entry : mediaToCookPerPlatform)
 	{
@@ -1279,18 +1327,33 @@ void AkSoundDataBuilder::dispatchAndWaitMediaCookTasks()
 		mediaPathToMediaAssetTasks.Add(convertTask);
 	}
 
-	for (auto Pair : TempMediaDependenciesList)
 	{
-		UAkGroupValue* GroupValue = Pair.Key;
-		MediaDependencySet& MediaDependenciesInJson = Pair.Value;
-		MediaDependencySet MediaDependenciesInAsset(GroupValue->MediaDependencies);
-		if (MediaDependenciesInJson.Num() != MediaDependenciesInAsset.Num() || !MediaDependenciesInJson.Includes(MediaDependenciesInAsset))
+		FScopeLock autoLock(&MediaDependenciesLock);
+		for (auto Pair : TempMediaDependenciesList)
 		{
-			GroupValue->MediaDependencies.Reset();
-			GroupValue->MediaDependencies.Append(MediaDependenciesInJson.Array());
-			markAssetDirty(GroupValue);
+			UAkGroupValue* GroupValue = Pair.Key;
+			MediaDependencySet& MediaDependenciesInJson = Pair.Value;
+			MediaDependencySet MediaDependenciesInAsset(GroupValue->MediaDependencies);
+			if (MediaDependenciesInJson.Num() != MediaDependenciesInAsset.Num() || !MediaDependenciesInJson.Includes(MediaDependenciesInAsset))
+			{
+				GroupValue->MediaDependencies.Reset();
+				GroupValue->MediaDependencies.Append(MediaDependenciesInJson.Array());
+				markAssetDirty(GroupValue);
+			}
+
 		}
 
+		for (auto MediaAsset : MediaAssetsInSwitchContainersMissingGroupValues)
+		{
+			if (UAkMediaAsset* Asset = MediaAsset.Get())
+			{
+				if (!Asset->AutoLoad)
+				{
+					Asset->AutoLoad = true;
+					markAssetDirty(Asset);
+				}
+			}
+		}
 	}
 
 	FTaskGraphInterface::Get().WaitUntilTasksComplete(mediaPathToMediaAssetTasks);

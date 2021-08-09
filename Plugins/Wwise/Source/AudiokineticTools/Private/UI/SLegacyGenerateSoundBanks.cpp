@@ -207,7 +207,7 @@ void SLegacyGenerateSoundBanks::PopulateList()
 			continue;
 		}
 
-		if (projectInfo.SupportedPlatforms().ContainsByPredicate([PlatformInfo](auto& x) { return x.Name == PlatformInfo->WwisePlatform; })
+		if (projectInfo.GetSupportedPlatforms().ContainsByPredicate([PlatformInfo](auto& x) { return x.Name == PlatformInfo->WwisePlatform; })
 			&& !PlatformNames.ContainsByPredicate([PlatformInfo](TSharedPtr<FString> Platform) { return PlatformInfo->WwisePlatform == *Platform; }))
 		{
 			PlatformNames.Add(MakeShared<FString>(PlatformInfo->WwisePlatform));

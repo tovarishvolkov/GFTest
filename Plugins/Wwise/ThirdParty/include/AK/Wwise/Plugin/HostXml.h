@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -165,7 +165,8 @@ struct ak_wwise_plugin_host_xml_v1
 	 * \endaknote
 	 * 
 	 * \param[in] in_this Current reader instance of this interface.
-	 * \return The name of the current node.
+	 * \return The name of the current node. The buffer is owned by Authoring and is 
+	 *   valid until the next API call.
 	 */
 	const char *(*GetName)(const struct ak_wwise_plugin_host_xml_reader_instance_v1* in_this);
 
@@ -206,7 +207,8 @@ struct ak_wwise_plugin_host_xml_v1
 	 * \endaknote
 	 * 
 	 * \param[in] in_this Current reader instance of this interface.
-	 * \return The value of the current node. An empty string if the value is empty.
+	 * \return The value of the current node, an empty string if the value is empty.
+	 *   The buffer is owned by Authoring and is valid until the next API call.
 	 */
 	const char *(*GetValue)(const struct ak_wwise_plugin_host_xml_reader_instance_v1* in_this);
 
@@ -304,7 +306,8 @@ struct ak_wwise_plugin_host_xml_v1
 	 * \endaknote
 	 * 
 	 * \param[in] in_this Current reader instance of this interface.
-	 * \return The string of the current nodes. An empty string if the value is empty.
+	 * \return The string of the current nodes, an empty string if the value is empty.
+	 *   The buffer is owned by Authoring and is valid until the next API call.
 	 */
 	const char *(*ReadElementString)(struct ak_wwise_plugin_host_xml_reader_instance_v1* in_this);
 
@@ -323,6 +326,7 @@ struct ak_wwise_plugin_host_xml_v1
 	 * 
 	 * \param[in] in_this Current reader instance of this interface.
 	 * \param[out] out_csXml All the XML content, including markup, in the current node.
+	 *   The buffer is owned by Authoring and is valid until the next API call.
 	 */
 	void(*ReadInnerXml)(struct ak_wwise_plugin_host_xml_reader_instance_v1* in_this, const char ** out_csXml);
 
@@ -341,6 +345,7 @@ struct ak_wwise_plugin_host_xml_v1
 	 * 
 	 * \param[in] in_this Current reader instance of this interface.
 	 * \param[out] out_csXml All the XML content, including markup and enclosing tags, of the current node.
+	 *   The buffer is owned by Authoring and is valid until the next API call.
 	 */
 	void(*ReadOuterXml)(struct ak_wwise_plugin_host_xml_reader_instance_v1* in_this, const char ** out_csXml);
 
@@ -358,6 +363,7 @@ struct ak_wwise_plugin_host_xml_v1
 	 * \param[in] in_this Current reader instance of this interface.
 	 * \param[in] in_rcsAttributeName The attribute name
 	 * \param[out] out_rcsValue The attribute value.
+	 *   The buffer is owned by Authoring and is valid until the next API call.
 	 * \return true if the value exists.
 	 */
 	bool(*GetAttribute)(
@@ -556,6 +562,7 @@ namespace AK::Wwise::Plugin
 			 * \endaknote
 			 * 
 			 * \return The name of the current node.
+			 *   The buffer is owned by Authoring and is valid until the next API call.
 			 */
 			inline const char * GetName() const { return g_cinterface->GetName(this); }
 
@@ -593,7 +600,8 @@ namespace AK::Wwise::Plugin
 			 * 		at the earliest convenience.
 			 * \endaknote
 			 * 
-			 * \return The value of the current node. An empty string if the value is empty.
+			 * \return The value of the current node, an empty string if the value is empty.
+			 *   The buffer is owned by Authoring and is valid until the next API call.
 			 */
 			inline const char * GetValue() const { return g_cinterface->GetValue(this); }
 
@@ -685,7 +693,8 @@ namespace AK::Wwise::Plugin
 			 * 		at the earliest convenience.
 			 * \endaknote
 			 * 
-			 * \return The string of the current nodes. An empty string if the value is empty.
+			 * \return The string of the current nodes, an empty string if the value is empty.
+			 *   The buffer is owned by Authoring and is valid until the next API call.
 			 */
 			inline const char * ReadElementString() { return g_cinterface->ReadElementString(this); }
 
@@ -703,6 +712,7 @@ namespace AK::Wwise::Plugin
 			 * \endaknote
 			 * 
 			 * \param[out] out_csXml All the XML content, including markup, in the current node.
+			 *   The buffer is owned by Authoring and is valid until the next API call.
 			 */
 			inline void ReadInnerXml(const char *& out_csXml) { g_cinterface->ReadInnerXml(this, &out_csXml); }
 
@@ -720,6 +730,7 @@ namespace AK::Wwise::Plugin
 			 * \endaknote
 			 * 
 			 * \param[out] out_csXml All the XML content, including markup and enclosing tags, of the current node.
+			 *   The buffer is owned by Authoring and is valid until the next API call.
 			 */
 			inline void ReadOuterXml(const char *& out_csXml) { g_cinterface->ReadOuterXml(this, &out_csXml); }
 
@@ -735,6 +746,7 @@ namespace AK::Wwise::Plugin
 			 * 
 			 * \param[in] in_rcsAttributeName The attribute name
 			 * \param[out] out_rcsValue The attribute value.
+			 *   The buffer is owned by Authoring and is valid until the next API call.
 			 * \return true if the value exists.
 			 */
 			inline bool GetAttribute(const char * in_rcsAttributeName, const char *& out_rcsValue) { return MKBOOL(g_cinterface->GetAttribute(this, in_rcsAttributeName, &out_rcsValue)); }

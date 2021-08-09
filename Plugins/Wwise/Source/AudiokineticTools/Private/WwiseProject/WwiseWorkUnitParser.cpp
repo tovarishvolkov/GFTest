@@ -25,6 +25,7 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "Misc/FileHelper.h"
 #include "Internationalization/Regex.h"
 #include "WwiseProjectParser.h"
+#include "WwiseProjectInfo.h"
 #include "HAL/PlatformFileManager.h"
 
 #define LOCTEXT_NAMESPACE "AkAudio"
@@ -33,7 +34,7 @@ DEFINE_LOG_CATEGORY_STATIC(LogWwiseWorkUnitParser, Log, All);
 
 bool WwiseWorkUnitParser::Parse()
 {
-	if (!visitor)
+	if (!Visitor)
 	{
 		return false;
 	}
@@ -45,29 +46,29 @@ bool WwiseWorkUnitParser::Parse()
 		return false;
 	}
 
-	visitor->OnBeginParse();
+	Visitor->OnBeginParse();
 	ParsePhysicalFolders(); 
 	projectRootFolder = FPaths::GetPath(projectFilePath) + TEXT("/");
 	for (int i = EWwiseItemType::Event; i <= EWwiseItemType::LastWwiseDraggable; ++i)
 	{
 		const auto CurrentType = static_cast<EWwiseItemType::Type>(i);
-		visitor->Init(CurrentType);
+		Visitor->Init(CurrentType);
 		parseFolders(EWwiseItemType::FolderNames[i], CurrentType);
 	}
-	visitor->End();
+	Visitor->End();
 
 	return true;
 }
 
 bool WwiseWorkUnitParser::ForceParse()
 {
-	if (!visitor)
+	if (!Visitor)
 	{
 		return false;
 	}
 
 	wwuLastPopulateTime.Reset();
-	visitor->ForceInit();
+	Visitor->ForceInit();
 	return Parse();
 }
 
@@ -75,43 +76,34 @@ void WwiseWorkUnitParser::ParsePhysicalFolders()
 {
 	FScopedSlowTask SlowTask(2.f, LOCTEXT("AK_PopulatingPickerPhysicalFolders", "Parsing Wwise Physical Folders..."));
 	SlowTask.MakeDialog();
-	visitor->OnBeginPhysicalFolderParse();
-	auto projectFilePath = AkUnrealHelper::GetWwiseProjectPath();
-	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*projectFilePath))
+	Visitor->OnBeginPhysicalFolderParse();
+	FString ProjectFilePath = AkUnrealHelper::GetWwiseProjectPath();
+	if (!FPlatformFileManager::Get().GetPlatformFile().FileExists(*ProjectFilePath))
 	{
+		UE_LOG(LogWwiseWorkUnitParser, Error, TEXT("Could not find the project file '<%s>' while syncing assets. Some folders may not appear in the content browser or in the Wwise picker."), *ProjectFilePath);
+		return;
+	}
+
+	FString ProjectFileString;
+	if (!FFileHelper::LoadFileToString(ProjectFileString, *ProjectFilePath))
+	{
+		UE_LOG(LogWwiseWorkUnitParser, Error, TEXT("Could not read the project file '<%s>' while syncing assets. Some folders may not appear in the content browser or in the Wwise picker."), *ProjectFilePath);
 		return;
 	}
 
 	//replace CDATA elements in xml so they don't kill the parser
-	FString PatternString(TEXT("<\\!\\[CDATA[\\s\\S]*?>"));
-	FString fileString;
-	bool readSuccess = FFileHelper::LoadFileToString(fileString, *projectFilePath);
-
-	if (!readSuccess)
+	WwiseProjectInfo::SanitizeProjectFileString(ProjectFileString);
+	WwiseProjectParser Parser(Visitor);
+	FText ErrorOut;
+	int32 ErrorLineNumber;
+	FFastXml::ParseXmlFile(&Parser, nullptr, ProjectFileString.GetCharArray().GetData(), nullptr, false, false, ErrorOut,  ErrorLineNumber);
+	if (!ErrorOut.IsEmpty())
 	{
-		UE_LOG(LogWwiseWorkUnitParser, Error, TEXT("Could not read the project file '<%s>' while syncing assets. Some folders may not appear in the content browser or in the Wwise picker."), *projectFilePath);
-		return;
-	}
-
-	FRegexPattern Pattern(PatternString);
-	FRegexMatcher Matcher(Pattern, fileString);
-	while (Matcher.FindNext())
-	{
-		auto t = Matcher.GetCaptureGroup(0);
-		fileString = fileString.Replace(*t, TEXT(""));
-	}
-
-	WwiseProjectParser parser(visitor);
-	FText errorOut;
-	int32 errorLineNumber;
-	FFastXml::ParseXmlFile(&parser, NULL, fileString.GetCharArray().GetData(), NULL, false, false, errorOut,  errorLineNumber);
-	if (!errorOut.IsEmpty())
-	{
-		UE_LOG(LogWwiseWorkUnitParser, Error, TEXT("Failed to parse the project file '<%s>' while syncing assets. Some folders may not appear in the content browser or in the Wwise picker. \n Line <%i> - Error message: <%s>."), *projectFilePath, errorLineNumber, *errorOut.ToString());
+		UE_LOG(LogWwiseWorkUnitParser, Error, TEXT("Failed to parse the project file '<%s>' while syncing assets. Some folders may not appear in the content browser or in the Wwise picker. \n Line <%i> - Error message: <%s>."), *ProjectFilePath, ErrorLineNumber, *ErrorOut.ToString());
 	}
 	else 
 	{
-		visitor->EndPhysicalFolderParse();
+		Visitor->EndPhysicalFolderParse();
 	}
 }
 
@@ -171,7 +163,7 @@ void WwiseWorkUnitParser::parseFolders(const FString& FolderName, EWwiseItemType
 	//All the remainder is deleted.
 	while (iKnown < KnownWwus.Num())
 	{
-		visitor->RemoveWorkUnit(KnownWwus[iKnown]);
+		Visitor->RemoveWorkUnit(KnownWwus[iKnown]);
 		LastPopTimeMap.Remove(KnownWwus[iKnown]);
 		iKnown++;
 	}
@@ -179,7 +171,7 @@ void WwiseWorkUnitParser::parseFolders(const FString& FolderName, EWwiseItemType
 	//Delete those tagged.
 	for (FString& ToRemove : WwusToRemove)
 	{
-		visitor->RemoveWorkUnit(ToRemove);
+		Visitor->RemoveWorkUnit(ToRemove);
 		LastPopTimeMap.Remove(ToRemove);
 	}
 
@@ -234,7 +226,7 @@ void WwiseWorkUnitParser::preParseWorkUnits(const TArray<FString>& WwusToProcess
 		if (!workUnitXml.IsValid()) 
 		{
 			unparseableWwus.Add(workUnitPath);
-			visitor->RegisterError(workUnitPath, workUnitXml.GetLastError());
+			Visitor->RegisterError(workUnitPath, workUnitXml.GetLastError());
 		}
 		auto workUnitInfo = peekWorkUnit(workUnitPath, ItemType);
 		if (workUnitInfo.successfullyParsed)
@@ -249,7 +241,7 @@ void WwiseWorkUnitParser::preParseWorkUnits(const TArray<FString>& WwusToProcess
 		}
 		else 
 		{
-			visitor->RegisterError(workUnitInfo.wwuPath, TEXT("XML was valid, but did not have the expected structure."));
+			Visitor->RegisterError(workUnitInfo.wwuPath, TEXT("XML was valid, but did not have the expected structure."));
 		}
 	}
 }
@@ -265,7 +257,7 @@ FString WwiseWorkUnitParser::getRelativePath(const WorkUnitInfo& info, EWwiseIte
 	}
 	else
 	{
-		auto parentPath = visitor->FindRelativePath(info.wwuPath, info.parentWorkUnitGuid, ItemType);
+		auto parentPath = Visitor->FindRelativePath(info.wwuPath, info.parentWorkUnitGuid, ItemType);
 		relativePath = FString::Format(TEXT("{0}/{1}"), { parentPath, info.wwuName });
 	}
 	return relativePath;
@@ -281,7 +273,7 @@ void WwiseWorkUnitParser::parseWorkUnitFile(const WorkUnitInfo& wwuInfo, const F
 
 	FDateTime LastModifiedTime = IFileManager::Get().GetTimeStamp(*wwuInfo.wwuPath);
 	
-	visitor->EnterWorkUnit(wwuInfo, RelativePath, ItemType);	
+	Visitor->EnterWorkUnit(wwuInfo, RelativePath, ItemType);	
 	if (parseWorkUnitXml(wwuInfo.wwuPath, RelativePath, ItemType)) 
 	{
 		FDateTime& Time = wwuLastPopulateTime.FindOrAdd(ItemType).FindOrAdd(wwuInfo.wwuPath);
@@ -289,9 +281,9 @@ void WwiseWorkUnitParser::parseWorkUnitFile(const WorkUnitInfo& wwuInfo, const F
 	}
 	else
 	{
-		visitor->RegisterError(wwuInfo.wwuPath, TEXT("XML was valid, but did not have the expected structure."));
+		Visitor->RegisterError(wwuInfo.wwuPath, TEXT("XML was valid, but did not have the expected structure."));
 	}
-	visitor->ExitWorkUnit(wwuInfo.isStandalone);
+	Visitor->ExitWorkUnit(wwuInfo.isStandalone);
 }
 
 WwiseWorkUnitParser::WorkUnitInfo WwiseWorkUnitParser::peekWorkUnit(const FString& WwuFilePath, EWwiseItemType::Type ItemType)
@@ -403,20 +395,20 @@ void WwiseWorkUnitParser::parseWorkUnitChildren(const FXmlNode* NodeToParse, con
 		
 		if (CurrentTag == TEXT("Event"))
 		{
-			visitor->EnterEvent(CurrentId, CurrentName, CurrentPath);
+			Visitor->EnterEvent(CurrentId, CurrentName, CurrentPath);
 		}
 		else if (CurrentTag == TEXT("AcousticTexture"))
 		{
 			if (ItemType == EWwiseItemType::Type::AcousticTexture)
 			{
-				visitor->EnterAcousticTexture(CurrentId, CurrentNode, CurrentName, CurrentPath);
+				Visitor->EnterAcousticTexture(CurrentId, CurrentNode, CurrentName, CurrentPath);
 			}
 		}
 		else if (CurrentTag == TEXT("AuxBus"))
 		{
-			visitor->EnterAuxBus(CurrentId, CurrentName, CurrentPath);
+			Visitor->EnterAuxBus(CurrentId, CurrentName, CurrentPath);
 			recurse(CurrentNode, WorkUnitPath, CurrentPath, ItemType, CurrentId);
-			visitor->ExitAuxBus();
+			Visitor->ExitAuxBus();
 		}
 		else if (CurrentTag == TEXT("WorkUnit"))
 		{
@@ -440,38 +432,38 @@ void WwiseWorkUnitParser::parseWorkUnitChildren(const FXmlNode* NodeToParse, con
 					}
 					else
 					{
-						visitor->RegisterError(info.wwuPath, TEXT("XML was valid, but did not have the expected structure."));
+						Visitor->RegisterError(info.wwuPath, TEXT("XML was valid, but did not have the expected structure."));
 					}
 				}
 			}
 		}
 		else if (CurrentTag == TEXT("SwitchGroup"))
 		{
-			visitor->EnterSwitchGroup(CurrentId, CurrentName, CurrentPath);
+			Visitor->EnterSwitchGroup(CurrentId, CurrentName, CurrentPath);
 			recurse(CurrentNode, WorkUnitPath, CurrentPath, ItemType, CurrentId);
-			visitor->ExitSwitchGroup();
+			Visitor->ExitSwitchGroup();
 		}
 		else if (CurrentTag == TEXT("Switch"))
 		{
-			visitor->EnterSwitch(CurrentId, CurrentName, CurrentPath);
+			Visitor->EnterSwitch(CurrentId, CurrentName, CurrentPath);
 		}
 		else if (CurrentTag == TEXT("StateGroup"))
 		{
-			visitor->EnterStateGroup(CurrentId, CurrentName, CurrentPath);
+			Visitor->EnterStateGroup(CurrentId, CurrentName, CurrentPath);
 			recurse(CurrentNode, WorkUnitPath, CurrentPath, ItemType, CurrentId);
-			visitor->ExitStateGroup();
+			Visitor->ExitStateGroup();
 		}
 		else if (CurrentTag == TEXT("State"))
 		{
-			visitor->EnterState(CurrentId, CurrentName, CurrentPath);
+			Visitor->EnterState(CurrentId, CurrentName, CurrentPath);
 		}
 		else if (CurrentTag == TEXT("GameParameter"))
 		{
-			visitor->EnterGameParameter(CurrentId, CurrentName, CurrentPath);
+			Visitor->EnterGameParameter(CurrentId, CurrentName, CurrentPath);
 		}
 		else if (CurrentTag == TEXT("Trigger"))
 		{
-			visitor->EnterTrigger(CurrentId, CurrentName, CurrentPath);
+			Visitor->EnterTrigger(CurrentId, CurrentName, CurrentPath);
 		}
 		else if (CurrentTag == TEXT("Folder") || CurrentTag == TEXT("Bus"))
 		{
@@ -481,13 +473,13 @@ void WwiseWorkUnitParser::parseWorkUnitChildren(const FXmlNode* NodeToParse, con
 				currentItemType = EWwiseItemType::Bus;
 			}
 
-			visitor->EnterFolderOrBus(CurrentId, CurrentName, CurrentPath, currentItemType);
+			Visitor->EnterFolderOrBus(CurrentId, CurrentName, CurrentPath, currentItemType);
 			recurse(CurrentNode, WorkUnitPath, CurrentPath, ItemType, CurrentId);
-			visitor->ExitFolderOrBus();
+			Visitor->ExitFolderOrBus();
 		}
 	}
 
-	visitor->ExitChildrenList();
+	Visitor->ExitChildrenList();
 }
 
 #undef LOCTEXT_NAMESPACE

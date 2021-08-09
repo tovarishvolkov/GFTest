@@ -27,27 +27,28 @@ TMap<FString, FString> UAkPlatformInfo::UnrealNameToWwiseName;
 TSet<FString> AkUnrealPlatformHelper::GetAllSupportedUnrealPlatforms()
 {
 	TSet<FString> SupportedPlatforms;
-
-#if UE_4_23_OR_LATER
-	for (const auto& Info : PlatformInfo::GetPlatformInfoArray())
-#else
-	for (const auto& Info : PlatformInfo::EnumeratePlatformInfoArray())
-#endif
+#if UE_5_0_OR_LATER
+	for (const PlatformInfo::FTargetPlatformInfo* TargetPlatformInfo : PlatformInfo::GetPlatformInfoArray())
 	{
-#if UE_4_24_OR_LATER
-		bool bIsGame = Info.PlatformType == EBuildTargetType::Game;
+		auto Info = *TargetPlatformInfo;
+		FName PlatformInfoName = Info.Name;
+		FString VanillaName = Info.VanillaInfo->Name.ToString();
 #else
-		bool bIsGame = Info.PlatformType == PlatformInfo::EPlatformType::Game;
+	for (const PlatformInfo::FPlatformInfo& Info : PlatformInfo::GetPlatformInfoArray())
+	{
+		FName PlatformInfoName = Info.PlatformInfoName;
+		FString VanillaName = Info.VanillaPlatformName.ToString();
 #endif
-		if (Info.IsVanilla() && bIsGame && (Info.PlatformInfoName != TEXT("AllDesktop")))
+		bool bIsGame = Info.PlatformType == EBuildTargetType::Game;
+		if (Info.IsVanilla() && bIsGame && (PlatformInfoName != TEXT("AllDesktop")))
 		{
-			FString VanillaName = Info.VanillaPlatformName.ToString();
 			VanillaName.RemoveFromEnd(TEXT("NoEditor"));
 			SupportedPlatforms.Add(VanillaName);
 		}
 	}
 
 	return SupportedPlatforms;
+
 }
 
 TSet<FString> AkUnrealPlatformHelper::GetAllSupportedUnrealPlatformsForProject()
@@ -99,5 +100,10 @@ TArray<TSharedPtr<FString>> AkUnrealPlatformHelper::GetAllSupportedWwisePlatform
 	}
 
 	return WwisePlatforms;
+}
+
+bool AkUnrealPlatformHelper::IsEditorPlatform(FString Platform)
+{
+	return Platform == "Windows" || Platform == "Mac" || Platform == "Linux";
 }
 #endif // WITH_EDITOR

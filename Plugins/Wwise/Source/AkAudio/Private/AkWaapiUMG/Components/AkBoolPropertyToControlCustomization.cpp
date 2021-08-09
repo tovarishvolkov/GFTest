@@ -24,6 +24,10 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "AkWaapiUMG/Components/SAkItemBoolProperties.h"
 #include "AkAudioStyle.h"
 
+#if UE_5_0_OR_LATER
+#include "Framework/Docking/TabManager.h"
+#endif
+
 #define LOCTEXT_NAMESPACE "AkPropertyToControlCustomization"
 
 TSharedRef<IPropertyTypeCustomization> FAkBoolPropertyToControlCustomization::MakeInstance()

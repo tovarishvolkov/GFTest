@@ -211,7 +211,11 @@ private:
 	FDelegateHandle ProjectLoadedHandle;
 	FDelegateHandle ConnectionLostHandle;
 	FDelegateHandle ClientBeginDestroyHandle;
+
+	//Waapi Client callbacks
 	void RemoveClientCallbacks();
+	void OnProjectLoadedCallback();
+	void OnConnectionLostCallback();
 
 	/* Used to show/hide the Picker/Warning */
 	EVisibility isPickerAllowed() const;
@@ -273,12 +277,12 @@ private:
 	TSharedPtr<SWidget> MakeWaapiPickerContextMenu();
 
 	/** Helper functions for playback */
-	int32 CreateTransport(const FGuid& in_ItemId);
-	void DestroyTransport(const FGuid& in_itemID);
-	void TogglePlayStop(int32 in_transportID);
-	void StopTransport(int32 in_transportID);
-	uint64 SubscribeToTransportStateChanged(int32 in_transportID);
-	void HandleStateChanged(TSharedPtr<FJsonObject> in_UEJsonObject);
+	int32 CreateTransport(const FGuid& ItemID);
+	void DestroyTransport(const FGuid& ItemID);
+	void TogglePlayStop(int32 TransportID);
+	void StopTransport(int32 TransportID);
+	uint64 SubscribeToTransportStateChanged(int32 TransportID);
+	void HandleStateChanged(TSharedPtr<FJsonObject> UEJsonObject);
 	
 	/** Callback returns true if the rename command can be executed. */
 	bool HandleRenameWwiseItemCommandCanExecute() const;

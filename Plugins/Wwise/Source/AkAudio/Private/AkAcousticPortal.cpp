@@ -21,6 +21,7 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "AkAcousticPortal.h"
 #include "AkAudioDevice.h"
 #include "AkComponentHelpers.h"
+#include "AkSpatialAudioHelper.h"
 #include "Components/BrushComponent.h"
 #include "Model.h"
 #include "EngineUtils.h"
@@ -48,6 +49,7 @@ const float UAkPortalComponent::RoomsRefreshIntervalEditor = 0.1f;
 #endif
 const float UAkPortalComponent::RoomsRefreshIntervalGame = 0.5f;
 const float UAkPortalComponent::RoomsRefreshDistanceThreshold = 1.0f;
+const float UAkPortalComponent::RoomsRefreshMinRotationThreshold_Degrees = 5.0f;
 
 UAkPortalComponent::UAkPortalComponent(const class FObjectInitializer& ObjectInitializer) :
 	Super(ObjectInitializer)
@@ -72,6 +74,10 @@ UAkPortalComponent::UAkPortalComponent(const class FObjectInitializer& ObjectIni
 
 	RoomsRefreshIntervalSeconds = RoomsRefreshIntervalGame;
 #if WITH_EDITOR
+	if (GEditor)
+	{
+		GEditor->OnObjectsReplaced().AddUObject(this, &UAkPortalComponent::HandleObjectsReplaced);
+	}
 	UWorld* world = GetWorld();
 	if (world != nullptr)
 	{
@@ -118,6 +124,27 @@ void UAkPortalComponent::OnUnregister()
 }
 
 #if WITH_EDITOR
+void UAkPortalComponent::BeginDestroy()
+{
+	Super::BeginDestroy();
+	if (GEditor)
+	{
+		GEditor->OnObjectsReplaced().RemoveAll(this);
+	}
+}
+
+void UAkPortalComponent::HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap)
+{
+	if (ReplacementMap.Contains(Parent))
+	{
+		InitializeParent();
+	}
+	if (ReplacementMap.Contains(FrontRoom) || ReplacementMap.Contains(BackRoom))
+	{
+		UpdateConnectedRooms();
+	}
+}
+
 void UAkPortalComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
@@ -161,7 +188,11 @@ bool UAkPortalComponent::MoveComponentImpl(
 
 void UAkPortalComponent::OnUpdateTransform(EUpdateTransformFlags UpdateTransformFlags, ETeleportType Teleport)
 {
-	if (!RoomConnectionsNeedUpdated && (GetComponentLocation() - PreviousLocation).Size() > RoomsRefreshDistanceThreshold)
+	const FVector Forward = UKismetMathLibrary::GetForwardVector(GetComponentRotation()).GetSafeNormal();
+	const FVector PreviousForward = UKismetMathLibrary::GetForwardVector(PreviousRotation).GetSafeNormal();
+	const float Rotation = FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(Forward, PreviousForward)));
+	const float Translation = (GetComponentLocation() - PreviousLocation).Size();
+	if (!RoomConnectionsNeedUpdated && (Translation > RoomsRefreshDistanceThreshold || Rotation >= RoomsRefreshMinRotationThreshold_Degrees))
 	{
 		RoomConnectionsNeedUpdated = true;
 	}
@@ -332,6 +363,7 @@ bool UAkPortalComponent::UpdateConnectedRooms()
 	FindConnectedComponents(Dev->GetRoomIndex(), FrontRoom, BackRoom);
 	LastRoomsUpdate = GetWorld()->GetTimeSeconds();
 	PreviousLocation = GetComponentLocation();
+	PreviousRotation = GetComponentRotation();
 	RoomConnectionsNeedUpdated = false;
 	/* Return true if any room connection has changed. */
 	return (GetFrontRoom() != previousFront || GetBackRoom() != previousBack);
@@ -459,7 +491,7 @@ AkAcousticPortalState AAkAcousticPortal::GetCurrentState() const
 AkRoomID AAkAcousticPortal::GetFrontRoom() const
 {
 	if (Portal != nullptr)
-		Portal->GetFrontRoom();
+		return Portal->GetFrontRoom();
 	UE_LOG(LogAkAudio, Warning, TEXT("AAkAcousticPortal %s called GetFrontRoom with uninitialized portal component."), *GetName());
 	return AkRoomID();
 }
@@ -467,7 +499,7 @@ AkRoomID AAkAcousticPortal::GetFrontRoom() const
 AkRoomID AAkAcousticPortal::GetBackRoom() const
 {
 	if (Portal != nullptr)
-		Portal->GetBackRoom();
+		return Portal->GetBackRoom();
 	UE_LOG(LogAkAudio, Warning, TEXT("AAkAcousticPortal %s called GetBackRoom with uninitialized portal component."), *GetName());
 	return AkRoomID();
 }
@@ -577,8 +609,8 @@ void AAkAcousticPortal::FitRaycast()
 
 			for (auto& res : OutHits)
 			{
-				if (res.IsValidBlockingHit() && 
-					!IsAkSpatialAudioActorClass(res.Actor.Get()))
+				if (res.IsValidBlockingHit() &&
+					!AkSpatialAudioHelper::IsAkSpatialAudioActorClass(AkSpatialAudioHelper::GetActorFromHitResult(res)))
 				{
 					bHit = true;
 					ImpactPoint0 = res.ImpactPoint;
@@ -599,7 +631,7 @@ void AAkAcousticPortal::FitRaycast()
 				{
 					if (res.IsValidBlockingHit() &&
 						res.Distance > kMinPortalSize &&
-						!IsAkSpatialAudioActorClass(res.Actor.Get()))
+						!AkSpatialAudioHelper::IsAkSpatialAudioActorClass(AkSpatialAudioHelper::GetActorFromHitResult(res)))
 					{
 						bHit = true;
 						ImpactPoint1 = res.ImpactPoint;

@@ -67,6 +67,10 @@ public class AudiokineticTools : ModuleRules
                 "PropertyEditor",
                 "SharedSettingsWidgets",
                 "ContentBrowser",
+#if UE_5_0_OR_LATER
+                "DeveloperToolSettings",
+#endif
+
 #if UE_4_26_OR_LATER
                 "ContentBrowserData",
 #endif
@@ -84,7 +88,10 @@ public class AudiokineticTools : ModuleRules
 				"MovieSceneTracks",
 				"RenderCore",
 				"SourceControl",
-                "LevelEditor"
+                "LevelEditor",
+#if UE_5_0_OR_LATER
+                "EditorFramework"
+#endif
             });
 
 #if !UE_4_25_OR_LATER

@@ -428,8 +428,14 @@ UAkAssetData* UAkAudioBank::FindOrAddAssetData(const FString& platform, const FS
 
 void UAkAudioBank::Reset()
 {
+	if (LocalizedPlatformAssetDataMap.Num() > 0)
+	{
+		bChangedDuringReset = true;
+	}
 	LocalizedPlatformAssetDataMap.Empty();
 
+	// ALWAYS call Super::Reset() last, since it will check if things have been modified
+	// before marking as dirty.
 	Super::Reset();
 }
 

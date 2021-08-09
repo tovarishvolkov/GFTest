@@ -69,11 +69,15 @@ public:
 	FAkBankLatentActionCallbackInfo(UAkAudioBank* bank, FWaitEndBankAction* LatentAction)
 		: IAkBankCallbackInfo(bank)
 		, BankLatentAction(LatentAction)
-	{}
+	{
+		LatentActionValidityToken = MakeShared<FPendingLatentActionValidityToken, ESPMode::ThreadSafe>();
+		BankLatentAction->ValidityToken = LatentActionValidityToken;
+	}
 
 	virtual void HandleAction(AkUInt32 BankID, const void * InMemoryBankPtr, AKRESULT ActionResult) override;
 
 private:
+	TSharedPtr<FPendingLatentActionValidityToken, ESPMode::ThreadSafe> LatentActionValidityToken;
 	FWaitEndBankAction* BankLatentAction;
 };
 

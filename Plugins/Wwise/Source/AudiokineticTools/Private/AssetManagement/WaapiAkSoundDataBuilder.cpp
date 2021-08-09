@@ -25,6 +25,7 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "AkUnrealHelper.h"
 #include "AkWaapiClient.h"
 #include "AkWaapiUtils.h"
+#include "AkAudioType.h"
 #include "AssetRegistry/Public/AssetRegistryModule.h"
 #include "AssetTools/Public/AssetToolsModule.h"
 #include "Async/Async.h"
@@ -88,7 +89,10 @@ void WaapiAkSoundDataBuilder::DoWork()
 
 	createNotificationItem();
 
-	loadAndWaitForAssetToLoad();
+	if (AkUnrealHelper::IsUsingEventBased())
+	{
+		loadAndWaitForAssetToLoad();
+	}
 
 	auto& akAssetDatabase = AkAssetDatabase::Get();
 
@@ -108,7 +112,7 @@ void WaapiAkSoundDataBuilder::DoWork()
 
 	AutoSetIsBuilding autoSetIsBuilding;
 
-	auto start = FPlatformTime::Cycles64();
+	StartTime = FPlatformTime::Cycles64();
 
 	auto cacheFile = AkUnrealHelper::GetWwiseSoundBankInfoCachePath();
 
@@ -262,41 +266,7 @@ void WaapiAkSoundDataBuilder::DoWork()
 		waitForGenerationDoneEvent->Wait(FTimespan::FromSeconds(60));
 	}
 
-	FTaskGraphInterface::Get().WaitUntilTasksComplete(allParseTask);
-
-	dispatchAndWaitMediaCookTasks();
-
-	AutoSaveAssetsBlocking();
-
-	bool totalSuccess = _generationSuccess && waapiCallSuccess;
-
-	auto end = FPlatformTime::Cycles64();
-
-	const TCHAR* message = nullptr;
-
-	if (totalSuccess)
-	{
-		message = TEXT("WAAPI Sound Data Builder task was successful");
-		notifyGenerationSucceeded();
-	}
-	else
-	{
-		message = TEXT("WAAPI Sound Data Builder task failed");
-		notifyGenerationFailed();
-	}
-
-	UE_LOG(LogAkSoundData, Display, TEXT("%s and took %f seconds."), message, FPlatformTime::ToSeconds64(end - start));
-
-	if (!IsRunningCommandlet())
-	{
-		AsyncTask(ENamedThreads::Type::GameThread, []
-		{
-			if (auto audioDevice = FAkAudioDevice::Get())
-			{
-				audioDevice->ReloadAllSoundData();
-			}
-		});
-	}
+	WrapUpGeneration(_generationSuccess && waapiCallSuccess, TEXT("WAAPI"));
 }
 
 void WaapiAkSoundDataBuilder::onSoundBankGenerationDone(uint64_t id, TSharedPtr<FJsonObject> responseJson)

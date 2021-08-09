@@ -19,7 +19,7 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "Core/Public/Templates/Function.h"
 #include "Serialization/BulkData.h"
 #include "UObject/Object.h"
-
+#include "AkUEFeatures.h"
 #include "AkMediaAsset.generated.h"
 
 struct AKAUDIO_API FAkMediaDataChunk
@@ -69,8 +69,9 @@ public:
 
 public:
 	void Serialize(FArchive& Ar) override;
-
 	bool IsReadyForAsyncPostLoad() const override;
+	void BeginDestroy() override;
+	bool IsReadyForFinishDestroy() override;
 
 	void Load(bool LoadAsync, const MediaAssetDataLoadAsyncCallback& LoadedCallback = MediaAssetDataLoadAsyncCallback());
 	void Unload();
@@ -79,8 +80,8 @@ public:
 	bool IsLoaded() const { return State == LoadState::Loaded; }
 	
 private:
-	uint8* allocateMediaMemory();
-	void freeMediaMemory(uint8* mediaMemory);
+	uint8* AllocateMediaMemory();
+	void FreeMediaMemory(uint8* MediaMemory);
 
 private:
 	enum class LoadState
@@ -93,6 +94,10 @@ private:
 
 	uint8* LoadedMediaData = nullptr;
 	UAkMediaAsset* Parent = nullptr;
+
+#if !WITH_EDITOR
+	BulkDataIORequest* LoadingRequest = nullptr;
+#endif
 };
 
 UCLASS()
@@ -119,21 +124,21 @@ public:
 	TArray<UObject*> UserData;
 
 private:
-	UPROPERTY()
+	UPROPERTY(transient)
 	UAkMediaAssetData* CurrentMediaAssetData;
 
 public:
 	void Serialize(FArchive& Ar) override;
 	void PostLoad() override;
-	void FinishDestroy() override;
 
-	void Load(bool FromSerialize = false);
+	void Load(bool bFromSerialize = false);
 	void Unload();
 
 	bool IsReadyForAsyncPostLoad() const override;
+	bool IsReadyForFinishDestroy() override;
 
 #if WITH_EDITOR
-	UAkMediaAssetData* FindOrAddMediaAssetData(const FString& platform);
+	UAkMediaAssetData* FindOrAddMediaAssetData(const FString& Platform);
 
 	virtual void Reset();
 
@@ -145,11 +150,11 @@ public:
 	template<typename T>
 	T* GetUserData()
 	{
-		for (auto entry : UserData)
+		for (auto Entry : UserData)
 		{
-			if (entry && entry->GetClass()->IsChildOf(T::StaticClass()))
+			if (Entry && Entry->GetClass()->IsChildOf(T::StaticClass()))
 			{
-				return entry;
+				return Entry;
 			}
 		}
 
@@ -157,10 +162,11 @@ public:
 	}
 
 protected:
-	void loadAndSetMedia(bool LoadAsync);
-	void unloadMedia(bool ForceUnload = false);
+	void LoadAndSetMedia(bool bLoadAsync);
+	void UnloadMedia();
+	bool TryUnloadMedia();
 
-	UAkMediaAssetData* getMediaAssetData() const;
+	UAkMediaAssetData* GetMediaAssetData() const;
 
 private:
 	FThreadSafeCounter LoadRefCount;
@@ -168,6 +174,12 @@ private:
 
 	bool SerializeHasBeenCalled = false;
 	bool LoadFromSerialize = false;
+
+	static const int LeakedInitialCount = 10;
+	int Leaked = LeakedInitialCount;			// Leaking after N destruction trials
+
+	void ResetMedia();
+	void DoSetMedia(uint8* LoadedMediaData, int64 MediaDataSize);
 };
 
 UCLASS()
@@ -191,8 +203,8 @@ public:
 	bool HasActivePlayingIDs();
 	TMap<uint32, TArray<uint32>> ActiveEventToPlayingIDMap;
 
-	bool IsReadyForFinishDestroy() override;
 	void BeginDestroy() override;
+	bool IsReadyForFinishDestroy() override;
 
 	void PinInGarbageCollector(uint32 PlayingID);
 	void UnpinFromGarbageCollector(uint32 PlayingID);

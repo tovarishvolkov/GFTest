@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -42,7 +42,7 @@ the specific language governing permissions and limitations under the License.
 // These definitions are used throughout the Wwise plug-in system
 #ifndef GUID_DEFINED		// Adapted from Windows API, to have exactly the same definition. C-compatible.
 #define GUID_DEFINED
-#pragma pack(push,1)
+#pragma pack(push,8)
 typedef struct _GUID {
 	uint32_t Data1;
 	uint16_t Data2;

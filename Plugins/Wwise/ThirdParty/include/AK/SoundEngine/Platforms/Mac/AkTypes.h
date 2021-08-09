@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -44,16 +44,23 @@ the specific language governing permissions and limitations under the License.
 	#define AK_MAC_OS_X							///< Compiling for Mac OS X
 #endif
 
-#if defined __x86_64__
-	#define AK_CPU_X86_64						///< Compiling for 64-bit x86 CPU
-	#define AKSIMD_V4F32_SUPPORTED
-#elif defined __arm64__
-	#define AK_CPU_ARM							///< Compiling for ARM CPU
-	#define AK_CPU_ARM_64
-	#if defined __ARM_NEON__
-		#define AK_CPU_ARM_NEON					///< Compiling for ARM CPU with Neon
+#if defined(__LP64__) || defined(_LP64)
+	#if defined __aarch64__
+		#define AK_CPU_ARM_64
+	#else
+		#define AK_CPU_X86_64
 		#define AKSIMD_V4F32_SUPPORTED
 	#endif
+#elif defined(__arm__)
+	#define AK_CPU_ARM
+#else
+	#define AK_CPU_X86 //x86
+	#define AKSIMD_V4F32_SUPPORTED
+#endif
+
+#if (defined AK_CPU_ARM || defined AK_CPU_ARM_64)
+	#define AK_CPU_ARM_NEON
+	#define AKSIMD_V4F32_SUPPORTED
 #endif
 
 #ifdef AK_MAC_OS_X

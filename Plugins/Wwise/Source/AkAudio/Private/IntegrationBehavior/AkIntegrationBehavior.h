@@ -43,6 +43,7 @@ public:
 	virtual void AkAudioDevice_LoadAllReferencedBanks(FAkAudioDevice* AkAudioDevice) = 0;
 	virtual void AkAudioDevice_SetCurrentAudioCulture(const FString& NewWwiseLanguage) = 0;
 	virtual void AkAudioDevice_SetCurrentAudioCultureAsync(FAkAudioDevice* AkAudioDevice, const FString& NewWwiseLanguage, const FOnSetCurrentAudioCultureCompleted& CompletedCallback) = 0;
+	virtual void AkAudioDevice_SetCurrentAudioCultureAsync(FAkAudioDevice* AkAudioDevice, const FString& NewWwiseLanguage, FSetCurrentAudioCultureAction* LatentAction) = 0;
 	virtual void AkAudioDevice_CreateIOHook(FAkAudioDevice* AkAudioDevice) = 0;
 	virtual void AkAudioDevice_LoadInitialData(FAkAudioDevice* AkAudioDevice) = 0;
 #if WITH_EDITOR

@@ -44,6 +44,8 @@ UENUM(BlueprintType)
 enum class AkChannelConfiguration : uint8
 {
 	Ak_Parent = 0,
+	Ak_MainMix,
+	Ak_Passthrough,
 	Ak_LFE,
 	AK_Audio_Objects,
 	Ak_1_0,
@@ -381,6 +383,24 @@ struct FAkChannelMask
 public:
 	UPROPERTY(EditAnywhere, Category="Channel Mask", BlueprintReadWrite, meta = (Bitmask, BitmaskEnum = AkSpeakerConfiguration))
 	int32 ChannelMask;
+};
+
+USTRUCT(BlueprintType)
+struct FAkOutputSettings
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	UPROPERTY(EditAnywhere, Category = "Output Settings", BlueprintReadWrite)
+	FString AudioDeviceSharesetName;
+
+	UPROPERTY(EditAnywhere, Category = "Output Settings", BlueprintReadWrite)
+	int32 IdDevice;
+
+	UPROPERTY(EditAnywhere, Category = "Output Settings", BlueprintReadWrite, meta=(DisplayName="PanningRule"))
+	PanningRule PanRule;
+
+	UPROPERTY(EditAnywhere, Category = "Output Settings", BlueprintReadWrite)
+	AkChannelConfiguration ChannelConfig;
 };
 
 /// Callback information structure corresponding to \ref AK_EndOfEvent, \ref AK_MusicPlayStarted and \ref AK_Starvation.
@@ -849,14 +869,37 @@ DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAkPostEventCallback, EAkCallbackType, Call
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnAkBankCallback, EAkResult, Result);
 DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSetCurrentAudioCultureCallback, bool, Succeeded);
 
+struct FPendingLatentActionValidityToken
+{
+	bool bValid = true;
+};
+
+class FAkPendingLatentAction: public FPendingLatentAction
+{
+public:    
+	
+	// Allows objects referencing this latent action to determine if it is still valid (not deleted) before accessing it
+	TSharedPtr<FPendingLatentActionValidityToken, ESPMode::ThreadSafe> ValidityToken;
+
+	virtual void NotifyObjectDestroyed() override
+	{
+		// When the owning object is destroyed, the latent action is about to be deleted, so flag it as invalid
+		if (ValidityToken.IsValid())
+		{
+			ValidityToken->bValid = false;
+		}
+	}
+};
+
 // Class used for Blueprint nodes blocking on EndOfEvent
-class FWaitEndOfEventAction : public FPendingLatentAction
+class FWaitEndOfEventAction : public FAkPendingLatentAction
 {
 public:
 	FName ExecutionFunction;
 	int32 OutputLink = 0;
 	FWeakObjectPtr CallbackTarget;
 	FThreadSafeBool EventFinished;
+
 
 	FWaitEndOfEventAction(const FLatentActionInfo& LatentInfo)
 		: ExecutionFunction(LatentInfo.ExecutionFunction)
@@ -879,8 +922,8 @@ public:
 #endif
 };
 
-// Class used for Blueprint nodes blocking on EndOfEvent
-class FWaitEndBankAction : public FPendingLatentAction
+// Class used for Blueprint nodes blocking on Bank Load
+class FWaitEndBankAction : public FAkPendingLatentAction
 {
 public:
 	FName ExecutionFunction;
@@ -909,7 +952,7 @@ public:
 #endif
 };
 
-class FSetCurrentAudioCultureAction : public FPendingLatentAction
+class FSetCurrentAudioCultureAction : public FAkPendingLatentAction
 {
 public:
 	FName ExecutionFunction;
@@ -1010,8 +1053,9 @@ struct FAkExternalSourceInfo
 	bool IsStreamed = true;
 };
 
-struct FAkSDKExternalSourceArray
+struct FAkSDKExternalSourceArray :  public TSharedFromThis<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>
 {
+	FAkSDKExternalSourceArray() {}
 	FAkSDKExternalSourceArray(const TArray<FAkExternalSourceInfo>& BlueprintArray);
 	~FAkSDKExternalSourceArray();
 

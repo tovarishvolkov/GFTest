@@ -84,11 +84,15 @@ public:
 	FAkLatentActionEventCallbackPackage(FWaitEndOfEventAction* LatentAction, uint32 in_Hash)
 		: IAkUserEventCallbackPackage(AK_EndOfEvent, in_Hash)
 		, EndOfEventLatentAction(LatentAction)
-	{}
+	{
+		LatentActionValidityToken = MakeShared<FPendingLatentActionValidityToken, ESPMode::ThreadSafe>();
+		EndOfEventLatentAction->ValidityToken = LatentActionValidityToken;
+	}
 
 	virtual void HandleAction(AkCallbackType in_eType, AkCallbackInfo* in_pCallbackInfo) override;
 
 private:
+	TSharedPtr<FPendingLatentActionValidityToken, ESPMode::ThreadSafe> LatentActionValidityToken;
 	FWaitEndOfEventAction* EndOfEventLatentAction;
 };
 

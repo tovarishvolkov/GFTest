@@ -36,6 +36,19 @@
 							</PositioningInfo>
 							<ObjectLists/>
 						</Bus>
+						<Bus Name="AUX" ID="{8AAB2CFA-BAE0-43A3-9480-0298B4481577}">
+							<ChildrenList>
+								<AuxBus Name="RevTest" ID="{FB9DD9F9-93AE-47CE-9A9E-2BB6CDD60CAF}">
+									<ReferenceList>
+										<Reference Name="Effect0" PluginName="Wwise RoomVerb" CompanyID="0" PluginID="118" PluginType="3">
+											<ObjectRef Name="Room_Small" ID="{577F1466-A63B-47F7-98BD-C56E433F8B5D}" WorkUnitID="{E8613F7D-BAD3-45CD-A3ED-505576F31277}"/>
+										</Reference>
+									</ReferenceList>
+									<ObjectLists/>
+								</AuxBus>
+							</ChildrenList>
+							<ObjectLists/>
+						</Bus>
 					</ChildrenList>
 					<ObjectLists/>
 				</Bus>

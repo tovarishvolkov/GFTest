@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -97,12 +97,18 @@ namespace AK
 			AkUInt32 uFrees;		///< Number of free calls since initialization
 		};
 
+		/// Memory global statistics.
+		/// \remarks These statistics are not collected in the Release configuration of
+		/// the default memory manager implementation.
+		/// \sa
+		/// - AK::MemoryMgr::GetGlobalStats()
+		/// - \ref memorymanager
 		struct GlobalStats
 		{
-			AkUInt64 uUsed;
-			AkUInt64 uDeviceUsed;
-			AkUInt64 uReserved;
-			AkUInt64 uMax;
+			AkUInt64 uUsed;			///< Total memory used including all categories (in bytes)
+			AkUInt64 uDeviceUsed;	///< Total device memory used including all categories (in bytes)
+			AkUInt64 uReserved;		///< Total reserved memory. (Used and unused). Will return 0 if the reserved memory is not traceable.
+			AkUInt64 uMax;			///< Maximum total allocation size, specified in the initialization settings through uMemAllocationSizeLimit. Will be 0 if no limit was set.
 		};
 
 		////////////////////////////////////////////////////////////////////////

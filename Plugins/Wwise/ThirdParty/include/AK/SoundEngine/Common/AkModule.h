@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -172,7 +172,7 @@ struct AkMemSettings
 	AkMemDebugRealloc				pfDebugRealloc;					///< (Optional) Memory allocation debugging hook. Used for tracking calls to pfRealloc.
 	AkMemDebugReallocAligned		pfDebugReallocAligned;			///< (Optional) Memory allocation debugging hook. Used for tracking calls to pfReallocAligned.
 	AkMemDebugFree					pfDebugFree;					///< (Optional) Memory allocation debugging hook. Used for tracking calls to pfFree.
-	AkUInt32						uMemoryDebugLevel;				///< Default 0 disabled. 1 debug enabled. 2 stomp allocator and debug enabled. User implementations may use multiple non-zero values to offer different features.
+	AkUInt32						uMemoryDebugLevel;				///< Default 0 disabled. 1 debug enabled. 2 stomp allocator enabled. 3 stomp allocator and debug enabled. User implementations may use multiple non-zero values to offer different features.
 	//@}
 };
 //@}

@@ -158,7 +158,7 @@ public:
 	UModel* ParentBrush;
 
 #if WITH_EDITORONLY_DATA
-	UPROPERTY()
+	UPROPERTY(SkipSerialization, NonTransactional)
 	mutable TArray<UTextRenderComponent*> TextVisualizers;
 
 	FText GetPolyText(int32 PolyIdx) const;
@@ -226,6 +226,7 @@ private:
 	void InitializeParentBrush(bool fromTick = false);
 
 #if WITH_EDITOR
+	virtual void HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap) override;
 	virtual bool ContainsTexture(const FGuid& textureID) override;
 	virtual void RegisterAllTextureParamCallbacks() override;
 	/* Sort the edges of a face such that they form a continuous loop */

@@ -37,6 +37,7 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "Misc/ScopeLock.h"
 #include "Model.h"
 #include "UObject/UObjectIterator.h"
+#include "AkAcousticPortal.h"
 
 bool UAkGameplayStatics::m_bSoundEngineRecording = false;
 float UAkGameplayStatics::OcclusionScalingFactor = 1.0f;
@@ -303,8 +304,8 @@ void UAkGameplayStatics::PostAndWaitForEndOfEventAsync(class UAkAudioEvent* AkEv
 
 			if (ExternalSources.Num() > 0)
 			{
-				FAkSDKExternalSourceArray SDKExternalSrcInfo(ExternalSources);
-				NewAction->FuturePlayingID = DeviceAndWorld.AkAudioDevice->PostEventLatentActionAsync(AkEvent, Actor, bStopWhenAttachedToDestroyed, NewAction, SDKExternalSrcInfo.ExternalSourceArray);
+				TSharedPtr<FAkSDKExternalSourceArray, ESPMode::ThreadSafe> SDKExternalSrcInfo = MakeShared<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>(ExternalSources);		
+				NewAction->FuturePlayingID = DeviceAndWorld.AkAudioDevice->PostEventLatentActionAsync(AkEvent, Actor, bStopWhenAttachedToDestroyed, NewAction, SDKExternalSrcInfo);
 			}
 			else
 			{
@@ -591,7 +592,63 @@ void UAkGameplayStatics::SetReflectionsOrder(int Order, bool RefreshPaths)
 		Order = FMath::Clamp(Order, 0, 4);
 		UE_LOG(LogAkAudio, Warning, TEXT("UAkGameplayStatics::SetReflectionsOrder: The order value is invalid. It was clamped to %d"), Order);
 	}
-	AK::SpatialAudio::SetReflectionsOrder(Order, RefreshPaths);
+
+	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
+	if (AudioDevice)
+	{
+		AudioDevice->SetReflectionsOrder(Order, RefreshPaths);
+	}
+}
+
+void UAkGameplayStatics::SetPortalObstructionAndOcclusion(UAkPortalComponent* PortalComponent, float ObstructionValue, float OcclusionValue)
+{
+	if (ObstructionValue > 1.f || ObstructionValue < 0.f)
+	{
+		ObstructionValue = FMath::Clamp(ObstructionValue, 0.f, 1.f);
+		UE_LOG(LogAkAudio, Warning, TEXT("UAkGameplayStatics::SetPortalObstructionAndOcclusion: The obstruction value is invalid. It was clamped to %f"), ObstructionValue);
+	}
+
+	if (OcclusionValue > 1.f || OcclusionValue < 0.f)
+	{
+		OcclusionValue = FMath::Clamp(OcclusionValue, 0.f, 1.f);
+		UE_LOG(LogAkAudio, Warning, TEXT("UAkGameplayStatics::SetPortalObstructionAndOcclusion: The occlusion value is invalid. It was clamped to %f"), OcclusionValue);
+	}
+
+	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
+	if (AudioDevice)
+	{
+		AudioDevice->SetPortalObstructionAndOcclusion(PortalComponent, ObstructionValue, OcclusionValue);
+	}
+}
+
+void UAkGameplayStatics::SetGameObjectToPortalObstruction(UAkComponent* GameObjectAkComponent, UAkPortalComponent* PortalComponent, float ObstructionValue)
+{
+	if (ObstructionValue > 1.f || ObstructionValue < 0.f)
+	{
+		ObstructionValue = FMath::Clamp(ObstructionValue, 0.f, 1.f);
+		UE_LOG(LogAkAudio, Warning, TEXT("UAkGameplayStatics::SetGameObjectToPortalObstruction: The obstruction value is invalid. It was clamped to %f"), ObstructionValue);
+	}
+
+	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
+	if (AudioDevice)
+	{
+		AudioDevice->SetGameObjectToPortalObstruction(GameObjectAkComponent, PortalComponent, ObstructionValue);
+	}
+}
+
+void UAkGameplayStatics::SetPortalToPortalObstruction(UAkPortalComponent* PortalComponent0, UAkPortalComponent* PortalComponent1, float ObstructionValue)
+{
+	if (ObstructionValue > 1.f || ObstructionValue < 0.f)
+	{
+		ObstructionValue = FMath::Clamp(ObstructionValue, 0.f, 1.f);
+		UE_LOG(LogAkAudio, Warning, TEXT("UAkGameplayStatics::SetGameObjectToPortalObstruction: The obstruction value is invalid. It was clamped to %f"), ObstructionValue);
+	}
+
+	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
+	if (AudioDevice)
+	{
+		AudioDevice->SetPortalToPortalObstruction(PortalComponent0, PortalComponent1, ObstructionValue);
+	}
 }
 
 void UAkGameplayStatics::SetOutputBusVolume(float BusVolume, class AActor* Actor)
@@ -631,6 +688,20 @@ void UAkGameplayStatics::SetPanningRule(PanningRule PanRule)
 	{
 		AkPanningRule AkPanRule = (PanRule == PanningRule::PanningRule_Headphones) ? AkPanningRule_Headphones : AkPanningRule_Speakers;
 		AudioDevice->SetPanningRule(AkPanRule);
+	}
+}
+
+void UAkGameplayStatics::ReplaceMainOutput(const FAkOutputSettings& MainOutputSettings)
+{
+	FAkAudioDevice* AudioDevice = FAkAudioDevice::Get();
+	if (AudioDevice)
+	{
+		AkOutputSettings OutSettings;
+		OutSettings.audioDeviceShareset = AudioDevice->GetIDFromString(MainOutputSettings.AudioDeviceSharesetName);
+		OutSettings.idDevice = MainOutputSettings.IdDevice;
+		OutSettings.ePanningRule = (MainOutputSettings.PanRule == PanningRule::PanningRule_Headphones) ? AkPanningRule_Headphones : AkPanningRule_Speakers;
+		FAkAudioDevice::GetChannelConfig(MainOutputSettings.ChannelConfig, OutSettings.channelConfig);
+		AudioDevice->ReplaceMainOutput(OutSettings);
 	}
 }
 
@@ -905,9 +976,7 @@ void UAkGameplayStatics::SetCurrentAudioCulture(const FString& AudioCulture, FLa
 
 	if (FAkAudioDevice* AudioDevice = FAkAudioDevice::Get())
 	{
-		AudioDevice->SetCurrentAudioCultureAsync(AudioCulture, FOnSetCurrentAudioCultureCompleted::CreateLambda([NewAction](bool Succeeded) {
-			NewAction->ActionDone = true;
-		}));
+		AudioDevice->SetCurrentAudioCultureAsync(AudioCulture, NewAction);
 	}
 	else
 	{

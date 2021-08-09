@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -102,8 +102,8 @@ struct ak_wwise_plugin_undo_event_v1
 	 * \brief Get the event name, to show after the "Undo " and "Redo " terms in the menu.
 	 * 
 	 * \param[in] in_this Current instance of this Undo Event.
-	 * \param[out] out_csName Pointer to a static name for this event. This pointer needs to be accessible as long
-	 *             as the event is not destroyed.
+	 * \param[out] out_csName Pointer to a static name for this event. The buffer is owned by Authoring and is 
+	 *   valid until the next API call.
 	 * \return true if successful.
 	 */
 	bool(*GetName)(
@@ -475,8 +475,8 @@ namespace AK::Wwise::Plugin
 			/**
 			 * \brief Get the event name, to show after the "Undo " and "Redo " terms in the menu.
 			 * 
-			 * \param[out] out_csName Pointer to a static name for this event. This pointer needs to be accessible as long
-			 *             as the event is not destroyed.
+			 * \param[out] out_csName Pointer to a static name for this event. The buffer is owned by Authoring and is 
+			 *   valid until the next API call.
 			 * \return true if successful.
 			 */
 			virtual bool GetName(const char ** out_csName) const = 0;

@@ -11,17 +11,20 @@
 	<StreamedFiles/>
 	<MediaFilesNotInAnyBank/>
 	<SoundBanks>
-		<SoundBank Id="1355168291" Language="SFX" Hash="803165585">
+		<SoundBank Id="1355168291" GUID="{701ECBBD-9C7B-4030-8CDB-749EE5D1C7B9}" Language="SFX" Hash="2365619057">
 			<ObjectPath>Init</ObjectPath>
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
+			<IncludedAuxBusses>
+				<AuxBus Id="769424364" Name="RevTest" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\AUX\RevTest" GUID="{FB9DD9F9-93AE-47CE-9A9E-2BB6CDD60CAF}"/>
+			</IncludedAuxBusses>
 		</SoundBank>
-		<SoundBank Id="2385628198" Language="SFX" Hash="719559271">
+		<SoundBank Id="2385628198" GUID="{AE832118-B114-4441-B331-56D6E918AFDD}" Language="SFX" Hash="2298687178">
 			<ObjectPath>\SoundBanks\Default Work Unit\Footsteps</ObjectPath>
 			<ShortName>Footsteps</ShortName>
 			<Path>Footsteps.bnk</Path>
 			<IncludedEvents>
-				<Event Id="2385628198" Name="Footsteps" ObjectPath="\Events\Default Work Unit\Footsteps">
+				<Event Id="2385628198" Name="Footsteps" ObjectPath="\Events\Default Work Unit\Footsteps" GUID="{8BA4787C-411E-4C21-9EE1-7CD28200A4BE}" DurationType="OneShot" DurationMin="0.250250" DurationMax="0.890634">
 					<IncludedMemoryFiles>
 						<File Id="33279019" Language="SFX">
 							<ShortName>FTS_Grass_7.wav</ShortName>
@@ -29,7 +32,7 @@
 						</File>
 						<File Id="56382393" Language="SFX">
 							<ShortName>Wood\FTS_Wood_5.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_5_921C4A5E.wem</Path>
+							<Path>SFX/Wood/FTS_Wood_5_221F913C.wem</Path>
 						</File>
 						<File Id="62961058" Language="SFX">
 							<ShortName>Water\FTS_Water_5.wav</ShortName>
@@ -49,7 +52,7 @@
 						</File>
 						<File Id="134792594" Language="SFX">
 							<ShortName>FTS_Wood_11.wav</ShortName>
-							<Path>SFX/FTS_Wood_11_84A496FC.wem</Path>
+							<Path>SFX/FTS_Wood_11_26A5A88C.wem</Path>
 						</File>
 						<File Id="135222606" Language="SFX">
 							<ShortName>FTS_Water_7.wav</ShortName>
@@ -65,7 +68,7 @@
 						</File>
 						<File Id="171200006" Language="SFX">
 							<ShortName>FTS_Wood_10.wav</ShortName>
-							<Path>SFX/FTS_Wood_10_8C332572.wem</Path>
+							<Path>SFX/FTS_Wood_10_BA985A03.wem</Path>
 						</File>
 						<File Id="176810074" Language="SFX">
 							<ShortName>FTS_Grass_11.wav</ShortName>
@@ -73,7 +76,7 @@
 						</File>
 						<File Id="195147332" Language="SFX">
 							<ShortName>FTS_Grass_8.wav</ShortName>
-							<Path>SFX/FTS_Grass_8_4300E903.wem</Path>
+							<Path>SFX/FTS_Grass_8_F4612628.wem</Path>
 						</File>
 						<File Id="198730852" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_6.wav</ShortName>
@@ -97,23 +100,23 @@
 						</File>
 						<File Id="236201808" Language="SFX">
 							<ShortName>FTS_Dirt_12.wav</ShortName>
-							<Path>SFX/FTS_Dirt_12_3B530EE9.wem</Path>
+							<Path>SFX/FTS_Dirt_12_D2FB5F92.wem</Path>
 						</File>
 						<File Id="244999168" Language="SFX">
 							<ShortName>FTS_Dirt_7.wav</ShortName>
-							<Path>SFX/FTS_Dirt_7_16166F7C.wem</Path>
+							<Path>SFX/FTS_Dirt_7_4113ABFD.wem</Path>
 						</File>
 						<File Id="250721738" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_2.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_2_873E5CC4.wem</Path>
+							<Path>SFX/Dirt/FTS_Dirt_2_122B4D81.wem</Path>
 						</File>
 						<File Id="264265626" Language="SFX">
 							<ShortName>FTS_Wood_9.wav</ShortName>
-							<Path>SFX/FTS_Wood_9_C59AEB60.wem</Path>
+							<Path>SFX/FTS_Wood_9_6B277428.wem</Path>
 						</File>
 						<File Id="289830776" Language="SFX">
 							<ShortName>FTS_Wood_8.wav</ShortName>
-							<Path>SFX/FTS_Wood_8_2E57DBA2.wem</Path>
+							<Path>SFX/FTS_Wood_8_E83F54EB.wem</Path>
 						</File>
 						<File Id="302590341" Language="SFX">
 							<ShortName>FTS_Wood_12.wav</ShortName>
@@ -133,7 +136,7 @@
 						</File>
 						<File Id="364780378" Language="SFX">
 							<ShortName>FTS_Wood_7.wav</ShortName>
-							<Path>SFX/FTS_Wood_7_C21EEC99.wem</Path>
+							<Path>SFX/FTS_Wood_7_1CB97A7B.wem</Path>
 						</File>
 						<File Id="367129222" Language="SFX">
 							<ShortName>FTS_Grass_8.wav</ShortName>
@@ -141,7 +144,7 @@
 						</File>
 						<File Id="401291620" Language="SFX">
 							<ShortName>Wood\FTS_Wood_2.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_2_D708229F.wem</Path>
+							<Path>SFX/Wood/FTS_Wood_2_86080C79.wem</Path>
 						</File>
 						<File Id="406835349" Language="SFX">
 							<ShortName>Water\FTS_Water_6.wav</ShortName>
@@ -149,7 +152,7 @@
 						</File>
 						<File Id="417815908" Language="SFX">
 							<ShortName>FTS_Wood_8.wav</ShortName>
-							<Path>SFX/FTS_Wood_8_70C18C9F.wem</Path>
+							<Path>SFX/FTS_Wood_8_EFACF335.wem</Path>
 						</File>
 						<File Id="431763545" Language="SFX">
 							<ShortName>Wood\FTS_Wood_1.wav</ShortName>
@@ -157,7 +160,7 @@
 						</File>
 						<File Id="438120175" Language="SFX">
 							<ShortName>Grass\FTS_Grass_3.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_3_7D9F4FBF.wem</Path>
+							<Path>SFX/Grass/FTS_Grass_3_1A5AC552.wem</Path>
 						</File>
 						<File Id="444544100" Language="SFX">
 							<ShortName>Wood\FTS_Wood_2.wav</ShortName>
@@ -165,11 +168,11 @@
 						</File>
 						<File Id="445363368" Language="SFX">
 							<ShortName>FTS_Dirt_10.wav</ShortName>
-							<Path>SFX/FTS_Dirt_10_4E897BCE.wem</Path>
+							<Path>SFX/FTS_Dirt_10_6FFA24D4.wem</Path>
 						</File>
 						<File Id="480819142" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_1.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_1_88374317.wem</Path>
+							<Path>SFX/Dirt/FTS_Dirt_1_234584EF.wem</Path>
 						</File>
 						<File Id="482086239" Language="SFX">
 							<ShortName>Wood\FTS_Wood_3.wav</ShortName>
@@ -189,7 +192,7 @@
 						</File>
 						<File Id="504234298" Language="SFX">
 							<ShortName>Wood\FTS_Wood_5.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_5_95CDF82A.wem</Path>
+							<Path>SFX/Wood/FTS_Wood_5_5114096F.wem</Path>
 						</File>
 						<File Id="511745616" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_4.wav</ShortName>
@@ -197,11 +200,11 @@
 						</File>
 						<File Id="538010256" Language="SFX">
 							<ShortName>Wood\FTS_Wood_4.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_4_A0A60176.wem</Path>
+							<Path>SFX/Wood/FTS_Wood_4_F36DE8EC.wem</Path>
 						</File>
 						<File Id="538765976" Language="SFX">
 							<ShortName>FTS_Wood_12.wav</ShortName>
-							<Path>SFX/FTS_Wood_12_3E671B93.wem</Path>
+							<Path>SFX/FTS_Wood_12_9A8DFE58.wem</Path>
 						</File>
 						<File Id="546829936" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_3.wav</ShortName>
@@ -209,7 +212,7 @@
 						</File>
 						<File Id="549071018" Language="SFX">
 							<ShortName>FTS_Dirt_9.wav</ShortName>
-							<Path>SFX/FTS_Dirt_9_BED24EC5.wem</Path>
+							<Path>SFX/FTS_Dirt_9_4B266595.wem</Path>
 						</File>
 						<File Id="550492136" Language="SFX">
 							<ShortName>Grass\FTS_Grass_5.wav</ShortName>
@@ -221,7 +224,7 @@
 						</File>
 						<File Id="563387354" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_3.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_3_66555C58.wem</Path>
+							<Path>SFX/Dirt/FTS_Dirt_3_3B233E3C.wem</Path>
 						</File>
 						<File Id="573849091" Language="SFX">
 							<ShortName>FTS_Grass_11.wav</ShortName>
@@ -241,7 +244,7 @@
 						</File>
 						<File Id="602974584" Language="SFX">
 							<ShortName>FTS_Wood_7.wav</ShortName>
-							<Path>SFX/FTS_Wood_7_73AC96CD.wem</Path>
+							<Path>SFX/FTS_Wood_7_EE778E84.wem</Path>
 						</File>
 						<File Id="611815475" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_1.wav</ShortName>
@@ -257,7 +260,7 @@
 						</File>
 						<File Id="626827759" Language="SFX">
 							<ShortName>FTS_Grass_7.wav</ShortName>
-							<Path>SFX/FTS_Grass_7_03B21C52.wem</Path>
+							<Path>SFX/FTS_Grass_7_4C94201A.wem</Path>
 						</File>
 						<File Id="629267353" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_2.wav</ShortName>
@@ -265,19 +268,19 @@
 						</File>
 						<File Id="631293237" Language="SFX">
 							<ShortName>FTS_Dirt_11.wav</ShortName>
-							<Path>SFX/FTS_Dirt_11_3219637D.wem</Path>
+							<Path>SFX/FTS_Dirt_11_74431D0E.wem</Path>
 						</File>
 						<File Id="649385026" Language="SFX">
 							<ShortName>Grass\FTS_Grass_5.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_5_C40CDE49.wem</Path>
+							<Path>SFX/Grass/FTS_Grass_5_D5C4E233.wem</Path>
 						</File>
 						<File Id="670195462" Language="SFX">
 							<ShortName>Grass\FTS_Grass_2.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_2_210ADE1B.wem</Path>
+							<Path>SFX/Grass/FTS_Grass_2_9F764FB2.wem</Path>
 						</File>
 						<File Id="684169982" Language="SFX">
 							<ShortName>FTS_Grass_12.wav</ShortName>
-							<Path>SFX/FTS_Grass_12_28675447.wem</Path>
+							<Path>SFX/FTS_Grass_12_EA21015D.wem</Path>
 						</File>
 						<File Id="699258097" Language="SFX">
 							<ShortName>FTS_Dirt_8.wav</ShortName>
@@ -289,15 +292,15 @@
 						</File>
 						<File Id="713361232" Language="SFX">
 							<ShortName>Wood\FTS_Wood_1.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_1_CDF45243.wem</Path>
+							<Path>SFX/Wood/FTS_Wood_1_DA2E0FC9.wem</Path>
 						</File>
 						<File Id="727065953" Language="SFX">
 							<ShortName>Wood\FTS_Wood_6.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_6_D22906E1.wem</Path>
+							<Path>SFX/Wood/FTS_Wood_6_5B1B3385.wem</Path>
 						</File>
 						<File Id="733903199" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_4.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_4_FBC8ADFA.wem</Path>
+							<Path>SFX/Dirt/FTS_Dirt_4_0A311692.wem</Path>
 						</File>
 						<File Id="745308928" Language="SFX">
 							<ShortName>FTS_Grass_10.wav</ShortName>
@@ -329,7 +332,7 @@
 						</File>
 						<File Id="811188900" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_5.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_5_A56C744C.wem</Path>
+							<Path>SFX/Dirt/FTS_Dirt_5_232F79F7.wem</Path>
 						</File>
 						<File Id="812856809" Language="SFX">
 							<ShortName>FTS_Dirt_7.wav</ShortName>
@@ -337,7 +340,7 @@
 						</File>
 						<File Id="812880505" Language="SFX">
 							<ShortName>Grass\FTS_Grass_4.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_4_4B704C7B.wem</Path>
+							<Path>SFX/Grass/FTS_Grass_4_461B67E8.wem</Path>
 						</File>
 						<File Id="814264923" Language="SFX">
 							<ShortName>Water\FTS_Water_6.wav</ShortName>
@@ -345,11 +348,11 @@
 						</File>
 						<File Id="815145540" Language="SFX">
 							<ShortName>Grass\FTS_Grass_1.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_1_64387D81.wem</Path>
+							<Path>SFX/Grass/FTS_Grass_1_AB3DBCC7.wem</Path>
 						</File>
 						<File Id="842503274" Language="SFX">
 							<ShortName>Grass\FTS_Grass_6.wav</ShortName>
-							<Path>SFX/Grass/FTS_Grass_6_AE9B0750.wem</Path>
+							<Path>SFX/Grass/FTS_Grass_6_FB6EDA42.wem</Path>
 						</File>
 						<File Id="851711587" Language="SFX">
 							<ShortName>FTS_Water_9.wav</ShortName>
@@ -381,7 +384,7 @@
 						</File>
 						<File Id="912231829" Language="SFX">
 							<ShortName>Wood\FTS_Wood_6.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_6_9A00EB6C.wem</Path>
+							<Path>SFX/Wood/FTS_Wood_6_21E3EE8E.wem</Path>
 						</File>
 						<File Id="916892411" Language="SFX">
 							<ShortName>WaterAdd\FTS_WaterAdd_6.wav</ShortName>
@@ -393,7 +396,7 @@
 						</File>
 						<File Id="923241902" Language="SFX">
 							<ShortName>Dirt\FTS_Dirt_6.wav</ShortName>
-							<Path>SFX/Dirt/FTS_Dirt_6_44724EBE.wem</Path>
+							<Path>SFX/Dirt/FTS_Dirt_6_9CCC455A.wem</Path>
 						</File>
 						<File Id="927880812" Language="SFX">
 							<ShortName>FTS_Dirt_10.wav</ShortName>
@@ -445,7 +448,7 @@
 						</File>
 						<File Id="1038585851" Language="SFX">
 							<ShortName>Wood\FTS_Wood_3.wav</ShortName>
-							<Path>SFX/Wood/FTS_Wood_3_117B45AF.wem</Path>
+							<Path>SFX/Wood/FTS_Wood_3_BDF939A4.wem</Path>
 						</File>
 						<File Id="1050404912" Language="SFX">
 							<ShortName>Water\FTS_Water_1.wav</ShortName>
@@ -574,36 +577,43 @@
 				</Event>
 			</IncludedEvents>
 			<GameParameters>
-				<GameParameter Id="1176274864" Name="InWet" ObjectPath="\Game Parameters\Default Work Unit\InWet"/>
+				<GameParameter Id="1176274864" Name="InWet" ObjectPath="\Game Parameters\Default Work Unit\InWet" GUID="{46802335-4E0D-4E38-8750-AAC54F9FA5BB}"/>
 			</GameParameters>
 			<SwitchGroups>
-				<SwitchGroup Id="4148674434" Name="FootstepsSurfases" ObjectPath="\Switches\Default Work Unit\FootstepsSurfases">
+				<SwitchGroup Id="4148674434" Name="FootstepsSurfases" ObjectPath="\Switches\Default Work Unit\FootstepsSurfases" GUID="{95DF86EB-2ACB-4167-AAA5-2E5703359D08}">
 					<Switches>
-						<Switch Id="1773321336" Name="PM_Dirt" ObjectPath="\Switches\Default Work Unit\FootstepsSurfases\PM_Dirt"/>
-						<Switch Id="761628071" Name="PM_Grass" ObjectPath="\Switches\Default Work Unit\FootstepsSurfases\PM_Grass"/>
-						<Switch Id="2220787912" Name="PM_Water" ObjectPath="\Switches\Default Work Unit\FootstepsSurfases\PM_Water"/>
-						<Switch Id="4257446624" Name="PM_Wood" ObjectPath="\Switches\Default Work Unit\FootstepsSurfases\PM_Wood"/>
+						<Switch Id="1773321336" Name="PM_Dirt" ObjectPath="\Switches\Default Work Unit\FootstepsSurfases\PM_Dirt" GUID="{83291855-76C8-4929-B26F-27DE69D2588D}"/>
+						<Switch Id="761628071" Name="PM_Grass" ObjectPath="\Switches\Default Work Unit\FootstepsSurfases\PM_Grass" GUID="{4430BFF3-D7F3-4650-9197-AD4A3EE0B81A}"/>
+						<Switch Id="2220787912" Name="PM_Water" ObjectPath="\Switches\Default Work Unit\FootstepsSurfases\PM_Water" GUID="{F553FB2D-7FE6-4CD3-9DC8-BFC76F6EF20A}"/>
+						<Switch Id="4257446624" Name="PM_Wood" ObjectPath="\Switches\Default Work Unit\FootstepsSurfases\PM_Wood" GUID="{C042CC26-ED83-482C-B5E2-1F682530BF77}"/>
 					</Switches>
 				</SwitchGroup>
 			</SwitchGroups>
 		</SoundBank>
-		<SoundBank Id="3157003241" Language="SFX" Hash="1922006587">
+		<SoundBank Id="3157003241" GUID="{003B787B-1D1D-44FE-AA1B-6C791BE4C061}" Language="SFX" Hash="1348523684">
 			<ObjectPath>\SoundBanks\Default Work Unit\Test</ObjectPath>
 			<ShortName>Test</ShortName>
 			<Path>Test.bnk</Path>
 			<IncludedEvents>
-				<Event Id="3157003241" Name="Test" ObjectPath="\Events\test\Test">
+				<Event Id="3157003241" Name="Test" ObjectPath="\Events\test\Test" GUID="{F4E24975-DB7A-493A-B11C-3A8BD7BB6303}" MaxAttenuation="3000.000000" DurationType="Infinite">
 					<IncludedMemoryFiles>
-						<File Id="934438021" Language="SFX">
-							<ShortName>ColBox_Music_test(1)6.wav</ShortName>
-							<Path>SFX/ColBox_Music_test(1)6_607A0CA7.wem</Path>
+						<File Id="604898225" Language="SFX">
+							<ShortName>vox.wav</ShortName>
+							<Path>SFX/vox_D79FB2B7.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
+					<AuxBusSends>
+						<AuxBus Id="769424364" Name="RevTest" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\AUX\RevTest" GUID="{FB9DD9F9-93AE-47CE-9A9E-2BB6CDD60CAF}"/>
+					</AuxBusSends>
 				</Event>
 			</IncludedEvents>
 			<GameParameters>
-				<GameParameter Id="3046093717" Name="testLP" ObjectPath="\Game Parameters\Default Work Unit\testLP"/>
-				<GameParameter Id="3299578263" Name="testVolume" ObjectPath="\Game Parameters\Default Work Unit\testVolume"/>
+				<GameParameter Id="1295424488" Name="testRevLP" ObjectPath="\Game Parameters\Default Work Unit\testRevLP" GUID="{478755AA-1456-49C6-AD35-FBA63AAE4796}"/>
+				<GameParameter Id="1298737518" Name="testPan" ObjectPath="\Game Parameters\Default Work Unit\testPan" GUID="{8B133E62-2A85-4D55-B20C-6A45DDB620C0}"/>
+				<GameParameter Id="1362534804" Name="testRevHP" ObjectPath="\Game Parameters\Default Work Unit\testRevHP" GUID="{8E58925F-AECC-4A29-B029-F2BC5E52FCE9}"/>
+				<GameParameter Id="2237989772" Name="testRev" ObjectPath="\Game Parameters\Default Work Unit\testRev" GUID="{8D5B08AA-E9F7-4422-9BBA-CD52D908D2DF}"/>
+				<GameParameter Id="3046093717" Name="testLP" ObjectPath="\Game Parameters\Default Work Unit\testLP" GUID="{A523C67D-FE6D-4D1C-BC37-1F97D1BA336B}"/>
+				<GameParameter Id="3299578263" Name="testVolume" ObjectPath="\Game Parameters\Default Work Unit\testVolume" GUID="{4DD22DA4-AB9E-4C64-A0C5-8002FF3B7B0E}"/>
 			</GameParameters>
 		</SoundBank>
 	</SoundBanks>

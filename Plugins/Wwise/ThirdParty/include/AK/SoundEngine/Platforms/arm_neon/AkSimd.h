@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -457,6 +457,7 @@ static AkForceInline AKSIMD_V4I32 AKSIMD_CONVERT_V4F32_TO_V4F16(AKSIMD_V4F32 vec
 #define AKSIMD_CMPGT_V4I32( __a__, __b__)  vreinterpretq_s32_u32(vcgtq_s32(__a__,__b__))
 
 #define AKSIMD_OR_V4I32( __a__, __b__ ) vorrq_s32(__a__,__b__)
+#define AKSIMD_NOT_V4I32( __a__ ) veorq_s32(__a__, vdupq_n_s32(~0u))
 
 #define AKSIMD_XOR_V4I32(__a__, __b__)  veorq_s32(__a__, __b__)
 
@@ -669,22 +670,23 @@ AkForceInline AKSIMD_V4F32 AKSIMD_DIV_V4F32( AKSIMD_V4F32 a, AKSIMD_V4F32 b )
 #define AKSIMD_MUL_SS_V4F32( __a__, __b__ ) \
 	vmulq_f32( (__a__), vsetq_lane_f32( AKSIMD_GETELEMENT_V4F32( (__b__), 0 ), AKSIMD_SETZERO_V4F32(), 0 ) )
 
-/// Vector multiply-add operation.
-#define AKSIMD_MADD_V4F32( __a__, __b__, __c__ ) vmlaq_f32( (__c__), (__a__), (__b__) )
+/// Vector multiply-add and multiply-subtract operations (Aarch64 uses the fused-variants directly where appropriate)
+#if defined(AK_CPU_ARM_64)
+	#define AKSIMD_MADD_V4F32( __a__, __b__, __c__ ) vfmaq_f32( (__c__), (__a__), (__b__) )
+	#define AKSIMD_MADD_V2F32( __a__, __b__, __c__ ) vfma_f32( (__c__),  (__a__), (__b__) )
+	#define AKSIMD_MADD_V4F32_SCALAR( __a__, __b__, __c__ ) vfmaq_n_f32( (__c__), (__a__), (__b__) )
+	#define AKSIMD_MADD_V2F32_SCALAR( __a__, __b__, __c__ ) vfma_n_f32( (__c__), (__a__), (__b__) )
+#else
+	#define AKSIMD_MADD_V4F32( __a__, __b__, __c__ ) vmlaq_f32( (__c__), (__a__), (__b__) )
+	#define AKSIMD_MADD_V2F32( __a__, __b__, __c__ ) AKSIMD_ADD_V2F32( AKSIMD_MUL_V2F32( (__a__), (__b__) ), (__c__) )
+	#define AKSIMD_MADD_V4F32_SCALAR( __a__, __b__, __c__ ) vmlaq_n_f32( (__c__), (__a__), (__b__) )
+	#define AKSIMD_MADD_V2F32_SCALAR( __a__, __b__, __c__ ) vmla_n_f32( (__c__), (__a__), (__b__) )
+#endif
 
-/// Vector multiply-substract operation.  Careful: vmlsq_f32 does c-(a*b) and not the expected (a*b)-c
-#define AKSIMD_MSUB_V4F32( __a__, __b__, __c__ ) \
-	AKSIMD_SUB_V4F32( AKSIMD_MUL_V4F32( (__a__), (__b__) ), (__c__) )
-
-
-#define AKSIMD_MADD_V2F32( __a__, __b__, __c__ ) \
-	AKSIMD_ADD_V2F32( AKSIMD_MUL_V2F32( (__a__), (__b__) ), (__c__) )
-
-#define AKSIMD_MSUB_V2F32( __a__, __b__, __c__ ) \
-	AKSIMD_SUB_V2F32( AKSIMD_MUL_V2F32( (__a__), (__b__) ), (__c__) )
-
-#define AKSIMD_MADD_V4F32_SCALAR( __a__, __b__, __c__ ) vmlaq_n_f32( (__c__), (__a__), (__b__) )
-#define AKSIMD_MADD_V2F32_SCALAR( __a__, __b__, __c__ ) vmla_n_f32( (__c__), (__a__), (__b__) )
+/// Not a direct translation to vfmsq_f32 because that operation does -a*b+c, not a*b-c.
+/// Explicitly adding an additional negation tends to produce worse codegen than giving the compiler a chance to re-order things slightly
+#define AKSIMD_MSUB_V4F32( __a__, __b__, __c__ ) AKSIMD_SUB_V4F32( AKSIMD_MUL_V4F32( (__a__), (__b__) ), (__c__) )
+#define AKSIMD_MSUB_V2F32( __a__, __b__, __c__ ) AKSIMD_SUB_V2F32( AKSIMD_MUL_V2F32( (__a__), (__b__) ), (__c__) )
 
 /// Vector multiply-add operation.
 AkForceInline AKSIMD_V4F32 AKSIMD_MADD_SS_V4F32( const AKSIMD_V4F32& __a__, const AKSIMD_V4F32& __b__, const AKSIMD_V4F32& __c__ )
@@ -753,7 +755,7 @@ static AkForceInline AKSIMD_V4F32 AKSIMD_COMPLEXMUL_V4F32( AKSIMD_V4F32 vCIn1, A
 	vC2Ext.val[1] = AKSIMD_XOR_V4F32(vC2Ext.val[1], vSign);
 	float32x4_t vC1Rev = vrev64q_f32(vCIn1);
 	float32x4_t vMul = vmulq_f32(vCIn1, vC2Ext.val[0]);
-	float32x4_t vFinal = vmlaq_f32(vMul, vC1Rev, vC2Ext.val[1]);
+	float32x4_t vFinal = AKSIMD_MADD_V4F32(vC1Rev, vC2Ext.val[1], vMul);
 	return vFinal;
 }
 
@@ -965,10 +967,29 @@ static AkForceInline int AKSIMD_MASK_V4F32( const AKSIMD_V4F32& in_vec1 )
 // returns true if every element of the provided vector is zero
 static AkForceInline bool AKSIMD_TESTZERO_V4I32(AKSIMD_V4I32 a)
 {
+#if defined AK_CPU_ARM_64 && (!defined(_MSC_VER) || defined(vmaxvq_u32)) // vmaxvq_u32 is defined only in some versions of MSVC's arm64_neon.h (introduced during Visual Studio 2019)
+	uint32_t maxValue = vmaxvq_u32(vreinterpretq_u32_s32(a));
+	return maxValue == 0;
+#else
 	int64x1_t orReduce = vorr_s64(vget_low_s64(vreinterpretq_s64_s32(a)), vget_high_s64(vreinterpretq_s64_s32(a)));
 	return vget_lane_s64(orReduce, 0) == 0;
+#endif
 }
 #define AKSIMD_TESTZERO_V4F32( __a__) AKSIMD_TESTZERO_V4I32(vreinterpretq_s32_f32(__a__))
+#define AKSIMD_TESTZERO_V4COND( __a__) AKSIMD_TESTZERO_V4I32(vreinterpretq_s32_u32(__a__))
+
+static AkForceInline bool AKSIMD_TESTONES_V4I32(AKSIMD_V4I32 a)
+{
+#if defined AK_CPU_ARM_64 && (!defined(_MSC_VER) || defined(vminvq_u32)) // vminvq_u32 is defined only in some versions of MSVC's arm64_neon.h (introduced during Visual Studio 2019)
+	uint32_t minValue = vminvq_u32(vreinterpretq_u32_s32(a));
+	return minValue == ~0;
+#else
+	int64x1_t andReduce = vand_s64(vget_low_s64(vreinterpretq_s64_s32(a)), vget_high_s64(vreinterpretq_s64_s32(a)));
+	return vget_lane_s64(andReduce, 0) == ~0LL;
+#endif
+}
+#define AKSIMD_TESTONES_V4F32( __a__) AKSIMD_TESTONES_V4I32(vreinterpretq_s32_f32(__a__))
+#define AKSIMD_TESTONES_V4COND( __a__) AKSIMD_TESTONES_V4I32(vreinterpretq_s32_u32(__a__))
 
 
 static AkForceInline AKSIMD_V4COND AKSIMD_SETMASK_V4COND( AkUInt32 x )
@@ -979,7 +1000,6 @@ static AkForceInline AKSIMD_V4COND AKSIMD_SETMASK_V4COND( AkUInt32 x )
     return AKSIMD_EQ_V4I32(temp, xand);
 }
 
-#define AKSIMD_TESTZERO_V4COND( __a__) AKSIMD_TESTZERO_V4I32(vreinterpretq_s32_u32(__a__))
 
 //@}
 ////////////////////////////////////////////////////////////////////////

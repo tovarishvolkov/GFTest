@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -47,8 +47,10 @@ the specific language governing permissions and limitations under the License.
 typedef float AKSIMD_F32;		///< 32-bit float
 typedef __m256 AKSIMD_V8F32;	///< Vector of 8 32-bit floats
 typedef __m256d AKSIMD_V4F64;	///< Vector of 4 64-bit floats
+typedef __m256i	AKSIMD_V8I32;	///< Vector of 8 32-bit signed integers
 typedef AKSIMD_V8F32 AKSIMD_V8COND;	 ///< Vector of 8 comparison results
 typedef AKSIMD_V8F32 AKSIMD_V8FCOND;	 ///< Vector of 8 comparison results
+typedef AKSIMD_V8I32 AKSIMD_V8ICOND;
 
 //@}
 ////////////////////////////////////////////////////////////////////////
@@ -160,6 +162,28 @@ typedef AKSIMD_V8F32 AKSIMD_V8FCOND;	 ///< Vector of 8 comparison results
 /// Selects the higher of each of the 128b lanes in a and b to be the result ( B A ), ( D C) -> ( D B )
 #define AKSIMD_DEINTERLEAVELANES_HI_V8F32( a, b ) AKSIMD_PERMUTE_2X128_V8F32(a, b, AKSIMD_PERMUTE128(3, 1))
 
+/// Gets the specified 128b lane from a and stores it in the result
+#define AKSIMD_EXTRACT_V2F128( a, i ) _mm256_extractf128_ps(a, i)
+
+/// Rotate the 4x4 vectors in each of the 128b lanes. After rotation:
+///  A[7:0] = D[4] C[4] B[4] A[4] D[0] C[0] B[0] A[0]
+///  B[7:0] = D[5] C[5] B[5] A[5] D[1] C[1] B[1] A[1]
+///  C[7:0] = D[6] C[6] B[6] A[6] D[2] C[2] B[2] A[2]
+///  D[7:0] = D[7] C[7] B[7] A[7] D[3] C[3] B[3] A[3]
+AkForceInline void AKSIMD_TRANSPOSE8X4_V8F32(AKSIMD_V8F32& A, AKSIMD_V8F32& B, AKSIMD_V8F32& C, AKSIMD_V8F32& D)
+{
+	AKSIMD_V8F32 tmp1, tmp2, tmp3, tmp4;
+	tmp1 = AKSIMD_SHUFFLE_V8F32(A, B, AKSIMD_SHUFFLE(1, 0, 1, 0));
+	tmp2 = AKSIMD_SHUFFLE_V8F32(A, B, AKSIMD_SHUFFLE(3, 2, 3, 2));
+	tmp3 = AKSIMD_SHUFFLE_V8F32(C, D, AKSIMD_SHUFFLE(1, 0, 1, 0));
+	tmp4 = AKSIMD_SHUFFLE_V8F32(C, D, AKSIMD_SHUFFLE(3, 2, 3, 2));
+
+	A = AKSIMD_SHUFFLE_V8F32(tmp1, tmp3, AKSIMD_SHUFFLE(2, 0, 2, 0));
+	B = AKSIMD_SHUFFLE_V8F32(tmp1, tmp3, AKSIMD_SHUFFLE(3, 1, 3, 1));
+	C = AKSIMD_SHUFFLE_V8F32(tmp2, tmp4, AKSIMD_SHUFFLE(2, 0, 2, 0));
+	D = AKSIMD_SHUFFLE_V8F32(tmp2, tmp4, AKSIMD_SHUFFLE(3, 1, 3, 1));
+}
+
 //@}
 ////////////////////////////////////////////////////////////////////////
 
@@ -231,6 +255,7 @@ typedef AKSIMD_V8F32 AKSIMD_V8FCOND;	 ///< Vector of 8 comparison results
 #define AKSIMD_XOR_V8F32( a, b ) _mm256_xor_ps(a,b)
 #define AKSIMD_OR_V8F32( a, b ) _mm256_or_ps(a,b)
 #define AKSIMD_AND_V8F32( a, b) _mm256_and_ps(a,b)
+#define AKSIMD_NOT_V8F32( a ) _mm256_xor_ps(a,_mm256_castsi256_ps(_mm256_set1_epi32(~0)))
 
 /// horizontal add across the entire vector -  vVec will be updated to contain the sum of every input element of vVec
 /// \akwarning
@@ -282,7 +307,6 @@ static AkForceInline AKSIMD_V8F32 AKSIMD_COMPLEXMUL_V8F32(const AKSIMD_V8F32 cIn
 
 ////////////////////////////////////////////////////////////////////////
 /// @name AKSIMD vector comparison
-/// Apart from AKSIMD_SEL_GTEQ_V8F32, these implementations are limited to a few platforms. 
 //@{
 
 #define AKSIMD_CMP_CTRLMASKV8 __m256
@@ -317,15 +341,15 @@ static AkForceInline AKSIMD_V8F32 AKSIMD_VSEL_V8F32( AKSIMD_V8F32 vA, AKSIMD_V8F
 #define AKSIMD_MASK_V8F32( __a__ ) _mm256_movemask_ps( __a__ )
 
 // returns true if every element of the provided vector is zero
-#define AKSIMD_TESTZERO_V8I32( __a__ ) (_mm256_testz_si256( __a__, __a__ ) != 0)
-#define AKSIMD_TESTZERO_V8F32( __a__ ) (_mm256_testz_ps( __a__, __a__ ) != 0)
+#define AKSIMD_TESTZERO_V8I32( __a__ ) (_mm256_testz_si256(__a__,__a__) != 0)
+#define AKSIMD_TESTZERO_V8F32( __a__) AKSIMD_TESTZERO_V8I32(_mm256_castps_si256(__a__))
+
+// returns true if every element of the provided vector is one
+#define AKSIMD_TESTONES_V8I32(__a__) (_mm256_testc_si256(__a__, _mm256_set1_epi32(~0)) != 0)
+#define AKSIMD_TESTONES_V8F32( __a__) AKSIMD_TESTONES_V8I32(_mm256_castps_si256(__a__))
 
 //@}
 ////////////////////////////////////////////////////////////////////////
-
-typedef __m256i	AKSIMD_V8I32;	///< Vector of 8 32-bit signed integers
-
-typedef AKSIMD_V8I32 AKSIMD_V8ICOND;
 
 /// Loads 256-bit value (see _mm_loadu_si128)
 /// On every modern x86 processor this performs the same as an aligned load.

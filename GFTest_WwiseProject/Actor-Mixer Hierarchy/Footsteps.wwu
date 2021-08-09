@@ -3009,6 +3009,11 @@
 										</SwitchContainer>
 										<RandomSequenceContainer Name="WaterAdd" ID="{EF6571F7-8F1F-43E0-AF3A-E323EB9D9973}" ShortID="34502788">
 											<PropertyList>
+												<Property Name="MaxSoundPerInstance" Type="int16">
+													<ValueList>
+														<Value>1</Value>
+													</ValueList>
+												</Property>
 												<Property Name="PlayMechanismSpecialTransitions" Type="bool" Value="True"/>
 												<Property Name="PlayMechanismStepOrContinuous" Type="int16" Value="0"/>
 												<Property Name="RandomOrSequence" Type="int16" Value="0"/>
@@ -3433,14 +3438,26 @@
 													</RTPCList>
 												</Property>
 											</PropertyList>
+											<ReferenceList>
+												<Reference Name="LayerCrossFadeControlInput">
+													<ObjectRef Name="InWet" ID="{46802335-4E0D-4E38-8750-AAC54F9FA5BB}" WorkUnitID="{2C4A1233-8C0B-4C6C-AEEB-8F2FDCA1F2C7}"/>
+												</Reference>
+											</ReferenceList>
 											<BlendTrackAssocList>
 												<BlendTrackAssoc>
 													<ItemRef Name="FootstepsSurfases" ID="{CF89734B-326B-4198-9F50-295837266598}"/>
+													<CrossfadingInfo>
+														<LeftEdgePos>0</LeftEdgePos>
+														<LeftFadingMode>Automatic</LeftFadingMode>
+														<RightEdgePos>100</RightEdgePos>
+														<RightFadingMode>Automatic</RightFadingMode>
+													</CrossfadingInfo>
 												</BlendTrackAssoc>
 											</BlendTrackAssocList>
 										</BlendTrack>
 										<BlendTrack Name="WaterAdd" ID="{92C4E489-A009-49EE-AE15-9BBAEDA1AB31}" ShortID="1012890286">
 											<PropertyList>
+												<Property Name="EnableCrossFading" Type="bool" Value="True"/>
 												<Property Name="Volume" Type="Real64">
 													<RTPCList>
 														<RTPC Name="" ID="{4C00208C-CC67-43AF-89F7-10E75AC67F57}" ShortID="582689842">
@@ -3470,9 +3487,20 @@
 													</RTPCList>
 												</Property>
 											</PropertyList>
+											<ReferenceList>
+												<Reference Name="LayerCrossFadeControlInput">
+													<ObjectRef Name="InWet" ID="{46802335-4E0D-4E38-8750-AAC54F9FA5BB}" WorkUnitID="{2C4A1233-8C0B-4C6C-AEEB-8F2FDCA1F2C7}"/>
+												</Reference>
+											</ReferenceList>
 											<BlendTrackAssocList>
 												<BlendTrackAssoc>
 													<ItemRef Name="WaterAdd" ID="{EF6571F7-8F1F-43E0-AF3A-E323EB9D9973}"/>
+													<CrossfadingInfo>
+														<LeftEdgePos>9.81789390340458</LeftEdgePos>
+														<LeftFadingMode>Automatic</LeftFadingMode>
+														<RightEdgePos>100</RightEdgePos>
+														<RightFadingMode>Automatic</RightFadingMode>
+													</CrossfadingInfo>
 												</BlendTrackAssoc>
 											</BlendTrackAssocList>
 										</BlendTrack>

@@ -90,7 +90,7 @@ public:
 	{
 		TArray<EnvironmentType*> Result;
 
-		auto* Octree = Map.Find(World);
+		TUniquePtr<UAkEnvironmentOctree>* Octree = Map.Find(World);
 
 		if (Octree != nullptr)
 		{
@@ -138,17 +138,17 @@ public:
 	/**
 		Add a Component to the spatial index.
 	*/
-	void Add(USceneComponent* in_EnvironmentToAdd);
+	void Add(USceneComponent* EnvironmentToAdd);
 	
 	/**
 	 * Remove a Component from the spatial index.
 	 */
-	void Remove(USceneComponent* in_EnvironmentToRemove);
-	
+	bool Remove(USceneComponent* EnvironmentToRemove);
+
 	/**
 	 * Update the bounds of a component that is already indexed. Must be called if the transform of the component changes.
 	 */
-	void Update(USceneComponent* in_EnvironmentToUpdate);
+	void Update(USceneComponent* EnvironmentToUpdate);
 
 	/**
 	 * Clear all components in the given World.

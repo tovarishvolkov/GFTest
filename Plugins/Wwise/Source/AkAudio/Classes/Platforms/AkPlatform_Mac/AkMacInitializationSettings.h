@@ -17,15 +17,17 @@ Copyright (c) 2021 Audiokinetic Inc.
 
 #include "AkInclude.h"
 #include "InitializationSettings/AkInitializationSettings.h"
+#include "InitializationSettings/AkPlatformInitialisationSettingsBase.h"
+
 #include "AkMacInitializationSettings.generated.h"
 
 UCLASS(config = Game, defaultconfig)
-class AKAUDIO_API UAkMacInitializationSettings : public UObject
+class AKAUDIO_API UAkMacInitializationSettings : public UObject, public IAkPlatformInitialisationSettingsBase
 {
 	GENERATED_UCLASS_BODY()
 
 public:
-	void FillInitializationStructure(FAkInitializationStructure& InitializationStructure) const;
+	void FillInitializationStructure(FAkInitializationStructure& InitializationStructure) const override;
 
 	UPROPERTY(Config, EditAnywhere, Category = "Initialization")
 	FAkCommonInitializationSettingsWithSampleRate CommonSettings;

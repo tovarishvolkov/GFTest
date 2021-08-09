@@ -129,6 +129,7 @@ void FAkSurfaceReflectorSetDetailsCustomization::CustomizeDetails(IDetailLayoutB
 {
 	DetailLayout.EditCategory("Toggle", FText::GetEmpty(), ECategoryPriority::Important);
 	DetailLayout.EditCategory("Geometry Settings", FText::GetEmpty(), ECategoryPriority::TypeSpecific);
+	DetailLayout.EditCategory("Fit To Geometry", FText::GetEmpty(), ECategoryPriority::TypeSpecific);
 	MyDetailLayout = &DetailLayout;
 
 	DetailLayout.GetObjectsBeingCustomized(ObjectsBeingCustomized);

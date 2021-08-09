@@ -55,7 +55,7 @@ private:
 
 public:
 	AkReverbFadeControl(const class UAkLateReverbComponent& LateReverbComponent);
-
+	void UpdateValues(const class UAkLateReverbComponent& LateReverbComponent);
 	bool Update(float DeltaTime);
 	void ForceCurrentToTargetValue() { CurrentControlValue = TargetControlValue; }
 	AkAuxSendValue ToAkAuxSendValue() const;

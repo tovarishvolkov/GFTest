@@ -135,6 +135,14 @@ AkReverbFadeControl::AkReverbFadeControl(const UAkLateReverbComponent& LateRever
 	, Priority(LateReverbComponent.Priority)
 {}
 
+void AkReverbFadeControl::UpdateValues(const UAkLateReverbComponent& LateReverbComponent)
+{
+	AuxBusId = LateReverbComponent.GetAuxBusId();
+	TargetControlValue = LateReverbComponent.SendLevel;
+	FadeRate = LateReverbComponent.FadeRate;
+	Priority = LateReverbComponent.Priority;
+}
+
 bool AkReverbFadeControl::Update(float DeltaTime)
 {
 	if (CurrentControlValue != TargetControlValue || bIsFadingOut)
@@ -325,7 +333,7 @@ AkPlayingID UAkComponent::PostAkEventByNameWithCallback(const FString& in_EventN
 
 int32 UAkComponent::PostAkEventAndWaitForEnd(class UAkAudioEvent * AkEvent, const FString& in_EventName, const TArray<FAkExternalSourceInfo>& ExternalSources, FLatentActionInfo LatentInfo)
 {
-	AkPlayingID playingID = AK_INVALID_PLAYING_ID;
+	AkPlayingID PlayingID = AK_INVALID_PLAYING_ID;
 
 	if (AkEvent == NULL && in_EventName.IsEmpty())
 	{
@@ -345,7 +353,6 @@ int32 UAkComponent::PostAkEventAndWaitForEnd(class UAkAudioEvent * AkEvent, cons
 			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, NewAction);
 		}
 
-		AkPlayingID PlayingID = AK_INVALID_PLAYING_ID;
 		if (ExternalSources.Num() > 0)
 		{
 			FAkSDKExternalSourceArray SDKExternalSrcInfo(ExternalSources);
@@ -359,7 +366,7 @@ int32 UAkComponent::PostAkEventAndWaitForEnd(class UAkAudioEvent * AkEvent, cons
 						ExtSrc.ExternalSourceAsset->AddPlayingID(AudioDevice->GetIDFromString(GET_AK_EVENT_NAME(AkEvent, in_EventName)), PlayingID);
 						if (!StopWhenOwnerDestroyed)
 						{
-							ExtSrc.ExternalSourceAsset->PinInGarbageCollector(playingID);
+							ExtSrc.ExternalSourceAsset->PinInGarbageCollector(PlayingID);
 						}
 					}
 				}
@@ -380,7 +387,7 @@ int32 UAkComponent::PostAkEventAndWaitForEnd(class UAkAudioEvent * AkEvent, cons
 		}
 	}
 
-	return playingID;
+	return PlayingID;
 }
 
 void UAkComponent::PostAkEventAndWaitForEndAsync(UAkAudioEvent* AkEvent, int32& PlayingID, const TArray<FAkExternalSourceInfo>& ExternalSources, FLatentActionInfo LatentInfo)
@@ -397,15 +404,15 @@ void UAkComponent::PostAkEventAndWaitForEndAsync(UAkAudioEvent* AkEvent, int32& 
 	{
 		FLatentActionManager& LatentActionManager = deviceAndWorld.CurrentWorld->GetLatentActionManager();
 		FWaitEndOfEventAsyncAction* NewAction = LatentActionManager.FindExistingAction<FWaitEndOfEventAsyncAction>(LatentInfo.CallbackTarget, LatentInfo.UUID);
-		if (NewAction)
+		if (!NewAction)
 		{
 			NewAction = new FWaitEndOfEventAsyncAction(LatentInfo, &PlayingID);
 			LatentActionManager.AddNewAction(LatentInfo.CallbackTarget, LatentInfo.UUID, NewAction);
 
 			if (ExternalSources.Num() > 0)
 			{
-				FAkSDKExternalSourceArray SDKExternalSrcInfo(ExternalSources);
-				NewAction->FuturePlayingID = deviceAndWorld.AkAudioDevice->PostEventLatentActionAsync(AkEvent, this, NewAction, SDKExternalSrcInfo.ExternalSourceArray);
+				TSharedPtr<FAkSDKExternalSourceArray, ESPMode::ThreadSafe> SDKExternalSrcInfo = MakeShared<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>(ExternalSources);
+				NewAction->FuturePlayingID = deviceAndWorld.AkAudioDevice->PostEventLatentActionAsync(AkEvent, this, NewAction, SDKExternalSrcInfo);
 			}
 			else
 			{
@@ -417,10 +424,12 @@ void UAkComponent::PostAkEventAndWaitForEndAsync(UAkAudioEvent* AkEvent, int32& 
 
 AkRoomID UAkComponent::GetSpatialAudioRoom() const
 {
-	AkRoomID roomID;
+	AkRoomID RoomID;
 	if (CurrentRoom)
-		roomID = CurrentRoom->GetRoomID();
-	return roomID;
+	{
+		RoomID = CurrentRoom->GetRoomID();
+	}
+	return RoomID;
 }
 
 void UAkComponent::PostTrigger(const UAkTrigger* TriggerValue, FString Trigger)
@@ -848,6 +857,8 @@ void UAkComponent::UpdateAkLateReverbComponentList( FVector Loc )
 			// The volume was found. We still have to check if it is currently fading out, in case we are
 			// getting back in a volume we just exited.
 			ReverbFadeControls[FoundIdx].bIsFadingOut = false;
+			// We need to update the late reverb values in case they have changed on the reverb component.
+			ReverbFadeControls[FoundIdx].UpdateValues(*LateReverbComponent);
 		}
 	}
 

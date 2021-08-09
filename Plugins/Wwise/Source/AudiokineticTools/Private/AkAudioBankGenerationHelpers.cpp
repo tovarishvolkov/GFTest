@@ -247,7 +247,7 @@ namespace AkAudioBankGenerationHelper
 		{
 			SlowTask.EnterProgressFrame(0.f, LOCTEXT("AK_ClearSoundBankInfoCache", "Clearing SoundBankInfoCache.dat"));
 
-			auto soundBankInfoCachePath = FPaths::Combine(wwiseProjectInfo.CacheDirectory(), TEXT("SoundBankInfoCache.dat"));
+			auto soundBankInfoCachePath = FPaths::Combine(wwiseProjectInfo.GetCacheDirectory(), TEXT("SoundBankInfoCache.dat"));
 			FPlatformFileManager::Get().GetPlatformFile().DeleteFile(*soundBankInfoCachePath);
 
 			clearCommands.Add(TEXT("SoundBank Info Cache"));
@@ -255,7 +255,7 @@ namespace AkAudioBankGenerationHelper
 
 		if ((ClearFlags & AkSoundDataClearFlags::MediaCache) == AkSoundDataClearFlags::MediaCache)
 		{
-			auto cacheFolderPath = wwiseProjectInfo.CacheDirectory();
+			auto cacheFolderPath = wwiseProjectInfo.GetCacheDirectory();
 			TArray<FString> foldersInCache;
 
 			auto& platformFile = FPlatformFileManager::Get().GetPlatformFile();
@@ -321,9 +321,9 @@ namespace AkAudioBankGenerationHelper
 
 				TArray<FName> dependencies;
 #if UE_4_26_OR_LATER
-				AssetRegistryModule.Get().GetReferencers(mediaData.PackagePath, dependencies, UE::AssetRegistry::EDependencyCategory::All);
+				AssetRegistryModule.Get().GetReferencers(mediaData.PackageName, dependencies, UE::AssetRegistry::EDependencyCategory::All);
 #else
-				AssetRegistryModule.Get().GetReferencers(mediaData.PackagePath, dependencies, EAssetRegistryDependencyType::All);
+				AssetRegistryModule.Get().GetReferencers(mediaData.PackageName, dependencies, EAssetRegistryDependencyType::All);
 #endif
 				if (dependencies.Num() == 0)
 				{
@@ -334,7 +334,7 @@ namespace AkAudioBankGenerationHelper
 			if (mediaToDelete.Num() > 0)
 			{
 				clearCommands.Add(TEXT("Orphan Media"));
-				ObjectTools::DeleteAssets(mediaToDelete, false);
+				ObjectTools::DeleteAssets(mediaToDelete, true);
 			}
 		}
 

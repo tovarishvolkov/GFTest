@@ -21,7 +21,7 @@ under the Apache License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
 OR CONDITIONS OF ANY KIND, either express or implied. See the Apache License for
 the specific language governing permissions and limitations under the License.
 
-  Version: v2021.1.1  Build: 7601
+  Version: v2021.1.3  Build: 7665
   Copyright (c) 2006-2021 Audiokinetic Inc.
 *******************************************************************************/
 
@@ -37,6 +37,9 @@ the specific language governing permissions and limitations under the License.
 #include <xmmintrin.h>
 #include <smmintrin.h>
 #include <emmintrin.h>
+#if defined(__FMA__) || defined(__AVX2__)
+#include <immintrin.h>
+#endif
 
 ////////////////////////////////////////////////////////////////////////
 /// @name Platform specific defines for prefetching
@@ -229,9 +232,14 @@ static AkForceInline AKSIMD_V4COND AKSIMD_SETMASK_V4COND( AkUInt32 x )
 /// r0 := a0 * b0; r1 := a1; r2 := a2; r3 := a3 (see _mm_add_ss)
 #define AKSIMD_MUL_SS_V4F32( a, b ) _mm_mul_ss( a, b )
 
-/// Vector multiply-add operation.
+/// Vector multiply-add operation. (if we're targeting a platform or arch with FMA, (AVX2 implies FMA) using the fma intrinsics directly tends to be slightly more desirable)
+#if defined(__FMA__) || defined(__AVX2__)
+#define AKSIMD_MADD_V4F32( __a__, __b__, __c__ ) _mm_fmadd_ps( (__a__), (__b__) , (__c__) )
+#define AKSIMD_MSUB_V4F32( __a__, __b__, __c__ ) _mm_fmsub_ps( (__a__), (__b__) , (__c__) )
+#else
 #define AKSIMD_MADD_V4F32( __a__, __b__, __c__ ) _mm_add_ps( _mm_mul_ps( (__a__), (__b__) ), (__c__) )
 #define AKSIMD_MSUB_V4F32( __a__, __b__, __c__ ) _mm_sub_ps( _mm_mul_ps( (__a__), (__b__) ), (__c__) )
+#endif
 
 /// Vector multiply-add operation.
 #define AKSIMD_MADD_SS_V4F32( __a__, __b__, __c__ ) _mm_add_ss( _mm_mul_ss( (__a__), (__b__) ), (__c__) )
@@ -355,6 +363,7 @@ static AKSIMD_V4F32 AKSIMD_COMPLEXMUL_SSE3( const AKSIMD_V4F32 vCIn1, const AKSI
 #define AKSIMD_OR_V4I32( a, b ) _mm_or_si128(a,b)
 #define AKSIMD_XOR_V4I32( a, b ) _mm_xor_si128(a,b)
 #define AKSIMD_SUB_V4I32( a, b ) _mm_sub_epi32(a,b)
+#define AKSIMD_NOT_V4I32( a ) _mm_xor_si128(a,_mm_set1_epi32(~0))
 
 #define AKSIMD_OR_V4F32( a, b ) _mm_or_ps(a,b)
 #define AKSIMD_AND_V4F32( a, b ) _mm_and_ps(a,b)
@@ -514,8 +523,16 @@ static AkForceInline bool AKSIMD_TESTZERO_V4I32(AKSIMD_V4I32 a)
 	return _mm_movemask_epi8(_mm_cmpeq_epi32(a, _mm_setzero_si128())) == 0xFFFF;
 }
 #define AKSIMD_TESTZERO_V4F32( __a__ ) AKSIMD_TESTZERO_V4I32(_mm_castps_si128(__a__))
-
 #define AKSIMD_TESTZERO_V4COND( __a__ ) AKSIMD_TESTZERO_V4F32(__a__)
+
+// returns true if every element of the provided vector is ones
+static AkForceInline bool AKSIMD_TESTONES_V4I32(AKSIMD_V4I32 a)
+{
+	return _mm_movemask_epi8(_mm_cmpeq_epi32(a, _mm_set1_epi32(~0))) == 0xFFFF;
+}
+#define AKSIMD_TESTONES_V4F32( __a__ ) AKSIMD_TESTONES_V4I32(_mm_castps_si128(__a__))
+#define AKSIMD_TESTONES_V4COND( __a__ ) AKSIMD_TESTONES_V4F32(__a__)
+
 //@}
 ////////////////////////////////////////////////////////////////////////
 

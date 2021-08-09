@@ -190,7 +190,7 @@ int32 UGenerateSoundBanksCommandlet::Main(const FString& Params)
 
 	if (Switches.Contains(RebuildSwitch) || Switches.Contains(MigrateSwitch))
 	{
-		FPlatformFileManager::Get().GetPlatformFile().DeleteDirectoryRecursively(*wwiseProjectInfo.CacheDirectory());
+		FPlatformFileManager::Get().GetPlatformFile().DeleteDirectoryRecursively(*wwiseProjectInfo.GetCacheDirectory());
 	}
 
 	const FString* PlatformValue = ParamVals.Find(PlatformsSwitch);
@@ -200,7 +200,7 @@ int32 UGenerateSoundBanksCommandlet::Main(const FString& Params)
 		PlatformValue->ParseIntoArray(PlatformNames, TEXT(","));
 		for (FString& name : PlatformNames)
 		{
-			if (wwiseProjectInfo.SupportedPlatforms().FindByPredicate([&name](auto& x) { return x.Name == name; }))
+			if (wwiseProjectInfo.GetSupportedPlatforms().FindByPredicate([&name](auto& x) { return x.Name == name; }))
 			{
 				InitParameters.Platforms.Add(name);
 			}
@@ -208,7 +208,7 @@ int32 UGenerateSoundBanksCommandlet::Main(const FString& Params)
 	}
 	else
 	{
-		for (auto& platform : wwiseProjectInfo.SupportedPlatforms())
+		for (auto& platform : wwiseProjectInfo.GetSupportedPlatforms())
 		{
 			InitParameters.Platforms.Add(platform.Name);
 		}
@@ -221,7 +221,7 @@ int32 UGenerateSoundBanksCommandlet::Main(const FString& Params)
 		LanguagesValue->ParseIntoArray(LanguagesNames, TEXT(","));
 		for (FString& name : LanguagesNames)
 		{
-			if (auto* languageInfo = wwiseProjectInfo.SupportedLanguages().FindByPredicate([&name](auto const& info) { return info.Name == name; }))
+			if (auto* languageInfo = wwiseProjectInfo.GetSupportedLanguages().FindByPredicate([&name](auto const& info) { return info.Name == name; }))
 			{
 				InitParameters.Languages.Add(*languageInfo);
 			}
@@ -229,7 +229,7 @@ int32 UGenerateSoundBanksCommandlet::Main(const FString& Params)
 	}
 	else
 	{
-		for (auto& language : wwiseProjectInfo.SupportedLanguages())
+		for (auto& language : wwiseProjectInfo.GetSupportedLanguages())
 		{
 			InitParameters.Languages.Add(language);
 		}
@@ -303,7 +303,7 @@ int32 UGenerateSoundBanksCommandlet::Main(const FString& Params)
 		builder->SetOverrideWwiseConsolePath(*overrideWwiseConsolePath);
 	}
 
-	builder->AutoSave = true;
+	builder->AutoSave = false;
 	builder->Init();
 
 	auto buildTaskRef = FFunctionGraphTask::CreateAndDispatchWhenReady([builder] {
@@ -325,7 +325,7 @@ int32 UGenerateSoundBanksCommandlet::Main(const FString& Params)
 	{
 		// Wait for shaders to stop compiling... This prevents the engine tick to try and show a notification when we have no UI,
 		// which leads to a Slate crash.
-		while (GShaderCompilingManager->IsCompiling()) {
+		while (GShaderCompilingManager->GetNumRemainingJobs() > 0) {
 			FPlatformProcess::Sleep(1);
 			UE_LOG(LogAkSoundDataCommandlet, Display, TEXT("Waiting for shaders to stop compiling... %d left"), GShaderCompilingManager->GetNumRemainingJobs());
 		}
@@ -371,6 +371,7 @@ int32 UGenerateSoundBanksCommandlet::Main(const FString& Params)
 						if (akSettings)
 						{
 							auto packageFilenames = USourceControlHelpers::PackageFilenames(PackagesToSave);
+							TArray<FString> FilesToCheckIn;
 
 							for (auto& filename : packageFilenames)
 							{
@@ -378,9 +379,14 @@ int32 UGenerateSoundBanksCommandlet::Main(const FString& Params)
 								{
 									UE_LOG(LogAkSoundDataCommandlet, Error, TEXT("Cannot checkout %s"), *filename);
 								}
+								else
+								{
+									FilesToCheckIn.Add(filename);
+								}
+
 							}
 
-							if (!USourceControlHelpers::CheckInFiles(packageFilenames, akSettings->CommandletCommitMessage))
+							if (!USourceControlHelpers::CheckInFiles(FilesToCheckIn, akSettings->CommandletCommitMessage))
 							{
 								UE_LOG(LogAkSoundDataCommandlet, Error, TEXT("Cannot checkin"));
 							}

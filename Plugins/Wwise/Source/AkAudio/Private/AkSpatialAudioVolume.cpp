@@ -19,6 +19,7 @@ Copyright (c) 2021 Audiokinetic Inc.
 =============================================================================*/
 
 #include "AkSpatialAudioVolume.h"
+#include "AkSpatialAudioHelper.h"
 #include "AkAudioDevice.h"
 #include "AkLateReverbComponent.h"
 #include "AkRoomComponent.h"
@@ -44,16 +45,6 @@ Copyright (c) 2021 Audiokinetic Inc.
 static const float kScaleEpsilon = 0.001;
 static const float kConvexHullEpsilon = 0.001;
 static const FName NAME_SAV_Fit = TEXT("AkSpatialAudioVolumeRaycast");
-
-bool IsAkSpatialAudioActorClass(AActor* Actor)
-{
-	if (Actor == nullptr)
-		return false;
-
-	return
-		Actor->GetClass() == AAkSpatialAudioVolume::StaticClass() ||
-		Actor->GetClass() == AAkAcousticPortal::StaticClass();
-}
 
 #if WITH_EDITOR
 bool IntersectPlanes(FVector n0, float d0, FVector n1, float d1, FVector n2, float d2, FVector &p)
@@ -124,6 +115,10 @@ AAkSpatialAudioVolume::AAkSpatialAudioVolume(const class FObjectInitializer& Obj
 	{
 		CollisionChannel = ECollisionChannel::ECC_WorldStatic;
 	}
+
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
+	
 #endif
 }
 
@@ -165,9 +160,10 @@ void AAkSpatialAudioVolume::FitRaycast()
 
 		for (auto& res : OutHits)
 		{
-			if (res.Actor != nullptr)
+			AActor* HitActor = AkSpatialAudioHelper::GetActorFromHitResult(res);
+			if (HitActor != nullptr)
 			{
-				UAkPortalComponent* PortalComponent = (UAkPortalComponent*)res.Actor->FindComponentByClass(UAkPortalComponent::StaticClass());
+				UAkPortalComponent* PortalComponent = (UAkPortalComponent*)HitActor->FindComponentByClass(UAkPortalComponent::StaticClass());
 				if (PortalComponent != nullptr)
 				{
 					// We hit a portal. The portals are a good reference point for the SAV, but we need to extend the ray to the center of the portal
@@ -191,7 +187,7 @@ void AAkSpatialAudioVolume::FitRaycast()
 				}
 
 				if (!res.bStartPenetrating &&
-					res.Actor->GetClass() == AAkSpatialAudioVolume::StaticClass())
+					HitActor->GetClass() == AAkSpatialAudioVolume::StaticClass())
 				{
 					hits.Emplace(res);
 					break;
@@ -757,6 +753,33 @@ void AAkSpatialAudioVolume::FitBox(bool bPreviewOnly)
 	}
 
 	FitFailed = false;
+}
+
+bool AAkSpatialAudioVolume::ShouldTickIfViewportsOnly() const
+{
+	return bBrushNeedsRebuild || ((GetBounds() != PreviousBounds) && PreviousBounds.SphereRadius != 0.0f);
+}
+
+void AAkSpatialAudioVolume::Tick(float DeltaSeconds)
+{
+	if (ShouldTickIfViewportsOnly())
+	{
+		SetNeedRebuild(GetLevel());
+		GEditor->RebuildAlteredBSP();
+		PostRebuildBrush();
+		PreviousBounds = GetBounds();
+		bBrushNeedsRebuild = false;
+	}
+}
+
+void AAkSpatialAudioVolume::PostTransacted(const FTransactionObjectEvent& TransactionEvent)
+{
+	Super::PostTransacted(TransactionEvent);
+	const TArray<FName>& ChangedProperties = TransactionEvent.GetChangedProperties();
+	if (TransactionEvent.GetEventType() == ETransactionObjectEventType::UndoRedo && ChangedProperties.Contains(FName("FitToGeometry")))
+	{
+		bBrushNeedsRebuild = true;
+	}
 }
 
 void AAkSpatialAudioVolume::PostEditMove(bool bFinished)

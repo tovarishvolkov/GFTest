@@ -17,7 +17,6 @@ Copyright (c) 2021 Audiokinetic Inc.
 	AkGeometryData.h:
 =============================================================================*/
 #pragma once
-#include <AK/SoundEngine/Common/AkTypes.h>
 #include <AkInclude.h>
 
 #include "AkAcousticTexture.h"

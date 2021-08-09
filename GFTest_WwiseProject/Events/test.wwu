@@ -5,10 +5,10 @@
 			<ChildrenList>
 				<Event Name="Test" ID="{F4E24975-DB7A-493A-B11C-3A8BD7BB6303}">
 					<ChildrenList>
-						<Action Name="" ID="{0DCAB1BC-E891-4F6F-B6FE-1A9E0D2535F3}" ShortID="408676837">
+						<Action Name="" ID="{B7A6213E-5D3A-4A10-A690-C7A885CC9921}" ShortID="1040772190">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="The_5_Am_On_Cold_Sea" ID="{343F4FD4-1A80-436C-B77E-C6C47CE42B35}" WorkUnitID="{2F25FA87-7FC1-4453-9F3B-C948F3ED3F28}"/>
+									<ObjectRef Name="vox" ID="{2FAC6AE6-F591-4FBE-93B6-50894CB47593}" WorkUnitID="{2F25FA87-7FC1-4453-9F3B-C948F3ED3F28}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>

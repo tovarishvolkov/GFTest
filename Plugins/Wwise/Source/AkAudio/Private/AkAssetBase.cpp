@@ -274,8 +274,14 @@ bool UAkAssetBase::NeedsRebuild(const TSet<FString>& PlatformsToBuild, const TSe
 
 void UAkAssetBase::Reset()
 {
+	if (PlatformAssetData != nullptr)
+	{
+		bChangedDuringReset = true;
+	}
 	PlatformAssetData = nullptr;
 
+	// ALWAYS call Super::Reset() last, since it will check if things have been modified
+	// before marking as dirty.
 	Super::Reset();
 }
 #endif

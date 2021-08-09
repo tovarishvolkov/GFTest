@@ -26,7 +26,7 @@ Copyright (c) 2021 Audiokinetic Inc.
 #include "AkMediaAsset.h"
 
 
-class FPostAssociatedEventAction : public FPendingLatentAction
+class FPostAssociatedEventAction : public FAkPendingLatentAction
 {
 public:
 	FName ExecutionFunction;
@@ -36,14 +36,16 @@ public:
 	TFuture<AkPlayingID> FuturePlayingID;
 	TArray<FAkExternalSourceInfo> ExternalSources;
 	UAkAudioEvent* AkEvent = nullptr;
+	bool* bGameObjectStarted= nullptr;
 
-	FPostAssociatedEventAction(const FLatentActionInfo& LatentInfo, int32* PlayingID, const TArray<FAkExternalSourceInfo>& ExtSrc, UAkAudioEvent* Event)
+	FPostAssociatedEventAction(const FLatentActionInfo& LatentInfo, int32* PlayingID, const TArray<FAkExternalSourceInfo>& ExtSrc, UAkAudioEvent* Event, bool* bStarted)
 		: ExecutionFunction(LatentInfo.ExecutionFunction)
 		, OutputLink(LatentInfo.Linkage)
 		, CallbackTarget(LatentInfo.CallbackTarget)
 		, PlayingID(PlayingID)
 		, ExternalSources(ExtSrc)
 		, AkEvent(Event)
+		, bGameObjectStarted(bStarted)
 	{
 	}
 
@@ -53,6 +55,10 @@ public:
 		if (futureIsReady)
 		{
 			*PlayingID = FuturePlayingID.Get();
+			if (bGameObjectStarted != nullptr)
+			{
+				*bGameObjectStarted = true;
+			}
 		}
 		else if (AkEvent)
 		{
@@ -61,6 +67,10 @@ public:
 				if (ExtSrc.ExternalSourceAsset)
 				{
 					ExtSrc.ExternalSourceAsset->AddPlayingID(AkEvent->ShortID, *PlayingID);
+					if (bGameObjectStarted != nullptr)
+					{
+						*bGameObjectStarted = true;
+					}
 				}
 			}
 		}
@@ -176,11 +186,11 @@ void UAkGameObject::PostAkEventAsyncByEvent(const UObject* WorldContextObject,
 	FPostAssociatedEventAction* NewAction = LatentActionManager.FindExistingAction<FPostAssociatedEventAction>(LatentInfo.CallbackTarget, LatentInfo.UUID);
 	if (!NewAction)
 	{
-		NewAction = new FPostAssociatedEventAction(LatentInfo, &PlayingID, ExternalSources, AkEvent);
+		NewAction = new FPostAssociatedEventAction(LatentInfo, &PlayingID, ExternalSources, AkEvent, &bStarted);
 		if (ExternalSources.Num() > 0)
 		{
-			FAkSDKExternalSourceArray SDKExternalSrcInfo(ExternalSources);
-			NewAction->FuturePlayingID = DeviceAndWorld.AkAudioDevice->PostEventAsync(AkEvent, this, PostEventCallback, CallbackMask, SDKExternalSrcInfo.ExternalSourceArray);
+			TSharedPtr<FAkSDKExternalSourceArray, ESPMode::ThreadSafe> SDKExternalSrcInfo = MakeShared<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>(ExternalSources);
+			NewAction->FuturePlayingID = DeviceAndWorld.AkAudioDevice->PostEventAsync(AkEvent, this, PostEventCallback, CallbackMask, SDKExternalSrcInfo);
 		}
 		else
 		{

@@ -37,6 +37,7 @@ void FAkRoomComponentDetailsCustomization::CustomizeDetails(IDetailLayoutBuilder
 {
 	DetailLayout.EditCategory("Toggle", FText::GetEmpty(), ECategoryPriority::Important);
 	DetailLayout.EditCategory("Room", FText::GetEmpty(), ECategoryPriority::TypeSpecific);
+	DetailLayout.EditCategory("AkEvent", FText::GetEmpty(), ECategoryPriority::TypeSpecific);
 	MyDetailLayout = &DetailLayout;
 	TArray<TWeakObjectPtr<UObject>> ObjectsBeingCustomized;
 	DetailLayout.GetObjectsBeingCustomized(ObjectsBeingCustomized);

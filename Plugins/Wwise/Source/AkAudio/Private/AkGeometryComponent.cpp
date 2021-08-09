@@ -165,19 +165,19 @@ void UAkGeometryComponent::OnRegister()
 	SetRelativeLocation(FVector::ZeroVector);
 	InitializeParent();
 #if WITH_EDITOR
+	OnMeshTypeChangedHandle = FCoreUObjectDelegates::OnObjectPropertyChanged.AddLambda([this](UObject* Object, FPropertyChangedEvent& PropertyChangedEvent)
+		{
+			if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UMeshComponent, OverrideMaterials) &&
+				Parent != nullptr &&
+				Parent == Object &&
+				MeshType == AkMeshType::StaticMesh
+				)
+			{
+				UpdateStaticMeshOverride();
+			}
+		});
 	if (Parent != nullptr)
 	{
-		OnMeshTypeChangedHandle = FCoreUObjectDelegates::OnObjectPropertyChanged.AddLambda([this](UObject* Object, FPropertyChangedEvent& PropertyChangedEvent)
-			{
-				if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UMeshComponent, OverrideMaterials) &&
-					Parent != nullptr && 
-					Parent == Object &&
-					MeshType == AkMeshType::StaticMesh
-					)
-				{
-					UpdateStaticMeshOverride();
-				}
-			});
 		if (MeshType == AkMeshType::StaticMesh)
 		{
 			UStaticMeshComponent* MeshParent = Cast<UStaticMeshComponent>(Parent);
@@ -272,8 +272,13 @@ void UAkGeometryComponent::CalculateSurfaceArea(UStaticMeshComponent* StaticMesh
 	SurfaceAreas.Empty();
 
 	UStaticMesh* mesh = StaticMeshComponent->GetStaticMesh();
+#if UE_4_27_OR_LATER
+	if (mesh == nullptr || !mesh->GetRenderData())
+		return;
+#else
 	if (mesh == nullptr || !mesh->RenderData)
 		return;
+#endif
 
 	const FStaticMeshLODResources& RenderMesh = mesh->GetLODForExport(LOD);
 	FIndexArrayView RawIndices = RenderMesh.IndexBuffer.GetArrayView();
@@ -408,8 +413,13 @@ void UAkGeometryComponent::ConvertStaticMesh(UStaticMeshComponent* StaticMeshCom
 	if (LOD > mesh->GetNumLODs() - 1)
 		LOD = mesh->GetNumLODs() - 1;
 
+#if UE_4_27_OR_LATER
+	if (!mesh->GetRenderData())
+		return;
+#else
 	if (!mesh->RenderData)
 		return;
+#endif
 
 	const FStaticMeshLODResources& RenderMesh = mesh->GetLODForExport(LOD);
 	FIndexArrayView RawIndices = RenderMesh.IndexBuffer.GetArrayView();
@@ -691,21 +701,21 @@ void ConvertConvexMeshToGeometryData(AkSurfIdx surfIdx, UBodySetup* bodySetup, F
 			AkVertIdx initialVertIdx = GeometryData->Vertices.Num();
 			if (convexMesh.IsValid())
 			{
-				const Chaos::TParticles<Chaos::FReal, 3>& particles = convexMesh->GetSurfaceParticles();
+				const TArray<Chaos::FVec3>& Vertices = convexMesh->GetVertices();
 
 				TArray<TArray<int32>> FaceIndices;
 				TArray<Chaos::TPlaneConcrete<Chaos::FReal, 3>> Planes;
-				Chaos::TParticles<Chaos::FReal, 3> SurfaceParticles;
+				TArray<Chaos::FVec3> SurfaceVertices;
 				Chaos::TAABB<Chaos::FReal, 3> LocalBoundingBox;
-				Chaos::FConvexBuilder::Build(particles, Planes, FaceIndices, SurfaceParticles, LocalBoundingBox);
+				Chaos::FConvexBuilder::Build(Vertices, Planes, FaceIndices, SurfaceVertices, LocalBoundingBox);
 
 
-				for (uint32 particleIdx = 0; particleIdx < particles.Size(); ++particleIdx)
+				for (int32 vertexIdx = 0; vertexIdx < Vertices.Num(); ++vertexIdx)
 				{
 					FVector akvtx;
-					akvtx.X = particles.X(particleIdx).X;
-					akvtx.Y = particles.X(particleIdx).Y;
-					akvtx.Z = particles.X(particleIdx).Z;
+					akvtx.X = Vertices[vertexIdx].X;
+					akvtx.Y = Vertices[vertexIdx].Y;
+					akvtx.Z = Vertices[vertexIdx].Z;
 					GeometryData->Vertices.Add(akvtx);
 				}
 
@@ -725,9 +735,9 @@ void ConvertConvexMeshToGeometryData(AkSurfIdx surfIdx, UBodySetup* bodySetup, F
 					for (uint32 polyVertIdx = 0; polyVertIdx < numVertsInPoly; ++polyVertIdx)
 					{
 						auto vertIdx = face[polyVertIdx];
-						center.X += particles.X(vertIdx).X;
-						center.Y += particles.X(vertIdx).Y;
-						center.Z += particles.X(vertIdx).Z;
+						center.X = Vertices[vertIdx].X;
+						center.Y = Vertices[vertIdx].Y;
+						center.Z = Vertices[vertIdx].Z;
 					}
 					center.X /= numVertsInPoly;
 					center.Y /= numVertsInPoly;
@@ -735,9 +745,9 @@ void ConvertConvexMeshToGeometryData(AkSurfIdx surfIdx, UBodySetup* bodySetup, F
 
 					// get the vector from center to the first vertex
 					FVector v0;
-					v0.X = particles.X(firstVertIdx).X - center.X;
-					v0.Y = particles.X(firstVertIdx).Y - center.Y;
-					v0.Z = particles.X(firstVertIdx).Z - center.Z;
+					v0.X = Vertices[firstVertIdx].X - center.X;
+					v0.Y = Vertices[firstVertIdx].Y - center.Y;
+					v0.Z = Vertices[firstVertIdx].Z - center.Z;
 					v0.Normalize();
 
 					// get the normal of the plane
@@ -750,9 +760,9 @@ void ConvertConvexMeshToGeometryData(AkSurfIdx surfIdx, UBodySetup* bodySetup, F
 						// get the vector from center to the current vertex
 						AkVertIdx vertIdx = face[polyVertIdx];
 						FVector v1;
-						v1.X = particles.X(vertIdx).X - center.X;
-						v1.Y = particles.X(vertIdx).Y - center.Y;
-						v1.Z = particles.X(vertIdx).Z - center.Z;
+						v1.X = Vertices[vertIdx].X - center.X;
+						v1.Y = Vertices[vertIdx].Y - center.Y;
+						v1.Z = Vertices[vertIdx].Z - center.Z;
 						v1.Normalize();
 
 						// get the angle between v0 and v1
@@ -889,7 +899,11 @@ void UAkGeometryComponent::SendGeometry()
 				for (int i = 0; i < params.NumSurfaces; ++i)
 				{
 					Surfaces[i].transmissionLoss = GeometryData.Surfaces[i].Occlusion;
-					Surfaces[i].strName = TCHAR_TO_ANSI(*GeometryData.Surfaces[i].Name);
+					Surfaces[i].strName = nullptr;
+					if (!GeometryData.Surfaces[i].Name.IsEmpty())
+					{
+						Surfaces[i].strName = TCHAR_TO_ANSI(*GeometryData.Surfaces[i].Name);
+					}
 					Surfaces[i].textureID = GeometryData.Surfaces[i].Texture;
 				}
 			}
@@ -1034,7 +1048,7 @@ void UAkGeometryComponent::TickComponent(float DeltaTime, enum ELevelTick TickTy
 	}
 	if (MeshType == AkMeshType::StaticMesh)
 	{
-		if (Parent != nullptr)
+		if (IsValid(Parent) && !Parent->IsBeingDestroyed())
 		{
 			UStaticMeshComponent* MeshParent = Cast<UStaticMeshComponent>(Parent);
 			if (MeshParent != nullptr && StaticMeshSurfaceOverride.Num() != MeshParent->GetNumMaterials())
@@ -1153,6 +1167,25 @@ void UAkGeometryComponent::UpdateGeometryTransform()
 
 
 #if WITH_EDITOR
+void UAkGeometryComponent::HandleObjectsReplaced(const TMap<UObject*, UObject*>& ReplacementMap)
+{
+	Super::HandleObjectsReplaced(ReplacementMap);
+	if (ReplacementMap.Contains(Parent))
+	{
+		InitializeParent();
+		if (Parent != nullptr)
+		{
+			if (MeshType == AkMeshType::StaticMesh)
+			{
+				UStaticMeshComponent* MeshParent = Cast<UStaticMeshComponent>(Parent);
+				if (MeshParent != nullptr)
+					CalculateSurfaceArea(MeshParent);
+			}
+			RecalculateHFDamping();
+		}
+	}
+}
+
 bool UAkGeometryComponent::ContainsTexture(const FGuid& textureID)
 {
 	if (MeshType == AkMeshType::CollisionMesh)

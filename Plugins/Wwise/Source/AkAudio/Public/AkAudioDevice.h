@@ -453,17 +453,18 @@ public:
 	 * Indicates the location of a specific Media ID in memory.
 	 *
 	 * @param in_pSourceSettings Array of Source Settings
-	 * @param un_uNumSourceSettings Number of Source Settings in the array
+	 * @param in_uNumSourceSettings Number of Source Settings in the array
 	 */
 	AKRESULT SetMedia(AkSourceSettings* in_pSourceSettings, uint32 in_uNumSourceSettings);
 
 	/**
-	 * Removes the specified source from the list of loaded media.
+	 * Removes the specified source from the list of loaded media, even if this media is already in use.
 	 *
 	 * @param in_pSourceSettings Array of Source Settings
-	 * @param un_uNumSourceSettings Number of Source Settings in the array
+	 * @param in_uNumSourceSettings Number of Source Settings in the array
+	 * @param out_pUnsetResults Array of AKRESULT results per Source Settings
 	 */
-	AKRESULT UnsetMedia(AkSourceSettings* in_pSourceSettings, uint32 in_uNumSourceSettings);
+	 AKRESULT TryUnsetMedia(AkSourceSettings* in_pSourceSettings, uint32 in_uNumSourceSettings, AKRESULT* out_pUnsetResults = nullptr);
 
 	/**
 	 * Get the currently selected audio culture
@@ -485,6 +486,11 @@ public:
 	 */
 	void SetCurrentAudioCulture(const FString& AudioCulture);
 
+	/**
+	 * Change the audio culture asynchronously and signal the latent action when done
+	 */
+	void SetCurrentAudioCultureAsync(const FString& AudioCulture, FSetCurrentAudioCultureAction* LatentAction);
+	
 	/**
 	 * Change the audio culture asynchronous and call the callback when done
 	 */
@@ -649,42 +655,6 @@ public:
 		);
 
 	/**
-	 * Post an event to ak soundengine
-	 *
-	 * @param in_pEvent			Name of the event to post
-	 * @param in_pComponent		AkComponent on which to play the event
-	 * @param in_uFlags			Bitmask: see \ref AkCallbackType
-	 * @param in_pfnCallback	Callback function
-	 * @param in_pCookie		Callback cookie that will be sent to the callback function along with additional information.
-	 * @param in_bStopWhenOwnerDestroyed If true, then the sound should be stopped if the owning actor is destroyed
-	 * @return ID assigned by ak soundengine
-	 */
-	TFuture<AkPlayingID> PostEventAsync(class UAkAudioEvent* in_pEvent,
-		AActor* in_pActor,
-		const FOnAkPostEventCallback& PostEventCallback,
-		AkUInt32 in_uFlags = 0,
-		bool in_bStopWhenOwnerDestroyed = false,
-		const TArray<AkExternalSourceInfo>& in_ExternalSources = TArray<AkExternalSourceInfo>()
-	);
-
-	/**
-	 * Post an event to ak soundengine by name
-	 *
-	 * @param in_EventName		Name of the event to post
-	 * @param in_pGameObject	UAkGameObject on which to play the event
-	 * @param PostEventCallback	Callback delegate
-	 * @param in_uFlags			Bitmask: see \ref EAkCallbackType
-	 * @return ID assigned by ak soundengine
-	 */
-	TFuture<AkPlayingID> PostEventAsync(
-		class UAkAudioEvent* in_pEvent,
-		UAkGameObject* in_pGameObject,
-		const FOnAkPostEventCallback& PostEventCallback,
-		AkUInt32 in_uFlags = 0,
-		const TArray<AkExternalSourceInfo>& in_ExternalSources = TArray<AkExternalSourceInfo>()
-	);
-
-	/**
 	 * Post an event at location to ak soundengine
 	 *
 	 * @param in_pEvent			Name of the event to post
@@ -699,36 +669,76 @@ public:
 	);
 
 	/**
-	 * Post an event to ak soundengine by name
+	 * Wait for event asset to be fully loaded and then post the event to ak soundengine
 	 *
-	 * @param in_EventName		Name of the event to post
-	 * @param in_pComponent		AkComponent on which to play the event
-	 * @param in_bStopWhenOwnerDestroyed If true, then the sound should be stopped if the owning actor is destroyed
-	 * @param LatentAction		Pointer to a Blueprint latent action.Used in the EndOfEvent callback.
+	 * @param AudioEvent				The event to post
+	 * @param Actor						Actor on which to play the event
+	 * @param PostEventCallback			Callback function
+	 * @param CallbackFlags				Bitmask: see \ref AkCallbackType
+	 * @param bStopWhenOwnerDestroyed   If true, then the sound should be stopped if the owning actor is destroyed
 	 * @return ID assigned by ak soundengine
 	 */
-	TFuture<AkPlayingID> PostEventLatentActionAsync(
-		class UAkAudioEvent* in_pEvent,
+	TFuture<AkPlayingID> PostEventAsync(
+		class UAkAudioEvent* AudioEvent,
 		AActor* Actor,
-		bool bStopWhenOwnerDestroyed,
-		FWaitEndOfEventAction* LatentAction,
-		const TArray<AkExternalSourceInfo>& in_ExternalSources = TArray<AkExternalSourceInfo>()
+		const FOnAkPostEventCallback& PostEventCallback,
+		AkUInt32 CallbackFlags = 0,
+		bool bStopWhenOwnerDestroyed = false,
+		const TSharedPtr<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>& ExternalSources =
+		 MakeShared<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>()
+	);
+
+	/**
+	 * Wait for event asset to be fully loaded and then post the event to ak soundengine
+	 *
+	 * @param AudioEvent		The event to post
+	 * @param GameObject		UAkGameObject on which to play the event
+	 * @param PostEventCallback	Callback delegate
+	 * @param CallbackFlags		Bitmask: see \ref EAkCallbackType
+	 * @return ID assigned by ak soundengine
+	 */
+	TFuture<AkPlayingID> PostEventAsync(
+		class UAkAudioEvent* AudioEvent,
+		UAkGameObject* GameObject,
+		const FOnAkPostEventCallback& PostEventCallback,
+		AkUInt32 CallbackFlags = 0,
+		const TSharedPtr<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>& ExternalSources =
+		 MakeShared<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>()
 	);
 
 	/**
 	 * Post an event to ak soundengine by name
 	 *
-	 * @param in_EventName		Name of the event to post
-	 * @param in_pComponent		AkComponent on which to play the event
-	 * @param in_bStopWhenOwnerDestroyed If true, then the sound should be stopped if the owning actor is destroyed
-	 * @param LatentAction		Pointer to a Blueprint latent action.Used in the EndOfEvent callback.
+	 * @param AudioEvent				The event to post
+	 * @param Actor						Actor on which to play the event
+	 * @param bStopWhenOwnerDestroyed	If true, then the sound should be stopped if the owning actor is destroyed
+	 * @param LatentAction				Pointer to a Blueprint latent action. Used in the EndOfEvent callback.
 	 * @return ID assigned by ak soundengine
 	 */
 	TFuture<AkPlayingID> PostEventLatentActionAsync(
-		class UAkAudioEvent* in_pEvent,
-		UAkComponent* in_pComponent,
+		class UAkAudioEvent* AudioEvent,
+		AActor* Actor,
+		bool bStopWhenOwnerDestroyed,
 		FWaitEndOfEventAction* LatentAction,
-		const TArray<AkExternalSourceInfo>& in_ExternalSources = TArray<AkExternalSourceInfo>()
+		const TSharedPtr<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>& ExternalSources =
+		 MakeShared<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>()
+	);
+
+	/**
+	 * Post an event to ak soundengine by name
+	 *
+	 * @param AudioEvent				The event to post
+	 * @param AkComponent				AkComponent on which to play the event
+	 * @param bStopWhenOwnerDestroyed	If true, then the sound should be stopped if the owning actor is destroyed
+	 * @param LatentAction				Pointer to a Blueprint latent action.Used in the EndOfEvent callback.
+	 * @return ID assigned by ak soundengine
+	 */
+	TFuture<AkPlayingID> PostEventLatentActionAsync(
+		class UAkAudioEvent* AudioEvent,
+		UAkComponent* AkComponent,
+		FWaitEndOfEventAction* LatentAction,
+		const TSharedPtr<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>& ExternalSources =
+		 MakeShared<FAkSDKExternalSourceArray, ESPMode::ThreadSafe>()
 	);
 
 	/** Spawn an AkComponent at a location. Allows, for example, to set a switch on a fire and forget sound.
@@ -739,7 +749,7 @@ public:
 	 * @param EarlyReflectionsBusName - Use the provided auxiliary bus to process early reflections.  If empty, no early reflections will be processed.
 	 * @param AutoDestroy - Automatically destroy the AkComponent once the event is finished.
 	 */
-	class UAkComponent* SpawnAkComponentAtLocation( class UAkAudioEvent* in_pAkEvent, FVector Location, FRotator Orientation, bool AutoPost, const FString& EventName, bool AutoDestroy, class UWorld* in_World );
+	class UAkComponent* SpawnAkComponentAtLocation( class UAkAudioEvent* AkEvent, FVector Location, FRotator Orientation, bool AutoPost, const FString& EventName, bool AutoDestroy, class UWorld* in_World );
 
 	/**
 	 * Executes an action on all nodes that are referenced in the specified event in an action of type play.
@@ -848,6 +858,22 @@ public:
 	/**
 	 * Set a RTPC in ak soundengine
 	 *
+	 * @param in_Rtpc			RTPC Short ID
+	 * @param in_value			Value to set
+	 * @param in_interpolationTimeMs - Duration during which the RTPC is interpolated towards in_value (in ms)
+	 * @param in_pActor			AActor on which to set the RTPC
+	 * @return Result from ak sound engine
+	 */
+	AKRESULT SetRTPCValue(
+		AkRtpcID in_Rtpc,
+		AkRtpcValue in_value,
+		int32 in_interpolationTimeMs,
+		AActor * in_pActor
+		);
+
+	/**
+	 * Set a RTPC in ak soundengine
+	 *
 	 * @param in_RtpcValue	RTPC Value
 	 * @param in_value			Value to set
 	 * @param in_interpolationTimeMs - Duration during which the RTPC is interpolated towards in_value (in ms)
@@ -859,6 +885,22 @@ public:
 		AkRtpcValue in_value,
 		int32 in_interpolationTimeMs,
 		AActor * in_pActor
+	);
+
+	/**
+	 * Set a RTPC in ak soundengine by PlayingID
+	 *
+	 * @param in_Rtpc			RTPC Short ID
+	 * @param in_value			Value to set
+	 * @param in_playingID		PlayingID on which to set the value
+	 * @param in_interpolationTimeMs - Duration during which the RTPC is interpolated towards in_value (in ms)
+	 * @return Result from ak sound engine
+	 */
+	AKRESULT SetRTPCValueByPlayingID(
+		AkRtpcID in_Rtpc,
+		AkRtpcValue in_value,
+		AkPlayingID in_playingID,
+		int32 in_interpolationTimeMs
 	);
 
 	/**
@@ -894,6 +936,26 @@ public:
 	*  @return AK_Success if succeeded, AK_IDNotFound if the game object was not registered, or AK_Fail if the RTPC value could not be obtained
 	*/
 	AKRESULT GetRTPCValue(
+		AkRtpcID in_Rtpc,
+		AkGameObjectID in_gameObjectID,		///< Associated game object ID, ignored if io_rValueType is RTPCValue_Global.
+		AkPlayingID	in_playingID,			///< Associated playing ID, ignored if io_rValueType is not RTPC_PlayingID.
+		AkRtpcValue& out_rValue, 			///< Value returned
+		AK::SoundEngine::Query::RTPCValue_type&	io_rValueType		///< In/Out value, the user must specify the requested type. The function will return in this variable the type of the returned value.				);
+	);
+
+	/**
+	*  Get the value of a real-time parameter control (by ID)
+	*  An RTPC can have a any combination of a global value, a unique value for each game object, or a unique value for each playing ID.
+	*  The value requested is determined by RTPCValue_type, in_gameObjectID and in_playingID.
+	*  If a value at the requested scope (determined by RTPCValue_type) is not found, the value that is available at the the next broadest scope will be returned, and io_rValueType will be changed to indicate this.
+	*  @note
+	* 		When looking up RTPC values via playing ID (ie. io_rValueType is RTPC_PlayingID), in_gameObjectID can be set to a specific game object (if it is available to the caller) to use as a fall back value.
+	* 		If the game object is unknown or unavailable, AK_INVALID_GAME_OBJECT can be passed in in_gameObjectID, and the game object will be looked up via in_playingID.
+	* 		However in this case, it is not possible to retrieve a game object value as a fall back value if the playing id does not exist.  It is best to pass in the game object if possible.
+	*
+	*  @return AK_Success if succeeded, AK_IDNotFound if the game object was not registered, or AK_Fail if the RTPC value could not be obtained
+	*/
+	AKRESULT GetRTPCValue(
 		class UAkRtpc const* in_RtpcValue,
 		AkGameObjectID in_gameObjectID,		///< Associated game object ID, ignored if io_rValueType is RTPCValue_Global.
 		AkPlayingID	in_playingID,			///< Associated playing ID, ignored if io_rValueType is not RTPC_PlayingID.
@@ -908,10 +970,22 @@ public:
 	 * @param in_pszState		Name of the state
 	 * @return Result from ak sound engine
 	 */
-	AKRESULT SetState( 
-		const TCHAR * in_pszStateGroup,
-		const TCHAR * in_pszState
-	    );
+	AKRESULT SetState(
+		const TCHAR* in_pszStateGroup,
+		const TCHAR* in_pszState
+	);
+
+	/**
+	 * Set a state in ak soundengine
+	 *
+	 * @param in_StateGroup	State group short ID
+	 * @param in_State		State short ID
+	 * @return Result from ak sound engine
+	 */
+	AKRESULT SetState(
+		AkStateGroupID in_StateGroup,
+		AkStateID in_State
+	);
 
 	/**
 	 * Set a state in ak soundengine
@@ -937,6 +1011,20 @@ public:
 		AActor * in_pActor
 		);
 
+	/**
+	 * Set a switch in ak soundengine
+	 *
+	 * @param in_SwitchGroup	Short ID of the switch group
+	 * @param in_SwitchState	Short ID of the switch
+	 * @param in_pComponent		AkComponent on which to set the switch
+	 * @return Result from ak sound engine
+	 */
+	AKRESULT SetSwitch(
+		AkSwitchGroupID in_SwitchGroup,
+		AkSwitchStateID in_SwitchState,
+		AActor* in_pActor
+	);
+		
 	/**
 	 * Set a switch in ak soundengine
 	 *
@@ -1095,6 +1183,24 @@ public:
 		AkUInt32 in_idDevice = 0
 	);
 
+
+	/**
+	 * Replaces the main output device previously created during engine initialization with a new output device.
+	 * In addition to simply removing one output device and adding a new one, the new output device will also be used on all of the master buses
+	 * that the old output device was associated with, and preserve all listeners that were attached to the old output device.
+	 *
+	 * @param MainOutputSettings	Creation parameters for this output
+	 * 
+	 * @return 
+	 * - AK_InvalidID: The audioDeviceShareset on in_settings was not valid.
+	 * - AK_IDNotFound: The audioDeviceShareset on in_settings doesn't exist.  Possibly, the Init bank isn't loaded yet or was not updated with latest changes.
+	 * - AK_DeviceNotReady: The idDevice on in_settings doesn't match with a valid hardware device.  Either the device doesn't exist or is disabled.  Disconnected devices (headphones) are not considered "not ready" therefore won't cause this error.
+	 * - AK_DeviceNotFound: The in_outputDeviceId provided does not match with any of the output devices that the sound engine is currently using.
+	 * - AK_InvalidParameter: Out of range parameters or unsupported parameter combinations on in_settings
+	 * - AK_Success: parameters were valid, and the remove and add will occur.
+	 */
+	AKRESULT ReplaceMainOutput(const AkOutputSettings& MainOutputSettings);
+
 	/**
 	 * Gets speaker angles of the specified device. Speaker angles are used for 3D positioning of sounds over standard configurations.
 	 * Note that the current version of Wwise only supports positioning on the plane.
@@ -1181,6 +1287,28 @@ public:
 	 */
 	void UnregisterGlobalCallback(FDelegateHandle Handle, AkGlobalCallbackLocation Location);
 
+#ifdef AK_OUTPUT_DEVICE_METERING_ENABLED
+	/**
+	 * Registers a callback to be called to allow the game to access metering data from any output device.
+	 * @param OutputID Output ID, as returned from AddOutput or GetOutputID.  You can pass 0 for the main (default) output
+	 * @param Callback Callback function
+	 * @param MeteringFlags Metering flags
+	 * @param Cookie User cookie 
+	 * @return AK_Success if callback has been registered
+	 */
+	AKRESULT RegisterOutputDeviceMeteringCallback(AkOutputDeviceID OutputID,
+												  AkOutputDeviceMeteringCallbackFunc Callback,
+												  AkMeteringFlags MeteringFlags,
+												  void* Cookie);
+
+	/**
+	 * Unregisters the output devices's metering callback
+	 * @param OutputID 
+	 * @return AK_Success if callback has been unregistered
+	 */
+	AKRESULT UnregisterOutputDeviceMeteringCallback(AkOutputDeviceID OutputID);
+#endif
+
 	/**
 	 * Obtain a pointer to the singleton instance of FAkAudioDevice
 	 *
@@ -1237,6 +1365,26 @@ public:
 	* Set the early reflections send volume for an AK Component
 	*/
 	AKRESULT SetEarlyReflectionsVolume(UAkComponent* in_pComponent, float in_fSendVolume);
+
+	/**
+	* Set the reflections order for the project
+	*/
+	AKRESULT SetReflectionsOrder(int Order, bool RefreshPaths);
+
+	/**
+	* Set obstruction and occlusion on sounds going through this portal
+	*/
+	AKRESULT SetPortalObstructionAndOcclusion(UAkPortalComponent* in_pPortal, float in_fObstructionValue, float in_fOcclusionValue);
+
+	/**
+	* Set obstruction on sounds from this game object going through this portal
+	*/
+	AKRESULT SetGameObjectToPortalObstruction(UAkComponent* in_pComponent, UAkPortalComponent* in_pPortal, float in_fObstructionValue);
+
+	/**
+	* Set obstruction on sounds from a first portal going through the next portal
+	*/
+	AKRESULT SetPortalToPortalObstruction(UAkPortalComponent* in_pPortal0, UAkPortalComponent* in_pPortal1, float in_fObstructionValue);
 
 	/**
 	 * Get an ak audio component, or create it if none exists that fit the attachment criteria.
@@ -1387,22 +1535,22 @@ public:
 	TArray<class UAkLateReverbComponent*> FindLateReverbComponentsAtLocation(const FVector& Loc, const UWorld* in_World);
 
 	/** Add a UAkLateReverbComponent to the spatial index data structure. */
-	void IndexLateReverb(class UAkLateReverbComponent* in_ComponentToAdd);
+	void IndexLateReverb(class UAkLateReverbComponent* ComponentToAdd);
 
 	/** Remove a UAkLateReverbComponent from the spatial index data structure. */
-	void UnindexLateReverb(class UAkLateReverbComponent* in_ComponentToRemove);
+	void UnindexLateReverb(class UAkLateReverbComponent* ComponentToRemove);
 
 	/** Update the bounds of a UAkLateReverbComponent in the spatial index data structure. Must be called if the component's transform changes.*/
-	void ReindexLateReverb(class UAkLateReverbComponent* in_ComponentToAdd);
+	void ReindexLateReverb(class UAkLateReverbComponent* ComponentToAdd);
 
 	/** Get whether the given world has room registered in it. */
-	bool WorldHasActiveRooms(UWorld* in_World);
+	bool WorldHasActiveRooms(UWorld* World);
 
 	/** Find UAkRoomComponents at a given location. */
-	TArray<class UAkRoomComponent*> FindRoomComponentsAtLocation(const FVector& Loc, const UWorld* in_World);
+	TArray<class UAkRoomComponent*> FindRoomComponentsAtLocation(const FVector& Loc, const UWorld* World);
 
 	/** Return true if any UAkRoomComponents have been added to the prioritized list of rooms for the in_World**/
-	bool UsingSpatialAudioRooms(const UWorld* in_World);
+	bool UsingSpatialAudioRooms(const UWorld* World);
 
 	/** Get the aux send values corresponding to a point in the world.**/
 	void GetAuxSendValuesAtLocation(FVector Loc, TArray<AkAuxSendValue>& AkAuxSendValues, const UWorld* in_World);
@@ -1444,13 +1592,13 @@ public:
 	AKRESULT SetPosition(UAkComponent* in_akComponent, const AkTransform& in_SoundPosition);
 
 	/** Add a UAkRoomComponent to the spatial index data structure. */
-	void IndexRoom(class UAkRoomComponent* in_ComponentToAdd);
+	void IndexRoom(class UAkRoomComponent* ComponentToAdd);
 
 	/** Remove a UAkRoomComponent from the spatial index data structure. */
-	void UnindexRoom(class UAkRoomComponent* in_ComponentToRemove);
+	void UnindexRoom(class UAkRoomComponent* ComponentToRemove);
 
 	/** Update the bounds of a UAkRoomComponent in the spatial index data structure. Must be called if the component's transform changes.*/
-	void ReindexRoom(class UAkRoomComponent* in_ComponentToAdd);
+	void ReindexRoom(class UAkRoomComponent* ComponentToAdd);
 
 	AKRESULT AddRoom(UAkRoomComponent* in_pRoom, const AkRoomParams& in_RoomParams);
 	AKRESULT UpdateRoom(UAkRoomComponent* in_pRoom, const AkRoomParams& in_RoomParams);
@@ -1482,17 +1630,29 @@ public:
 	friend class UAkInitBank;
 	struct SetCurrentAudioCultureAsyncTask
 	{
+		enum CompletionType
+		{
+			LatentAction,
+			Callback
+		};
+
 		FString NewWwiseLanguage;
-		FOnSetCurrentAudioCultureCompleted CompletedCallback;
 		FThreadSafeCounter TasksRemaining = 0;
 		FThreadSafeBool IsDone = false;
 		FThreadSafeBool Succeeded = false;
+
+		SetCurrentAudioCultureAsyncTask(FString NewLanguage, FSetCurrentAudioCultureAction* LatentAction);
+		SetCurrentAudioCultureAsyncTask(FString NewLanguage, const FOnSetCurrentAudioCultureCompleted& CompletedCallback);
 
 		bool Start();
 		void Update();
 
 	private:
-		void onNewLanguageLoaded(bool IsValid);
+		void OnNewLanguageLoaded(bool IsValid);
+		TSharedPtr<FPendingLatentActionValidityToken, ESPMode::ThreadSafe> LatentActionValidityToken;
+		CompletionType CompletionActionType;
+		FSetCurrentAudioCultureAction* SetAudioCultureLatentAction;
+		FOnSetCurrentAudioCultureCompleted SetAudioCultureCompletedCallback;
 	};
 
 	bool IsPlayingIDActive(uint32 EventID, uint32 PlayingID);
@@ -1503,7 +1663,6 @@ public:
 	void AddToPinnedEventsMap(uint32 PlayingID, UAkAudioEvent* EventToPin);
 	void AddToPinnedMediasMap(uint32 PlayingID, UAkExternalMediaAsset* MediaToPin);
 	void CleanPinnedObjects(uint32 PlayingID);
-
 
 private:
 	bool EnsureInitialized();
@@ -1604,7 +1763,7 @@ private:
 		uint64 Created = 0;
 	} WaapiSubscriptionIds;
 
-	TArray<SetCurrentAudioCultureAsyncTask*> audioCultureAsyncTasks;
+	TArray<SetCurrentAudioCultureAsyncTask*> AudioCultureAsyncTasks;
 
 #if !WITH_EDITOR
 	TMap<FCulturePtr, FString> CachedUnrealToWwiseCulture;

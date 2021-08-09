@@ -14,6 +14,9 @@ Copyright (c) 2021 Audiokinetic Inc.
 *******************************************************************************/
 
 #if PLATFORM_TVOS
-/// <INSERT_TVOS_PLUGINS>
-/// </INSERT_TVOS_PLUGINS>
+#include <AK/Plugin/AkToneSourceFactory.h>
+#include <AK/Plugin/AkRoomVerbFXFactory.h>
+#include <AK/Plugin/AkTremoloFXFactory.h>
+#include <AK/Plugin/AkSynthOneSourceFactory.h>
+#include <AK/Plugin/AkReflectFXFactory.h>
 #endif

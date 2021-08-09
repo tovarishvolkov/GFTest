@@ -35,18 +35,64 @@ void UAkAudioType::PostLoad()
 	}
 }
 
-void UAkAudioType::Load()
+void UAkAudioType::MarkDirtyInGameThread()
+{
+#if WITH_EDITOR
+	AsyncTask(ENamedThreads::GameThread, [this] 
+		{
+			MarkPackageDirty();
+		});
+#endif
+}
+
+bool UAkAudioType::ShortIdMatchesName(AkUInt32& OutIdFromName)
 {
 	if (auto AudioDevice = FAkAudioDevice::Get())
 	{
-		auto idFromName = AudioDevice->GetIDFromString(GetName());
-		if (ShortID == 0)
+		if (IsA<UAkGroupValue>())
 		{
-			ShortID = idFromName;
+			FString ValueName;
+			GetName().Split(TEXT("-"), nullptr, &ValueName);
+			OutIdFromName = AudioDevice->GetIDFromString(ValueName);
 		}
-		else if (!IsA<UAkGroupValue>() && !IsA<UAkFolder>() && ShortID != 0 && ShortID != idFromName)
+		else
 		{
-			UE_LOG(LogAkAudio, Error, TEXT("%s - Current Short ID '%u' is different from ID from the name '%u'"), *GetName(), ShortID, idFromName);
+			OutIdFromName = AudioDevice->GetIDFromString(GetName());
+		}
+
+		if (ShortID != OutIdFromName)
+		{
+			//Folder asset name does not correspond to actual wwise object name and we don't use the short ID anyway
+			if (IsA<UAkFolder>())
+			{
+				return true;
+			}
+			if (ShortID != 0) 
+			{
+				UE_LOG(LogAkAudio, Warning, TEXT("%s - Current Short ID '%u' is different from expected ID '%u'"), *GetName(), ShortID, OutIdFromName);
+			}
+			return false;
+		}
+	}
+	return true;
+}
+
+void UAkAudioType::Load()
+{
+	ValidateShortId(false);
+}
+
+void UAkAudioType::ValidateShortId(bool bMarkAsDirty)
+{
+	AkUInt32 IdFromName;
+	if (!ShortIdMatchesName(IdFromName))
+	{
+		UE_LOG(LogAkAudio, Log, TEXT("%s - Updating Short ID from '%u' to '%u'"), *GetName(), ShortID, IdFromName);
+
+		ShortID = IdFromName;
+		if (bMarkAsDirty)
+		{
+			MarkDirtyInGameThread();
 		}
 	}
 }
@@ -54,10 +100,16 @@ void UAkAudioType::Load()
 #if WITH_EDITOR
 void UAkAudioType::Reset()
 {
-	ShortID = 0;
+	if (ShortID != 0)
+	{
+		ShortID = 0;
+		bChangedDuringReset = true;
+	}
 
-	AsyncTask(ENamedThreads::GameThread, [this] {
-		MarkPackageDirty();
-	});
+	if (bChangedDuringReset)
+	{
+		bChangedDuringReset = false;
+		MarkDirtyInGameThread();
+	}
 }
 #endif

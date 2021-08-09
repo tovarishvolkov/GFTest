@@ -91,7 +91,7 @@ public:
 	TMap<FString, UAkAssetData*> AssetDataPerPlatform;
 #endif
 
-	UPROPERTY()
+	UPROPERTY(transient)
 	UAkAssetData* CurrentAssetData;
 
 public:
