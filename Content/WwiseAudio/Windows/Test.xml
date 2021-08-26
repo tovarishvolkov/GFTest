@@ -8,7 +8,7 @@
 		<ExternalSourcesOutputRoot>/Users/tovarish_volkov/Library/Application Support/Wwise2019/Bottles/Wwise2019x64/dosdevices/z:/Volumes/Library/UnrealProjects/GFTest/GFTest_WwiseProject/GeneratedSoundBanks/Windows</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<SoundBanks>
-		<SoundBank Id="3157003241" GUID="{003B787B-1D1D-44FE-AA1B-6C791BE4C061}" Language="SFX" Hash="3593611148">
+		<SoundBank Id="3157003241" GUID="{003B787B-1D1D-44FE-AA1B-6C791BE4C061}" Language="SFX" Hash="1348523684">
 			<ObjectPath>\SoundBanks\Default Work Unit\Test</ObjectPath>
 			<ShortName>Test</ShortName>
 			<Path>Test.bnk</Path>

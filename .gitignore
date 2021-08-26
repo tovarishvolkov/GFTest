@@ -32,3 +32,7 @@ GFTest_WwiseProject/ProfilingSession53.prof
 GFTest_WwiseProject/ProfilingSession52.prof
 GFTest_WwiseProject/ProfilingSession51.prof
 GFTest_WwiseProject/ProfilingSession50.prof
+*.prof
+Plugins/Wwise/ThirdParty/iOS/Profile-iphoneos/lib/libAkMusicEngine.a
+Plugins/Wwise/ThirdParty/iOS/Debug-iphonesimulator/lib/libAkMusicEngine.a
+Plugins/Wwise/ThirdParty/iOS/Debug-iphoneos/lib/libAkMusicEngine.a
